@@ -1,0 +1,4 @@
+* Possibly a joint univariate GARCH fitting routine (jGARCH) as a precursor to
+one-stage estimation models.
+* Perhaps the scalar BEKK model.
+* Some multivariate tests.

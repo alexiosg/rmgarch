@@ -1,0 +1,973 @@
+\section{Introduction}
+The ability to dynamically and jointly model the full multivariate density
+dynamics has very important implications for risk and portfolio management,
+and more generally economic policy decision making. However, feasible large-scale
+multivariate GARCH modelling has proved very challenging since the direct extension
+of the univariate models to a vector representation by \cite{Bollerslev1988}.
+The {\bf rmgarch} package aims to provide a subset of multivariate GARCH models
+which can handle large scale estimation through separation of the dynamics
+so that parallel processing may be used. Methods for fitting, filtering,
+forecasting and simulation are included were applicable with some interesting
+additional methods aimed at portfolio and risk applications. This document provides
+for a summarized theoretical background of the models and their properties.\\
+While there are a number of open source and commercial packages implementing the
+DCC based models, the {\bf rmgarch} package uniquely implements and introduces
+the GO-GARCH model with ICA using the multivariate affine Generalized Hyperbolic
+distribution and the relevant methods for working with this model in an applied setting.\\
+The {\bf rmgarch} package is on CRAN and the development version on r-forge
+\url{https://r-forge.r-project.org/projects/teatime/}.\\
+The package is provided AS IS, without any implied warranty as to its accuracy
+or suitability. A lot of time and effort has gone into the development of this
+package, and it is offered under the GPL-3 license in the spirit of open knowledge
+sharing and dissemination. If you do use the model in published work DO remember
+to cite the package and author (type {\bf citation("rmgarch")} for the
+appropriate BibTeX entry) , and if you have used it and found it useful, drop me
+a note and let me know.\\
+\textbf{ IMPORTANT :\\
+The package is still in development and some functions/methods MAY change over time, 
+and bugs are certain to exist. Please report any suspected bugs in the code, mistakes 
+in the models or general questions to the R-SIG-FINANCE mailing list and not directly 
+to my email, unless solicited. I maintain a blog (\url{http://www.unstarched.net}) 
+which contains some examples and posts which I update when time permits.}
+\section{Multivariate GARCH Models}
+The generalization of univariate GARCH models to the multivariate domain is
+conceptually simple. Consider the stochastic vector process, $\bfx_t$ $\{t=1,2,...T\}$
+of financial returns with dimension $N\times 1$ and mean vector $\bfmu_t$\footnote{The mean
+vector may for example be derived from a VAR model or may simply represent the
+unconditional means of the financial returns.}, given the information set $\bfI_{t-1}$:
+\begin{equation}\label{eq:mgarch1}
+\bfx_t\left| \bfI_{t - 1} \right. = \bfmu _t + \bfvarepsilon _t,
+\end{equation}
+where the residuals of the process are modelled as:
+\begin{equation}\label{eq:mgarch2}
+{\bfvarepsilon _t} = \bfH_t^{1/2}{\bfz_t},
+\end{equation}
+and $\bfH_t^{1/2}$ is an $N\times N$ positive definite matrix such that $\bfH_t$
+is the conditional covariance matrix of $\bfx_t$\footnote{One way to obtain the
+square root matrix is through the singular value decomposition of $\bfH_t$.},
+and $\bfz_t$ an $N\times 1$ i.i.d. random vector, with centered and scaled first 2 moments:
+\begin{equation}\notag
+\E\left[\bfz_t\right] = 0,
+\end{equation}
+\begin{equation}\label{eq:mgarch3}
+\Var[{\bfz_t}] = {\bfI_N},
+\end{equation}
+with $\bfI_N$ denoting the identity matrix of order N. The conditional covariance
+matrix $\bfH_t$ of $\bfx_t$ may be defined as:
+\begin{align}
+\Var\left(\bfx_t\left| \bfI_{t - 1}\right.\right) =  \Var_{t - 1}(\bfx_t) &= \Var_{t - 1}(\bfvarepsilon_t)\nonumber \\
+& = \bfH_t^{1/2}\Var_{t - 1}(\bfz_t)(\bfH_t^{1/2})' \nonumber \\
+& = \bfH_t.\label{eq:mgarch4}
+\end{align}
+The literature on the different specifications of $\bfH_t$ may be broadly divided
+into direct multivariate extensions, factor models and the conditional correlation
+models. The usual trade-off of model parametrization and dimensionality clearly
+applies here, with the fully parameterized models offering the richest dynamics
+at the cost of increasing parameter size, making it unfeasible for modelling
+anything beyond a couple of assets. There is, also, a not so evident tradeoff
+between those models which allow flexible univariate dynamics (in the motion
+dynamics and the distributions) to enter the equation at the cost of some
+multivariate dynamics. The next sections will review these models and some of
+the tradeoffs they present for the decision maker. A more complete review of
+multivariate GARCH (\emph{MGARCH}) models is provided by \cite{Bauwens2006}
+and \cite{Silvennoinen2009a}.
+
+\subsection{Conditional Mean Dynamics}\label{section:mmean}
+The {\bf rmgarch} package allows for either a constant, univariate AR or
+Vector AR (\emph{VAR}) model to be fit (or a pre-filtered residual series).
+The constant and AR models are already implemented and described in the {\bf {rugarch}}
+package. For the DCC based models, the constant-AR model is jointly estimated
+with the first stage GARCH dynamics, while for the GO-GARCH models the univariate
+ARFIMAX model is used assuming constant variance to obtain the parameter estimates.
+In the case of the VAR model, external regressors are also allowed as is the
+possibility to use a robust version of the model based on the multivariate least
+trimmed squares approach of \cite{Croux2008}. When using a constant or AR model
+with DCC based models, standard errors are calculated for all first stage
+parameters using a partitioned standard error matrix. In the case of a VAR model,
+this joint estimation of standard errors is not practical due to the dimensionality
+of the system. Finally, in the case of the GO-GARCH model, there is no joint
+estimation of parameters for the first (conditional mean) and second (factor dynamics)
+stage estimation.\footnote{
+Additionally, since ICA is a linear noiseless model, there is no uncertainty assumed
+with regards to the mixing matrix A.}
+\subsection{Dynamic Conditional Correlation Models}\label{section:dcc}
+Conditional correlation models are founded on a decomposition of the conditional
+covariance matrix into conditional standard deviations and correlations, so that
+it may be expressed in such a way that the univariate and multivariate dynamics
+may be separated, thus easing the estimation process. This decomposition comes
+at a cost of some dynamic structure as well as severe restriction on the type
+of multivariate distribution which can usually be decomposed in such a way.\footnote{
+This has implications both for the use of the 2-stage estimation as well as the
+form of the covariance matrix which may be a complicated function of the scaling
+matrix for non-elliptical distributions.} Recently, some of these models have
+been extended to allow for more flexible dynamic structure which unfortunately
+has led to significant loss in the ease of estimation.\\
+In the constant conditional correlation model (CCC) of \cite{Bollerslev1990},
+the covariance matrix can be decomposed into
+\begin{equation}\label{eq:dcc1}
+{\bfH_t} = {\bfD_t}\bfR{\bfD_t} = {\rho _{ij}}\sqrt {{h_{iit}}{h_{jjt}}},
+\end{equation}
+where ${\bfD_t} = diag(\sqrt {{h_{11,t}}} ,...,\sqrt {{h_{nn,t}}} )$,
+and $\bfR$ is the positive definite constant conditional correlation matrix.
+The conditional variances, and $h_{ii,t}$, which can be estimated separately,
+can be written in vector form based on GARCH(p,q) models\footnote{The GARCH
+models are not restricted to be of one particular 'flavor', allowing to mix
+different GARCH models in the univariate stage.}
+\begin{equation}\label{eq:dcc2}
+{h_t} = \omega  + \sum\limits_{i = 1}^p {{\bfA_i}{\varepsilon _{t - i}} \odot {\varepsilon _{t - i}} + } \sum\limits_{i = 1}^q {{\bfB_i}{h_{t - i}}}
+\end{equation}
+where $\omega  \in {\mathbb{R}^n}$, $\bfA_i$ and $\bfB_i$ are $N\times N$
+diagonal matrices, and $\odot$ denotes the Hadamard operator. The conditions for
+the positivity of the covariance matrix $\bfH_t$ are that $\bfR$ is positive
+definite, and the elements of $\omega$ and the diagonal elements of the matrices
+$\bfA_i$ and $\bfB_i$ are positive. In the extended CCC model (E-CCC) of
+\cite{Jeantheau1998}, implemented in the {\bf ccgarch} package, the
+assumption of diagonal elements on $\bfA_i$ and $\bfB_i$ was relaxed, allowing
+the past squared errors and variances of the series to affect the dynamics of
+the individual conditional variances, and hence providing for a much richer structure,
+albeit at the cost of a lot more parameters. The decomposition in \eqref{eq:dcc1},
+allows the log-likelihood at each point in time ($LL_t$), in the multivariate
+normal case, to be expressed as
+\begin{equation}\label{eq:dcc3}
+\begin{gathered}
+  {LL_t} = \frac{1}
+{2}\left( {\log \left( {2\pi } \right) + \log \left| {{\bfH_t}} \right| + {{\bfvarepsilon '}_t}\bfH_t^{ - 1}{\bfvarepsilon _t}} \right) \hfill \\
+   = \frac{1}
+{2}\left( {\log \left( {2\pi } \right) + \log \left| {{\bfD_t}{\bfR}{\bfD_t}} \right| + {{\bfvarepsilon '}_t}\bfD_t^{ - 1}\bfR^{ - 1}\bfD_t^{ - 1}{\bfvarepsilon _t}} \right) \hfill \\
+   = \frac{1}
+{2}\left( {\log \left( {2\pi } \right) + 2\log \left| {{\bfD_t}} \right| + \log \left| {{\bfR}} \right| + {{\bfz'}_t}\bfR^{ - 1}{{\bfz'}_t}} \right) \hfill \\
+\end{gathered}
+\end{equation}
+where ${\bfz_t} = \bfD_t^{ - 1}{\bfvarepsilon _t}$. This can be described as a
+term ($\bfD_t$) for the sum of the univariate GARCH model likelihoods, a term
+for the correlation ($\bfR$) and a term for the covariance which arises from
+the decomposition.\\
+Because the restriction of constant conditional correlation may be unrealistic
+in practice, a class of models termed Dynamic Conditional Correlation (DCC) due
+to \cite{Engle2002} and \cite{Tse2002a} where introduced which allow
+for the correlation matrix to be time varying with motion dynamics, such that
+\begin{equation}\label{eq:dcc4}
+{\bfH_t} = {\bfD_t}{\bfR_t}{\bfD_t}.
+\end{equation}
+In these models, apart from the fact that the time varying correlation matrix,
+$\bfR_t$, must be inverted at every point in time (making the calculation that
+much slower), it is also important to constrain it to be positive definite.
+The most popular of these DCC models, due to \cite{Engle2002}, achieves
+this constraint by modelling a proxy process, $\bfQ_t$ as:
+\begin{equation}\label{eq:dcc5}
+\begin{gathered}
+  {\bfQ_t} = \bar \bfQ + a\left( {{\bfz_{t - 1}}{{\bfz'}_{t - 1}} - \bar \bfQ} \right) + b\left( {{\bfQ_{t - 1}} - \bar \bfQ} \right) \hfill \\
+        = (1 - a - b)\bar \bfQ + a{\bfz_{t - 1}}{{\bfz'}_{t - 1}} + b{\bfQ_{t - 1}} \hfill \\
+\end{gathered}
+\end{equation}
+where $a$ and $b$ are non negative scalars, with the condition that $a + b < 1$
+imposed to ensure stationarity and positive definiteness of $\bfQ_t$. $\bar Q$
+is the unconditional matrix of the standardized errors $\bfz_t$ which enters the
+equation via the covariance targeting part $(1-a-b)\bar \bfQ$, and $\bfQ_0$ is
+positive definite. The correlation matrix $\bfR$ is then obtained by rescaling
+$\bfQ_t$ such that,
+\begin{equation}\label{eq:dcc6}
+{\bfR_t} = diag{({\bfQ_t})^{ - 1/2}}{\bfQ_t}diag{({\bfQ_t})^{ - 1/2}}.
+\end{equation}
+The log-likelihood function in equation \eqref{eq:dcc2} can be
+decomposed more clearly into a volatility and correlation component by adding and
+subtracting ${{{\bfvarepsilon '}_t}\bfD_t^{ - 1}\bfD_t^{ - 1}{\bfvarepsilon _t}}={{{\bfz'}_t}{\bfz_t}}$,
+\begin{equation}
+\begin{gathered}
+  LL = \frac{1}
+{2}\sum\limits_{i = 1}^T {\left( {N\log \left( {2\pi } \right) + 2\log \left| {{\bfD_t}} \right| + \log \left| {{\bfR_t}} \right| + {{\bfz'}_t}\bfR_t^{ - 1}{{\bfz'}_t}} \right)}  \hfill \\
+   = \frac{1}
+{2}\sum\limits_{i = 1}^T {\left( {N\log \left( {2\pi } \right) + 2\log \left| {{\bfD_t}} \right| + {{\bfvarepsilon '}_t}\bfD_t^{ - 1}\bfD_t^{ - 1}{\bfvarepsilon _t}} \right) - } \frac{1}
+{2}\sum\limits_{i = 1}^T {\left( {{{\bfz'}_t}{\bfz_t} + \log \left| {{\bfR_t}} \right| + {{\bfz'}_t}\bfR_t^{ - 1}{{\bfz'}_t}} \right)}  \hfill \\
+   = {LL_V}\left( {{\theta _1}} \right) + {LL_R}\left( {{\theta _1},{\theta _2}} \right) \hfill \\
+\end{gathered}
+\end{equation}
+where ${LL_V}\left( {{\theta _1}} \right)$ is the volatility component with
+parameters $\theta_1$, and ${LL_R}\left( {{\theta _1},{\theta _2}} \right)$ the
+correlation component with parameters $\theta_1$ and $\theta_2$. In the Multivariate
+Normal case, where no shape or skew parameters enter the density, the volatility
+component is the sum of the individual GARCH likelihoods which can be jointly
+maximized by separately maximizing each univariate model. In other distributions,
+such as the multivariate Student, the existence of a shape parameter means that
+the estimation must be performed in one step so that the shape parameter is
+jointly estimated for all models. Separation of the likelihood into 2 parts
+provides for feasible large scale estimation. Together with the use of variance
+targeting, very large scale systems may be estimated in a matter of seconds with
+the use of parallel and grid computing. Yet as the system becomes larger and
+larger, it becomes questionable whether the scalar parameters can adequately
+capture the dynamics of the underlying process. As such, \cite{Cappiello2006}
+generalize the DCC model with the introduction of the Asymmetric Generalized
+DCC (\emph{AGDCC}) where the dynamics of $\bfQ_t$ are:
+\begin{equation}\label{eq:agdcc1}
+{\bfQ_t} = \left( {\bar \bfQ - \bfA'\bar Q\bfA - \bfB'\bar \bfQ\bfB - \bfG'{{\bar \bfQ}^ - }\bfG} \right) + \bfA'{\bfz_{t - 1}}{{\bfz'}_{t - 1}}\bfA + \bfB'{\bfQ_{t - 1}}\bfB + \bfG'\bfz_t^ - {{\bfz'}_t}^ - \bfG
+\end{equation}
+where $\bfA$, $\bfB$ and $\bfG$ are the $N\times N$ parameter matrices,
+$\bfz_t^ -$ are the zero-threshold standardized errors which are equal
+to $\bfz_t$ when less than zero else zero otherwise, $\bar \bfQ$ and $\bar \bfQ^ -$
+the unconditional matrices of $\bfz_t$ and $\bfz_t^-$ respectively. Because of
+its high dimensionality, restricted models have been used including the scalar,
+diagonal and symmetric versions with the specifications nested being
+\begin{itemize}
+\item  DCC : $\bfG = \left[ 0 \right],\bfA = \sqrt a ,\bfB = \sqrt b$
+\item ADCC : $\bfG = \sqrt g ,\bfA = \sqrt a ,\bfB = \sqrt b$
+\item GDCC : $\bfG = \left[ 0 \right]$.
+\end{itemize}
+Variance targeting in such high dimensional models where the parameters are no
+longer scalars, creates difficulties in imposing positive definiteness during
+estimation while at the same time guaranteeing a global optimum solution. Methods
+which directly check and penalize the eigenvalues of the intercept matrix introduce
+non-smoothness and discontinuities into the likelihood surface for which inference
+is likely to be difficult.\footnote{This has not prevented a plethora of paper
+using these models and making inference based on questionable convergence
+criteria.} More substantially, \cite{Aielli2009} points out that the
+estimation of $\bar \bfQ_t$ as the empirical counterpart of the correlation
+matrix of $\bfz_t$ in the DCC model is inconsistent since $\E[\bfz_t \bfz_t]=\E[\bfR_t]\neq \bfR[\bar \bfQ_t]$.
+He proposes instead the cDCC model which includes a corrective step which eliminates
+this inconsistency, albeit at the cost of targeting which is not allowed.\\
+One model which tries to balance dimensionality with more realistic dynamics is the Flexible DCC (FDCC)
+model of \cite{Billio2006} which allows groups \footnote{Groups here is used liberally,
+and meant to denote membership in a set with common dynamics.} of securities to have the same
+dynamics. The model may parsimoniously be represented as:
+\begin{equation}\label{eq:fdcc}
+{\bfQ_t} = cc' + \sum\limits_{j = 1}^P {\left( {{I_g}{a_j}} \right){{\left( {{I_g}{a_j}} \right)}^\prime } \odot {\varepsilon _{t - j}}} {\varepsilon '_{t - j}} + \sum\limits_{j = 1}^Q {\left( {{I_g}{b_j}} \right){{\left( {{I_g}{b_j}} \right)}^\prime } \odot {\bfQ_{t - j}}}
+\end{equation}
+where $I_g$ is the $assets\times groups$ logical matrix of group exclusive membership. This is
+a very flexible representation allowing a large range of representations, from a single group
+driving all dynamics (like the DCC), to each asset having its own group (like the GDCC).
+Unfortunately, without specialized restrictions correlation targeting is lost, but the model
+still remains feasible for a not too large number of groups. In the {\bf rmgarch} package,
+the intercept is estimated \emph{using} correlation targeting with the intercept set to 
+$({\mathbf{11'}} - aa' - bb')\odot \bar \bfQ$ and the restriction that $a_i a_j+b_i b_j<1,\forall i,j$ 
+in order to avoid explosive patterns. Positive definiteness of the matrices is achieved by 
+construction subject to a suitable starting point for $\bfQ_t$. Also note that only the 
+FDCC(1,1) model is allowed (i.e. P=1, Q=1) because of the large number of pairwise constraints
+needed which make higher order models prohibitively expensive to calculate (and in any case it is
+quite rare to use anything beyond this for DCC type models).\\
+In the {\bf rmgarch} package, the DCC, aDCC and FDCC models are implemented using the
+2-stage approach, with a choice of 3 distributions, the multivariate Normal (\emph{MVN}),
+Student (\emph{MVT}) and Laplace (\emph{MVL}). For the MVT distribution, it is
+understood that this is based on known shape parameter (which may be fixed for
+the first and second stage estimation using the fixed.pars method on the
+specification object), else that the first stage estimation is QML based as in
+\cite{Bauwens2005}.\\
+\subsubsection{Forecasting}
+Because of the nonlinearity of the DCC evolution process, the multi-step ahead
+forecast of the correlation cannot be directly solved, and is instead based on the
+approximation suggested in \cite{Engle2001}. Consider the multi-step ahead
+evolution of the proxy process $Q_{t+n}$:
+\begin{equation}
+{Q_{t + n}} = \left( {1 - \alpha  - \beta } \right)\bar Q + \alpha {E_t}\left[ {{z_{t + n - 1}}{{z'}_{t + n - 1}}} \right] + \beta {Q_{t + n - 1}}
+\end{equation}
+where ${E_t}\left[ {{z_{t + n - 1}}{{z'}_{t + n - 1}}} \right] = {R_{t + n - 1}}$ and
+${R_{t + n}} = diag{\left( {{Q_{t + n}}} \right)^{ - 1/2}}{Q_{t + n}}diag{\left( {{Q_{t + n}}} \right)^{ - 1/2}}$.
+\cite{Engle2001} suggest 2 types of approximations possible to solve for $R_{t+n}$,
+and the package adopts the one which, based on their findings, provides for the
+least bias. That is, set $\bar Q \approx R$ and ${E_t}\left[ {{Q_{t + 1}}} \right] = {E_t}\left[ {{R_{t + 1}}} \right]$,
+so that:
+\begin{equation}
+{E_t}\left[ {{R_{t + n}}} \right] = \sum\limits_{i = 0}^{n - 2} {\left( {1 - \alpha  - \beta } \right)\bar R{{\left( {\alpha  + \beta } \right)}^i} + {{\left( {\alpha  + \beta } \right)}^{n - 1}}{R_{n + 1}}}
+\end{equation}
+Importantly, for the rolling 1-ahead method, the estimate of $\bar Q$ at time T+n
+is updated from data up to time T+n-1, which will lead to small differences in
+results from applying the DCC filter method on new data (the difference will grow with n)
+which uses a fixed value for $\bar Q$ (and which can be controlled by the n.old option).
+\subsection{The GARCH-Copula Model}\label{section:cdcc}
+Copula functions were introduced by \cite{Sklar1959} as a tool to connect disparate
+marginal distribution together to form a joint multivariate distribution. They
+were extensively used in survival analysis and the actuarial sciences for many
+years before being introduced in the finance literature more than a decade ago
+by \cite{Frey2000} and \cite{Li2000}. They have since been very popular in
+investigating the dependence of financial time series of various assets classes
+and frequencies. \cite{Breymann2003} investigate bivariate hourly FX spot returns
+finding that the Student Copula best fit the data at all horizons (with the shape
+parameter increasing with the time horizon), while \cite{Malevergne2003} find
+that the Normal Copula fits pairs of currencies and equities well on the whole
+but unsurprisingly fails to capture tail events where the Student Copula does
+best.\footnote{Interestingly the authors argue that since such events are rare,
+the goodness of fit test they use cannot always reject the Normal Copula.}
+\cite{Junker2005} use a Frank copula with a transformation generator and GARCH
+dynamics for the margins using the empirical distribution, to analyze the
+bivariate dependency of the daily returns of 6 stocks and 3 Euro swap rates
+(with horizons 2,5, and 10 Years). The comparison with a range of popular
+copulas including the Normal and Student, in a risk exercise shows that
+asymmetric tail dependency is important and usually not accommodated by the
+Student distribution\footnote{An alternative would be to use the skew Generalized
+Hyperbolic Student distribution analyzed in \cite{Aas2006} which allows
+for the modelling of one heavy (with polynomial behavior) and one semi-heavy
+(with exponential behavior) tail.} While most studies are predominantly focused
+on bivariate copulas, the extension to n-variate models is not overtly
+challenging particularly for elliptical distributions, or the use of the more
+recent Vine pair copulas (see for example \cite{Joe2010}).
+\subsubsection{Copulas}\label{copulas}
+An n-dimensional copula $C\left( {{u_1},\dots,{u_n}} \right)$ is an n-dimensional
+distribution in the unit hypercube ${\left[ {0,1} \right]^n}$ with uniform margins.
+\cite{Sklar1959} showed that every joint distribution $F$ of the random vector
+$\bfX=(x_1,\dots,x_n)$ with margins ${{F_1}\left( {{x_1}} \right),\dots,{F_n}\left( {{x_n}} \right)}$,
+can be represented as:
+\begin{equation}\label{eq:copula1}
+F\left( {{x_1},\dots,{x_n}} \right) = C\left( {{F_1}\left( {{x_1}} \right),\dots,{F_n}\left( {{x_n}} \right)} \right)
+\end{equation}
+for a copula $C$, which is uniquely determined in ${\left[ {0,1} \right]^n}$
+for distributions $F$ under absolutely continuous margins and obtained as:
+\begin{equation}\label{eq:copula2}
+C\left( {{u_1},\dots,{u_n}} \right) = F\left( {F_1^{ - 1}\left( {{u_1}} \right),\dots,F_n^{ - 1}\left( {{u_n}} \right)} \right)
+\end{equation}
+The density function may conversely be obtained as :
+\begin{equation}\label{eq:copula3}
+f\left( {{x_1},\dots,{x_n}} \right) = c\left( {{F_1}\left( {{x_1}} \right),\dots,{F_n}\left( {{x_n}} \right)} \right)\prod\limits_{i = 1}^n {{f_i}\left( {{x_i}} \right)}
+\end{equation}
+where $f_i$ are the marginal densities and $c$ is the density function of the
+copula given by:
+\begin{equation}\label{eq:copula4}
+c\left( {{u_1},\dots,{u_n}} \right) = \frac{{f\left( {F_1^{ - 1}\left( {{u_1}} \right),\dots,F_n^{ - 1}\left( {{u_n}} \right)} \right)}}
+{{\prod\limits_{i = 1}^n {{f_i}\left( {F_i^{ - 1}\left( {{u_i}} \right)} \right)} }}.
+\end{equation}
+with $F_i^{ - 1}$ being the quantile function of the margins. A key property of
+copulas is their invariance under strictly increasing transformations of the
+components of the $\bfX$, so that for example the copula of the multivariate
+Normal distribution $F_n\left( {\bfmu ,\mbSigma } \right)$ is the same as
+that of $F_n\left( {0,\bfR} \right)$ where $\bfR$ is the correlation matrix
+implied by the covariance matrix, and the same for the copula of the multivariate
+Student distribution reviewed in detail in \cite{Demarta2005}. The density
+of the Normal Copula, of the n-dimensional random vector $\bfX$ in terms of the
+correlation matrix $\bfR$, is then:
+\begin{equation}\label{eq:copula5}
+c\left( {u;\bfR} \right) = \frac{1}{{{{\left| \bfR \right|}^{1/2}}}}{e^{ - \frac{1}{2}u'\left( {\bfR' - \bfI} \right)u}}
+\end{equation}
+where ${\bfu_i} = {\mbPhi ^{ - 1}}\left( {{F_i}\left( {{bfx_i}} \right)} \right)$
+for $i=1,\dots,n$, representing the quantile of the Probability Integral
+Transformed (\emph{PIT}) values of $\bfX$, and $\bfI$ is the identity matrix.
+Because the Normal Copula cannot account for tail dependence, the Student Copula
+has been more widely used for modelling of financial assets. The density of the
+Student Copula, of the n-dimensional random vector $\bfX$ in terms of the
+correlation matrix $\bfR$ and shape parameter $\nu$, can be written as:
+\begin{equation}\label{eq:copula6}
+c\left( {\bfu;\bfR,\nu } \right) = \frac{{\mbGamma \left( {\frac{{\nu  + n}}{2}} \right){{\left( {\mbGamma \left( {\frac{\nu }
+{2}} \right)} \right)}^n}{{\left( {1 + {\nu ^{ - 1}}\bfu'{\bfR^{ - 1}}\bfu} \right)}^{ - \left( {\nu  + n} \right)/2}}}}
+{{{{\left| \bfR \right|}^{1/2}}{{\left( {\mbGamma \left( {\frac{{\nu  + n}}{2}} \right)} \right)}^n}\mbGamma \left( {\frac{\nu }
+{2}} \right)\prod\limits_{i = 1}^n {{{\left( {1 + \frac{{\bfu_i^2}}{\nu }} \right)}^{ - \left( {\nu  + 1} \right)/2}}} }}
+\end{equation}\label{eq:copula7}
+where ${\bfu_i} = {t_\nu }^{ - 1}\left( {F\left( {{x_i};\nu } \right)} \right)$,
+where $t_\nu^{-1}$ is the quantile function of the student distribution with
+shape parameter $\nu$.
+\subsubsection{Correlation and Kendall's $\bftau$}\label{II:kendall}
+Pearson's product moment correlation $\bfR$ totally characterizes the dependence
+structure in the multivariate Normal case, where zero correlation also implies
+independence, but can only characterize the ellipses of equal density when the
+distribution belongs to the elliptical class. In the latter case for instance,
+with a distribution such as the multivariate Student, the correlation cannot
+capture tail dependence determined by the shape parameter. Furthermore, it is
+not invariant under monotone transformations of original variables making it
+inadequate in many cases. An alternative measure which does not suffer from this
+is Kendall's $\bftau$ (see \cite{Kruskal1958}) based on rank correlations
+which makes no assumption about the marginal distributions but depends only on
+the copula $C$. It is a pairwise measure of concordance calculated as:
+\begin{equation}\label{eq:copula8}
+\bftau \left( {{x_i},{x_j}} \right) = 4\int_0^1 {\int_0^1 {C\left( {{u_i},{u_j}} \right)dC\left( {{u_i},{u_j}} \right) - 1} }.
+\end{equation}\label{eq:copula9}
+For elliptical distributions, \cite{Lindskog2003} proved that there is a
+one-to-one relationship between this measure and Pearson's correlation coefficient
+$\rho$ given by:
+\begin{equation}\label{eq:copula10}
+\bftau \left( {{x_i},{x_j}} \right) = \left( {1 - \sum\limits_{x \in \mathbb{R}} {\left( {\mathbb{P}{{\left\{ {{X_i} = x} \right\}}^2}} \right)} } \right)\frac{2}
+{\pi }\arcsin {\rho _{ij}}
+\end{equation}
+which under certain assumptions (such as in the case of the multivariate Normal)
+simplifies to $\frac{2}{\pi}\arcsin {\rho_{ij}}$.\footnote{Another popular
+measure is Spearman's correlation coefficient $\rho_s$ which under Normality
+equates to $\frac{6}{\pi }\arcsin \frac{{{\rho _{ij}}}}{2}$, and it is usually
+very close in result to Kendall's meaure.} Kendall's $\bftau$ is also invariant
+under monotone transformations making it rather more suitable when working with
+non-elliptical distributions. A useful application arises in the case of the
+multivariate Student Distribution, where a maximum likelihood approach for the
+estimation of the Correlation matrix $\bfR$ becomes unfeasible for large dimensions.
+In this case, an alternative approach is to estimate the sample counterpart of
+Kendall's $\bftau$\footnote{The matrix is build up from the pairwise estimates.}
+from the transformed margins and then translate that into the correlation matrix
+as detailed in \eqref{eq:copula10}, providing for a method of moments
+type estimator.\footnote{It may be the case that the resultant matrix is not
+positive definite, in which case a variety of methods exist to tweak it into one.}
+The shape parameter $\nu$ may then be estimated keeping the correlation matrix
+constant, with little loss in efficiency vis-a-vis the full maximum likelihood
+method.\footnote{ According to at least one study of \cite{Zeevi2002}.}\\
+
+\subsubsection{Transformations and Consistency}\label{II:transformation}
+The estimation and PIT transformation of the margins provides for a great deal of
+flexibility, with the possibility of adopting a parametric, semi-parametric or
+empirical approach. The first method, whereby the margins and transformation are
+performed using a parametric density, was termed the Inference-Functions-for-Margins
+(\emph{IFM}) by \cite{Joe1997} who also established the asymptotic theory
+for it. The semi-parametric method (\emph{SPD}) uses a distribution which couples
+together generalized Pareto distribution (\emph{GPD}) fitted tails\footnote{For
+which a Probability Weighted Moment approach exists which is quite robust.} with
+a kernel based interior and described in \cite{Davison1990}, and offers a rather
+flexible method for capturing fat tails observed in practise. Finally, the empirical
+approach, also called pseudo-likelihood, was investigated by \cite{Genest1995}
+and asymptotic properties established under the assumption that the sequence
+of $\bfX$ is i.i.d.( see \cite{Durrleman2000} for an excellent summary of the
+different methods and their properties.)\\
+In the {\bf rmgarch} package, all 3 choices of transformations are available with
+the SPD method using the {\bf spd} package of \cite{Ghalanos2012c}.
+
+\subsubsection{The Student Copula AGDCC}\label{II:agdcccopula}
+The extension of the static copula approach to dynamic models, and in particular
+GARCH, was investigated by \cite{Patton2006} who extended and proved the
+validity of Sklar\'s theorem for the conditional case. \cite{Jondeau2006}
+combine the ACD model of \cite{Hansen1994} with skewed Student distribution
+to model time-varying or regime switching Student Copula for the dependence
+between pairs of countries, while \cite{Chollete2009} use a GARCH with
+skewed Student distribution in the first stage and a regime switching model
+with a Canonical vine copula for the high dependence regime and a Normal copula
+for the low dependence regime. The use of the skewed Student distribution in
+such models, beyond its tractability and desirable features, according to
+\cite{Chollete2009} is so as to ensure that the asymmetry in the
+dependence structure is purely the result of multivariate asymmetry and not an
+artifact of poor modelling of the margins. \cite{Demarta2005} describe a
+skewed Student copula derived from the Normal Mean Variance Mixture distribution
+(described in the next section), with margins univariate skewed student
+distributions with common shape ($\nu$) but separate skewness ($\gamma$)
+parameters.\footnote{The reason for the common shape parameter is that the
+mixing variable $\bfW$ in the Normal Mean Variance mixture is Inverse Gaussian
+distribution, $W\sim Ig\left( {\nu /2,\nu /2} \right)$. A grouped type copula
+whereby the shape parameter is also allowed to vary is also described by
+\cite{Demarta2005}, in which case each variable has a different value for
+the mixing variable $\bfW$, so that $\bfW_j\sim Ig\left( {\nu_j /2,\nu_j /2} \right)$,
+for $j=1,\dots,n$, and the $\bfW_j$ are now perfectly correlated.}\\
+In an elliptical distribution setting, adding dynamics to the correlation matrix
+of the copula seems a natural extension of the 2-stage DCC model, and allows the
+estimation of a Student copula with disparate shape parameters for the first stage,
+where this was not possible using the standard DCC model (unless estimated jointly).
+Let the n-dimensional random vector of asset returns $\bfr_t={r_{it},\dots,r_{nt}}$
+follow a copula GARCH model with joint distribution given by:
+\begin{equation}\label{eq:copula11}
+F\left( {{\bfr_t}|{\bfmu _t},{\bfh_t}} \right) = C\left( {{F_1}\left( {{r_{1t}}|{\mu _{1t}},{h_{1t}}} \right),\dots,{F_n}\left( {{r_{nt}}|{\mu_{nt}},{h_{nt}}} \right)} \right)
+\end{equation}
+where $F_i$, $i=1,\dots,n$ is the conditional distribution of the $i^{th}$
+marginal series density, $C$ is the n-dimensional Copula. The conditional mean
+$\E\left[ {{r_{it}}\left| {{\Im _{t - 1}}} \right.} \right] = {\mu _{it}}$,
+where $\Im _{t - 1}$ is the $\sigma$-field generated by the past realization of
+$r_t$, and the conditional variance $h_{it}$ follows a GARCH(1,1)
+process\footnote{For simplicity of exposition, a simple GARCH model is chosen,
+but in fact any combination of GARCH models may be used.}:
+\begin{align}\label{eq:copula12}
+{r_{it}} &= {\mu _{it}} + {\varepsilon _{it}},{\varepsilon _{it}} = \sqrt {{h_{it}}} {z_{it}},\\
+{h_{it}} &= \omega  + {\alpha _1}\varepsilon _{t - 1}^2 + \beta {h_{it - 1}}
+\end{align}
+where $z_{it}$ are i.i.d. random variables which conditionally follow a standardized
+skew Student distribution, $z_{it}\sim {f}_{i}(0,1,\xi_i,\nu_i)$, of \cite{Fernandez1998}
+with skew and shape parameters $\xi$ and $\nu$ respectively and derived in
+the  {\bf {rugarch}} vignette.\footnote{Any combination of conditional distributions
+can be used in the first stage. The skew-student is used here for illustration.}
+The dependence structure of the margins is then assumed to follow a Student copula
+with conditional correlation $\bfR_t$ and constant shape parameter $\eta$. The
+conditional density at time $t$ is given by:
+\begin{equation}\label{eq:copula13}
+{c_t}\left( {{u_{it}},\dots,{u_{nt}}\left| {{\bfR_t},\eta } \right.} \right) = \frac{{{f_t}\left( {F_i^{ - 1}\left( {{u_{it}}\left| \eta  \right.} \right),\dots,F_i^{ - 1}\left( {{u_{nt}}\left| \eta  \right.} \right)\left| {{\bfR_t},\eta } \right.} \right)}}{{\prod\limits_{i = 1}^n {{f_i}\left( {F_i^{ - 1}\left( {{u_{it}}\left| \eta  \right.} \right)\left| \eta  \right.} \right)} }}
+\end{equation}
+where $u_{it}=F_{it}\left(r_it\left|\mu_{it},h_{it},\xi_{i},\nu_{i}\right.\right)$
+is the PIT transformation of each series by its conditional distribution $F_{it}$
+estimated via the first stage GARCH process, ${F_i^{ - 1}\left( {{u_{it}}\left| \eta  \right.} \right)}$
+represents the quantile transformation of the uniform margins subject to the common
+shape parameter of the multivariate density, ${{f_t}\left( .\left| {{\bfR_t},\eta } \right. \right)}$
+is the multivariate density of the Student distribution with conditional correlation
+$R_t$ and shape parameter $\eta$ and ${f_i}\left( .\left| \eta  \right.\right)$
+is the univariate margins of the multivariate Student distribution with common
+shape parameter $\eta$. The dynamics of $R_t$ are assumed to follow an AGDCC
+model as described in the previous section, though it is more common to use a
+restricted scalar DCC model for not too large a number of series. Finally, the
+joint density of the 2-stage estimation is written as:
+\begin{equation}\label{eq:copula14}
+f\left( {{\bfr_t}\left| {{\bfmu _t},{\bfh_t}},{\bfR_t},\eta \right.} \right) = {c_t}\left( {{u_{it}},\dots,{u_{nt}}\left| {{\bfR_t},\eta } \right.} \right)\prod\limits_{i = 1}^n {\frac{1}
+{{\sqrt {{h_{it}}} }}{f_{it}}\left( {{z_{it}}\left| {{\nu _i},{\xi _i}} \right.} \right)}
+\end{equation}
+where it is clear that the likelihood is composed of a part due to the joint DCC
+copula dynamics and a part due to the first stage univariate GARCH dynamics.\\
+A similar model, with Student margins, was estimated by \cite{Ausin2010}
+using a Bayesian setup, and an empirical risk management application, albeit once
+again using only a bivariate series (DAX and Dow Jones indices), used to illustrate
+its applicability and appropriateness.\\
+In the {\bf rmgarch} package, the Normal and Student copulas are implemented,
+with either a static or dynamic correlation model (aDCC).
+\subsubsection{Forecasting}
+Because of the nonlinear transformation of the margins, there is no closed
+form solution for the multi-step ahead forecast. As such, the \emph{cgarchsim}
+method must be used. The inst folder of the package contains a number of examples.
+
+\subsection{The GO-GARCH Model}\label{section:gogarch}
+Factor ARCH models, originally introduced by \cite{Engle1990} and with
+foundations in the Arbitrage Pricing Theory of \cite{Ross1976}, are based
+on the assumption that returns are generated by a set of unobserved underlying
+factors that are conditionally heteroscedastic. The dependence framework is
+non-dynamic as a consequence of large scale estimation in a multivariate setting.
+The dependence structure of the unobserved factors then determines the type of
+factor model it belongs to, with correlated factors making up the F-ARCH type
+models, while uncorrelated and independent factors comprise the Orthogonal and
+Generalized Orthogonal Models respectively.\footnote{It should be noted, that
+most of these factor models may be seen as special cases of the BEKK model.
+The GO-GARCH model has the following restricted BEKK representation:
+\begin{equation}
+{H_t} = C + \sum\limits_{i = 1}^m {{A_i}{x_{t - 1}}{{x'}_{t - 1}}} {{A'}_i} + B{H_{t - 1}}B'.
+\end{equation}
+Under the assumption that all $A_i$ and B are restricted to have the same
+eigenvector $Z$, with the eigenvalues of A being all zero except the $i^{th}$
+one, and the C can be decomposed into $ZDZ'$ where $D$ is some positive definite
+diagonal matrix, then this is a GO-GARCH (with GARCH(1,1) univariate dynamics)
+model where Z is the linear ICA map. However, GO-GARCH model is not limited to
+GARCH(1,1) or any particular process for the factors.} Because one can always
+re-discover uncorrelated or independent sources by certain statistical transformation,
+the correlated factor assumption of F-ARCH models does appear to be restrictive.
+GO-GARCH models on the other hand make use of those transformations to place the
+factors in an independence framework with unique benefits such as separability
+and weighted density convolution giving rise to truly large scale, real-time and
+feasible estimation. Consider a set of $N$ assets whose returns \( \bfr_t \) are
+observed for $T$ periods, with  conditional mean \(E[\bfr_t|\mathfrak{F}_{t-1}] = \bfm_t\),
+where \(\mathfrak{F}_{t-1} \) is the \(\sigma\)-field generated by the past
+realizations of \( \bfr_t \), i.e. \( \mathfrak{F}_{t-1} = \sigma(\bfr_{t-1},\bfr_{t-2},\ldots) \).
+The GO-GARCH Model of \cite{Weide2002} maps \( \bfr_t  -\bfm_t\) onto a
+set of unobserved independent factors \( \bff_t \) (or "structural errors"),
+\begin{eqnarray}
+\bfr_t & = & \bfm_t + \bfepsilon_t \quad t = 1,\ldots, T \\
+\bfepsilon_t & = & \bfA \bff_t,
+\end{eqnarray}
+where \( \bfA \) is invertible and constant over time and may be decomposed into
+the de-whitening matrix $\mbSigma^{1/2}$, representing the square root of the
+unconditional covariance, and an orthogonal matrix, $\bfU$, so that:
+\begin{equation}\label{eq:matrix_A}
+\bfA = \mathbf{\Sigma}^{1/2}\bfU,
+\end{equation}
+and \(\bff_t = (f_{1t},\ldots,f_{Nt})'\). The rows of the mixing matrix \(\bfA \)
+therefore represent the independent source factor weights assigned to each asset
+(i.e. rows are the assets and columns the factors). The factors have the following
+specification:
+\begin{equation}
+    \bff_{t} = \bfH_t^{1/2} \bfz_t,
+\end{equation}
+where \( \bfH_t = E[\bff_t \bff_t' | \mathfrak{F}_{t-1}] \) is a diagonal matrix
+with elements \((h_{1t},\ldots,h_{Nt} )\) which are the conditional variances of
+the factors, and \(\bfz_t = (z_{1t},\ldots,z_{Nt})' \). The random variable \( z_{it} \)
+is independent of \( z_{jt-s} \) \(\forall j \neq i \) and \( \forall s\),
+with \(E[z_{it}|\mathfrak{F}_{t-1}]=0\) and \( E[z_{it}^2]=1 \), this implies
+that \( E[\bff_t|\mathfrak{F}_{t-1}] = \mathbf{0} \)
+and \(E[\bfepsilon_t|\mathfrak{F}_{t-1}] = \mathbf{0}\). The factor conditional
+variances, \(h_{i,t}\), can be modelled as a GARCH-type process. The unconditional
+distribution of the factors is characterized by:
+\begin{equation}\label{eq:factor_moments}
+E[\bff_t] = \mathbf{0} \quad  E[\bff_t\bff_t'] = \bfI_N
+\end{equation}
+which, in turn, implies that:
+\begin{equation}
+E[\bfepsilon_t] = \mathbf{0} \quad E[\bfepsilon_t\bfepsilon_t'] = \bfA \bfA'.
+\end{equation}
+It follows that the returns can be expressed as:
+\begin{equation}\label{eq:returns_model}
+\bfr_t = \bfm_t + \bfA \bfH_t^{1/2} \bfz_t.
+\end{equation}
+The conditional covariance matrix, \( \mbSigma_t \equiv E[(\bfr_t -\bfm_t)(\bfr_t - \bfm_t)'|\mathfrak{F}_{t-1}] \)
+of the returns is given by:
+\begin{equation}\label{eq:ifacdcov}
+    \mbSigma_t  =  \bfA \bfH_t \bfA'.
+\end{equation}
+The Orthogonal Factor model of \cite{Alexander2001}\footnote{When $\bfU$
+is restricted to be an identity matrix, the model reduces to the Orthogonal
+Factor model.} which uses only information in the covariance matrix, leads to
+uncorrelated components but not necessarily independent unless assuming a
+multivariate normal distribution. However, while whitening is not sufficient
+for independence, it is nevertheless an important step in the preprocessing of
+the data in the search for independent factors, since by exhausting the second
+order information contained in the covariance matrix it makes it easier to infer
+higher order information, reducing the problem to one of rotation (orthogonalization).
+The original procedure of \cite{Weide2002} used a 1-step maximum likelihood
+approach to jointly estimate the rotation matrix and dynamics making the procedure
+infeasible for anything other than a few assets. Alternative approaches such as
+nonlinear least squares and method of moments for the estimation of $\bfU$ have
+been proposed in \cite{Weide2004} and \cite{Weide2008}, respectively.
+In the {\bf rmgarch} package, I estimate the matrix \( \bfU \) by ICA as in
+\cite{Broda2009} and \cite{Zhang2009}. One of the computational
+advantages offered by the Generalized Orthogonal approach is that following the
+estimation of the independent factors, the dynamics of the marginal density
+parameters of those factors may be estimated separately.
+\subsubsection{ICA}
+The estimation of the factor loading matrix \( \bfA \) exploits the decomposition
+in \eqref{eq:matrix_A}. The estimation of ${\mathbf{\Sigma}^{1/2}}$,
+representing the square root of the unconditional covariance matrix, is usually
+obtained from the OLS residuals \( \widehat{\bfepsilon}_t = \bfr_t - \widehat{\bfm}_t \),
+while the orthogonal matrix $\bfU$ can be estimated using ICA (see \cite{Broda2009}, \cite{Zhang2009}).
+ICA is a computational method for separating multivariate mixed signals, $\bfx=[x_1, ..., x_{n}]'$,
+into additive statistically independent and non-Gaussian components, $\bfs=[s_1, ..., s_{n}]'$,
+such that $\bfx=\bfB \bfs$. The objective is to decompose the observed $\bfx=[x_1, ..., x_{n}]'$,
+into independent factors $\bfs=[s_1, ..., s_{n}]'$ and a linear matrix $\bfB$,
+such that $\bfx=\bfB \bfs$. The independent source vector $\bfs \in {\mathbb{R}^n}$,
+is assumed to be sampled from a joint distribution $f(\bfs)$,
+\begin{equation}\label{eq:ica1}
+f({s_1},...,{s_n}) = f({s_1})f({s_2})...f({s_n}),
+\end{equation}
+where $\bfs$ is not directly observable, nor is the particular form of the individual
+distributions, $f(s_i)$, usually known.\footnote{If the distributions are known the
+problem reduces to a classical maximum likelihood parametric estimation.} This forms
+the key property of independence, namely that the joint density of independent signals
+is simply the product of their margins. The estimate of the linear mixing matrix
+$\bfB$ can be obtained via estimation methods based on a choice of criteria for
+measuring independence which include the maximization of non-Gaussianity through
+measures such as kurtosis and negentropy, minimization of mutual information,
+likelihood and infomax. This follows from the Central Limit Theorem which states
+that mixtures of independent variables tend to become more Gaussian in distribution
+when they are mixed linearly, hence maximizing non-Gaussianity leads to independent
+components (see \cite{Hyvaerinen2000} for more details).\footnote{Estimation by
+minimization of the mutual information was first proposed by \cite{Comon1994}
+who derived a fundamental connection between cumulants, negentropy and mutual information.
+The approximation of negentropy by cumulants was originally considered much earlier
+in \cite{Jones1987}, while the connection between infomax and likelihood
+was shown in \cite{Pearlmutter1997}, and the connection between mutual
+information and likelihood was explicitly discussed in \cite{Cardoso2000}}
+Entropy may be thought of as the amount of information inherent within a random
+variable, being an increasing function of the amount of randomness in that variable.
+For a discrete random variable $X$ it is defined as,
+\begin{equation}\label{eq:entropy1}
+H(X) =  - \sum\limits_i {P(X = {b_i})\log P(X = {b_i}} ),
+\end{equation}
+with $b_i$ denoting the possible values of $X$. In the continuous case, for a continuous
+random variable $X$ with density $f_X(x)$, the entropy\footnote{In the continuous case
+this is usually called \textit{differential entropy}.} $H$ is defined as,
+\begin{equation}\label{eq:entropy2}
+H(X) =  - \int {f_{X}(x)\log f_{X}(x)\mathrm{d}x}.
+\end{equation}
+A key result from information theory states that among all random variables of
+equal variance, a Gaussian variable has the largest entropy. Hence entropy could
+be used as a measure of non-Gaussianity. A related measure of non-Gaussianity is
+the negentropy which is always non-negative and zero for a Gaussian variable. It
+is defined as,
+\begin{equation}\label{eq:entropy3}
+J(X) = H({X_{gauss}}) - H(X),
+\end{equation}
+where $H({X_{gauss}})$ is the entropy of a Gaussian random variable having the same
+covariance matrix as $X$. As shown by \cite{Comon1994}, negentropy is invariant
+for invertible linear transformations and is an optimal estimator of non-Gaussianity
+with regards to its statistical properties (i.e. consistency, asymptotic variance
+and robustness). In practice, because we do not know the density, approximations of
+negentropy are used such as the one by
+\cite{Hyvaerinen2000},
+\begin{equation}\label{eq:entropy4}
+J(X) \approx \sum\limits_{i = 1}^p {{k_i}{{[E({G_i}(X)) - E({G_i}(V))]}^2}},
+\end{equation}
+where $k_i$ are positive constants, $V$ is a standardized Gaussian variable and
+$G_i$ are non-quadratic functions. The choice of the non-quadratic function has
+an impact on the robustness of the estimators of negentropy. with $G(x)=x^4$
+(kurtosis based) being the least robust while more robust measures would include,
+\begin{equation}\label{eq:entropy5}
+{g_1}(u) = \frac{1}{{{a_1}}}\log \cosh {a_1}u,\qquad {g_2}(u) =  - \exp ( - 0.5{u^2}).
+\end{equation}
+Because these non-quadratic functions present a complex nonlinear optimization problem,
+sophisticated numerical algorithms are usually necessary. Two main algorithms are used,
+the online and batch methods, with the former based on stochastic gradient methods
+while in the latter case a popular choice is the natural gradient ascend of likelihood.
+The FastICA of \cite{Hyvaerinen2000} is a very efficient batch algorithm with
+a range of options for the non-quadratic functions. It can be used to estimate
+the components either one at a time by finding maximally non-Gaussian directions
+or in parallel by maximizing non-Gaussianity or the likelihood. The estimation
+procedure of the GO-GARCH model can be summarized as follows. First, the FastICA
+is applied to the whitened data \( \bfz_t = \widehat{\mbSigma}^{-1/2}\widehat{\bfepsilon}_t \),
+where \( \widehat{\mbSigma}^{1/2} \) is obtained from the eigenvalue decomposition
+of the OLS residual covariance matrix, returning an estimate of \( \bff_t\), i.e.,
+\(\bfy_t = \bfW \bfz_t\). Second, because of the assumption of independence, the
+likelihood function of the GO-GARCH model is greatly simplified so that the conditional
+log-likelihood function is expressed as the sum of the individual conditional
+log-likelihoods, derived from the conditional marginal densities of the factors,
+i.e., $GH_{\lambda_i}(y_{it})\equiv GH(y_{it};\lambda_i,\mu_{i}\sqrt{h_{it}},\delta_{i}\sqrt{h_{it}},\alpha_{i}/\sqrt{h_{it}},\beta_{i}/\sqrt{h_{it}})$,
+plus a term for the mixing matrix \(\bfA\), estimated in the first step by FastICA:
+\begin{equation}\label{eq:log_lik_IFACD}
+L(\widehat{\bfepsilon} _t \left| \bftheta ,\bfA \right.) = T \log{\left| \bfA^{ - 1} \right|} +
+\sum\limits_{t = 1}^T \sum\limits_{i = 1}^N \log{\left(GH_{\lambda_i}(y_{it}|\theta_i)\right)}
+\end{equation}
+where \( \bftheta \) is the vector of unknown parameters in the marginal densities.
+Because ICA is a linear noiseless model,\footnote{According to \cite{Hyvaerinen2000},
+this can be partially justified by the fact that most of the research on ICA has also
+concentrated on the noise free model and it has been shown with overwhelming empirical
+support across a number of different disciplines to be a very good approximation to
+a more complex model with noise added. Because the estimation of the noise-free model
+has proved to be a very difficult task in itself, the noise-free model may also be
+considered a tractable approximation of the more realistic noisy model.} the implication
+for this 2 stage estimation in the GO-GARCH model is that uncertainty plays no part
+in the derivation of the mixing matrix \(\bfA\) and hence does not affect the
+standard errors of the independent factors.\\
+The possibility of modelling the independent factors separately not only increases
+the flexibility of the model but also its computational feasibility, since the
+multivariate estimation reduces to \emph{N} univariate optimization steps plus a
+term which depends on the factor loading matrix. Thus the independence property
+of the model allows the estimation of very large scale systems on modern
+computational grids with the time required to calculate any n-dimensional
+model equivalent to the time it takes to estimate one single factor in this
+framework.\\
+In the {\bf rmgarch} package, 2 algorithms for ICA are implemented locally. The
+FastICA of \cite{Hyvaerinen2000}, based on a direct translation of their Matlab
+code and the RADICAL of \cite{Learned-Miller2003} which offers a robust
+alternative. Both models allow a choice of common options such as the type of
+covariance estimator to use for the whitening stage (e.g. Ledoit-Wolf, EWMA) as
+well as the possibility of dimensionality reduction during the PCA stage. In the
+latter case, some results for the model are still to be derived and it is therefore
+considered experimental at this stage.
+\subsubsection{Conditional Co-Moments}\label{II}
+It seems to be a well-established, stylized fact that the unconditional security
+return distribution is not normal and the mean and variance of returns alone are
+insufficient to characterize the return distribution completely. This has led
+researchers to pay attention to the third moment - skewness - and the  fourth
+moment - kurtosis. The validity of the CAPM in the presence of higher-order
+co-moments and their effects on asset prices has been thoroughly investigated.
+The simple, single-factor, CAPM only holds under very specific conditions.
+When asset prices are non-normal and investors have non-quadratic preferences,
+then they will care about all return moments and not only mean and variance,
+as in the standard CAPM.
+There are a number of extensions to the basic two-moments CAPM which predict a
+linear relationship in which terms like co-skewness and co-kurtosis are priced.
+For example, \cite{Kraus1976}, \cite{Sears1985} extended the CAPM to
+incorporate skewness in asset valuation models but provided mixed results. A few
+studies have shown that non-diversified skewness and kurtosis play an important
+role in determining security valuations. \cite{Fang1997}, derived a four-moment
+CAPM where it was shown that systematic variance, systematic skewness and systematic
+kurtosis contribute to the risk premium of an asset. \cite{Harvey2000}
+examined an extended CAPM, including systematic co-skewness,  reporting that
+conditional skewness explains the cross-sectional variation of expected returns
+across assets and is significant even when factors based on size and book-to-market
+are included. As skewness of a portfolio matters to investors, an asset's contribution
+to the skewness of a broadly diversified portfolio, referred to as "co-skewness"
+with the portfolio, may also be rewarded. Skewness preference further suggests that
+the representative investor may adjust his diversified portfolio such that an individual
+security's contribution to the skewness of the market portfolio may become a component
+of the security's expected returns.
+Mathematically, as demonstrated in \cite{Conine1981}, both individual assets'
+skewness  and co-skewness between assets contribute to the skewness of the portfolio
+which is composed of these assets. Intuitively, as positive (negative) skewness
+implies a probability of obtaining a large positive (negative) return (relative
+to a benchmark such as the normal distribution), a positive co-skewness of an asset
+with another asset means that, when the price volatility goes up the return of
+this asset also goes up. The general acceptance that the conditional density of
+asset returns is not completely and adequately  characterized by the first two
+moments, implies that the derivation of any measure of risk from that density
+requires estimates for the higher order co-moments of the return distribution if
+one is work within a multivariate setting. The linear affine representation of
+the GO-GARCH model allows to identify closed-form expression for the conditional
+co-skewness and co-kurtosis of asset returns\footnote{It is possible to go beyond
+these moments but the notation becomes cumbersome and the benefits likely to
+be marginal.}, as described in \cite{Athayde2000}. The conditional co-moments
+of \( \bfr_t \) of order 3 and 4  are represented as tensor matrices,
+\begin{equation}\label{eq:facd6}
+\begin{gathered}
+  \bfM_{t}^3 = \bfA \bfM_{f,t}^3(\bfA' \otimes \bfA'), \hfill \\
+  \bfM_{t}^4 = \bfA \bfM_{f,t}^4(\bfA' \otimes \bfA' \otimes \bfA'), \hfill \\
+\end{gathered}
+\end{equation}
+where \( \bfM_{f,t}^3\) and \( \bfM_{f,t}^4 \) are the \( (N \times N^2) \)
+conditional third co-moment matrix and the \( (N \times N^3) \) conditional
+fourth co-moment matrix of the factors, respectively. \( \bfM_{f,t}^3 \)
+and \( \bfM_{f,t}^4\), defined as are given by
+\begin{eqnarray}
+\bfM_{f,t}^3 & =&
+\begin{bmatrix}
+\bfM_{1,f,t}^3,\bfM_{2,f,t}^3,\ldots,\bfM_{N,f,t}^3
+\end{bmatrix} \label{eq:comoment_factor_matrix_3}\\
+\bfM_{f,t}^4 & = &
+\begin{bmatrix}
+\bfM_{11,f,t}^4,\bfM_{12,f,t}^4,\ldots,\bfM_{1N,f,t}^4|\ldots|\bfM_{N1,f,t}^4,\bfM_{N2,f,t}^4,\ldots,\bfM_{NN,f,t}^4
+\end{bmatrix}\label{eq:comoment_factor_matrix_4}
+\end{eqnarray}
+where \( \bfM_{k,f,t}^3, k=1,\ldots,N \) and \( \bfM_{kl,f,t}^4, k,l=1,\ldots,N \)
+are the \((N\times N)\) submatrices of \( \bfM_{f,t}^3 \) and \( \bfM_{f,t}^4\),
+respectively, with elements
+\begin{eqnarray*}
+m_{ijk,f,t}^3 & = & E[f_{i,t}f_{j,t}f_{k,t}|\mathfrak{F}_{t-1}] \\
+m_{ijkl,f,t}^4 & = & E[f_{i,t}f_{j,t}f_{k,t}f_{l,t}|\mathfrak{F}_{t-1}].
+\end{eqnarray*}
+Since the factors $f_{it}$ can be decomposed as $z_{it}\sqrt{h_{it}}$, and given
+the assumptions on \( z_{it} \), then \(E[f_{i,t}f_{j,t}f_{k,t}|\mathfrak{F}_{t-1}] = 0\).
+It is also true that for \( i \neq j\neq k \neq l \)\(E[f_{i,t}f_{j,t}f_{k,t}f_{l,t}|\mathfrak{F}_{t-1}] = 0\)
+and when \(i=j\) and \(k=l\),
+\begin{equation*}
+E[f_{i,t}f_{j,t}f_{k,t}f_{l,t}|\mathfrak{F}_{t-1}]  =  h_{it}^2 h_{kt}^2.
+\end{equation*}
+Thus, under the assumption of mutual independence, all elements in the conditional
+co-moments matrices with at least 3 different indices are zero. Finally, standardizing
+the conditional co-moments one obtains conditional co-skewness and co-kurtosis of $\bfr_t$,
+\begin{equation}\label{eq:facd7}
+\begin{gathered}
+  \bfS_{ijk,t} = \frac{m_{ijk,t}^3}{({\sigma_{i,t}}{\sigma _{j,t}}{\sigma _{k,t}})}, \hfill \\
+  \bfK_{ijkl,t} = \frac{m_{ijkl,t}^4}{({\sigma_{i,t}}{\sigma _{j,t}}{\sigma _{k,t}}{\sigma _{l,t}})}, \hfill \\
+\end{gathered}
+\end{equation}
+where $ \bfS_{ijk,t}$ represents the asset co-skewness between elements
+$i,j,k$ of $\bfr_t$, $\sigma_{i,t}$ the standard deviation  of $\bfr_{i,t}$, and
+in the case of $i=j=k$ represents the skewness of asset \(i\) at time $t$, and
+similarly for the co-kurtosis tensor $\bfK_{ijkl,t}$. Two natural applications
+of return co-moments matrices are Taylor type utility expansions in portfolio
+allocation and higher moment news impact surfaces. In the {\bf rmgarch} package
+the covariance, correlation, coskewness and cokurtosis can be extracted from any
+of the returned GO-GARCH objects (\emph{goGARCHfit}, \emph{goGARCHfilter},
+\emph{goGARCHforecast}, \emph{goGARCHsim} \emph{goGARCHroll}) by using the methods
+\emph{rcov}, \emph{rcor}, \emph{rcoskew} and \emph{rcokurt}, respectively.
+Additional arguments to these methods are clearly detailed in the help files.
+To obtain the weighted portfolio moments, using the geometric properties of the
+model, the method \emph{gportmoments} can be called on any of the GO-GARCH
+objects together with a weighting matrix.
+
+\subsubsection{The Portfolio Conditional Density}\label{III}
+An important question that can be addressed in this framework is the determination
+of the portfolio conditional density, an issue of vital importance in risk
+management application. The \emph{N}-dimensional NIG distribution, closed under
+convolution, is suited to problems in portfolio and risk management where a
+weighted sum of assets is considered. However, when the distributional parameters
+$\alpha$ and $\beta$, representing skew and shape, are allowed to vary per asset,
+as in the GO-GARCH case, this property no longer holds and numerical methods
+such as that of the Fast Fourier Transform (\emph{FFT}) are needed to derive the
+weighted density by inversion of the characteristic function of the scaled
+parameters\footnote{This effectively means that the weighted density is not
+necessarily NIG distributed.}. In the case of the NIG distribution, this is greatly
+simplified because of the representation of the modified Bessel function for the GIG
+shape index ($\lambda$) with value $-0.5$ which was derived in \cite{Barndorff-Nielsen1981},
+otherwise the characteristic function of the GH involves the evaluation of the
+modified Bessel function with complex arguments, which complicates the inversion.
+Appendix \ref{appendixI} derives the characteristic functions used in the case
+of independent margins for both the NIG and full GH distributions. Let $R_t$ be
+the portfolio return:
+\begin{align}\label{eq:portfolio1}
+{R_t} & =  \bfw'_t \bfr_t = \bfw'_t \bfm_t + (\bfw_t' \bfA \bfH_t^{1/2}){\bfz_t}
+\end{align}
+where $\bfH _t^{1/2}$ is estimated from the GARCH dynamics of $\bfy_t$. The model
+allows to express the portfolio variance, skewness and kurtosis in closed form,
+\begin{equation}\label{eq:portfolio5}
+\begin{gathered}
+  \sigma_{{p,t}}^2 = \bfw_t'{\mbSigma_{t}}\bfw_t, \hfill \\
+  {s_{p,t}} = \frac{{\bfw_t'\bfM_{_t}^3(\bfw_t \otimes \bfw_t)}}{{{{(\bfw_t'{\mbSigma _{t}}\bfw_t)}^{3/2}}}}, \hfill \\
+  {k_{p,t}} = \frac{{\bfw_t'\bfM_{_t}^4(\bfw_t \otimes \bfw_t \otimes \bfw_t)}}{{{{(\bfw_t'{\mbSigma_{t}}\bfw_t)}^2}}}, \hfill \\
+\end{gathered}
+\end{equation}
+where $\mbSigma_{t}$, $\bfM_{t}^3$ and $\bfM_{t}^4$ are derived in
+\eqref{eq:facd6}. The portfolio conditional density may be obtained via
+the inversion of the characteristic function through the FFT method as in
+\cite{Chen2007} (see Appendix \ref{appendixI} for details) or by
+simulation. The former is used in this package for its accuracy and speed.
+Provided that $\bfz_t$ is a \emph{N}-dimensional vector of innovations,
+marginally distributed as 1-dimensional standardized GH, the density of weighted
+asset return, ${w_{it}}{r_{it}}$, is
+\begin{equation}\label{eq:portfolio2}
+{w_{i,t}}{r_{i,t}} = ({w_{i,t}}{m_{i,t}} + \overline{w}_{i,t}{z_{i,t}}) \sim
+GH_{\lambda_i}\left(\overline{w}_{i,t}\mu_{i}+
+{w_{i,t}}m_{i,t},\left|\overline{w}_{i,t}\right|\delta_{i},\frac{\alpha_{i}}{\left|
+\overline{w}_{i,t} \right|},\frac{\beta_{i}}{\left| \overline{w}_{i,t} \right|}\right)
+\end{equation}
+where $\overline{\bfw}_t'$ is equal to $\bfw_t' \bfA \bfH_t^{1/2}$,
+and \(\overline{w}_{i,t} \) is the \emph{i}-th element of \( \overline{\bfw}_t\), $m_{i,t}$
+the conditional mean of the \emph{i}-th underlying asset. In order to obtain the
+density of the portfolio, we must sum the individual weighted densities of
+$z_{i,t}$.  The characteristic function of the portfolio return $R_t$ is
+\begin{equation}\label{eq:portfolio3}
+\varphi_R(u) = \prod\limits_{i = 1}^n {{\varphi_{\bar w{Z_i}}}} (u)
+=  \exp{
+   \left(
+   \text{i}u\sum\limits_{j = 1}^d \bar\mu_j +
+   \sum\limits_{j = 1}^d
+   \left(
+   \frac{\lambda_j}{2}
+   \log{\left(\frac{\gamma}{\upsilon}\right)}
+   +
+   \log \left(
+   \frac{\bfK_{\lambda _j}(\bar\delta_j\sqrt{\upsilon})}{\bfK_{\lambda_j}( \bar\delta_j \sqrt{\gamma})}
+   \right)
+   \right)
+   \right)
+   }
+\end{equation}
+where, $\gamma  = \bar \alpha _j^2 - \bar \beta _j^2$, $\upsilon  = \bar \alpha _j^2 - {({{\bar \beta }_j} + {\text{i}}u)^2}$,
+and $(\bar \alpha_j, \bar \beta_j, \bar \delta_j, \bar \mu_j)$ are the scaled
+versions of the parameters $(\alpha_{i}, \beta_{i}, \delta_{i}, \mu_{i})$
+as shown in \eqref{eq:portfolio2}. The density may be accurately
+approximated by FFT as follows,
+\begin{equation}\label{eq:portfolio4}
+{f_R}(r) = \frac{1} {{2\pi }}\int_{ - \infty }^{ + \infty } {{e^{( - \text{i}u r)}}} \varphi_R
+(u)\mathrm{d}u \approx \frac{1} {{2\pi }}\int_{ - s}^s {{e^{( - \text{i}u r)}}} \varphi_R
+(u)\mathrm{d}u.
+\end{equation}
+Once the density is formed by FFT inversion of the characteristic function,
+distribution, quantile and sampling functions can be created. In the
+{\bf rmgarch} package these are represented are \emph{dfft}, \emph{pfft},
+\emph{qfft} and \emph{rfft}, which operate on the point in time conditional
+density approximation, an object of class \emph{goGARCHfft}, returned from
+calling the \emph{convolution} method on a fitted (\emph{goGARCHfit}), filtered
+(\emph{goGARCHfilter}), forecasted (\emph{goGARCHforecast}), simulated
+(\emph{goGARCHsim}) or rolling (\emph{goGARCHroll}) object. Finally, the
+\emph{nportmoments} method applied to a \emph{goGARCHfft} object will return
+the FFT-based semi analytic portfolio moments.
+\subsubsection{Forecasting}
+The multi-step ahead forecast of the GO-GARCH model is based completely on the
+univariate factor dynamics, already covered in the {\bf {rugarch}} package.
+Additionally, all methods available for working with a fitted (\emph{goGARCHfit})
+object are also available for the resulting forecast (\emph{goGARCHforecast})
+object and covered in detail in the help file, and the examples in the inst
+folder of the package.
+
+\section{Miscellaneous}
+Like the {\bf rugarch} package, parallel functionality is implemented by passing a
+pre-created cluster object from the parallel package. Unlike the {\bf rugarch}
+package, there is a much higher cost to the use of a socket (snowfall) rather than
+fork (multicore) based setup, and depending on the number of sockets used, it may be
+the case that the data communication overhead is so high that non-parallel estimation
+is faster.\\
+A comprehensive set of examples is available in the rmgarch.tests folder of the source. 
+There are 5 main files, covering the Copula, DCC, FDCC and GO-GARCH models and the fScenario 
+and fMoments methods for use in portfolio and risk management applications (see the {\bf parma}
+package).\\
+\clearpage
+\appendixpage
+\addappheadtotoc
+\subsection*{The GH characteristic function}\label{appendixI}
+The moment generating function (\emph{MGF}) of the GH Distribution is,
+\begin{equation}\label{appendixI:eq:ghypmom}
+\begin{gathered}
+  {M_{GH(\lambda ,\alpha ,\beta ,\delta ,\mu )}}(u) = {e^{\mu u}}{M_{GIG\left( {\lambda ,\delta \sqrt {{\alpha ^2} - {\beta ^2}} } \right)}}\left( {\frac{{{u^2}}}{2} + \beta u} \right), \hfill \\
+   = {e^{\mu u}}{\left( {\frac{{{\alpha ^2} - {\beta ^2}}}{{{\alpha ^2} - {{(\beta  + u)}^2}}}} \right)^{\lambda /2}}\frac{{{\bfK_\lambda }\left( {\delta \sqrt {{\alpha ^2} - {{(\beta  + u)}^2}} } \right)}}{{{\bfK_\lambda }\left( {\delta \sqrt {{\alpha ^2} - {\beta ^2}} } \right)}} \hfill \\
+\end{gathered}
+\end{equation}
+where $M_{GIG}$ represents the moment generating function of the Generalized Inverse
+Gaussian which forms the mixing distribution in this variance-mean mixture subclass.
+Powers of the MGF, $M_{GH}(u)^p$, only have the representation in \eqref{appendixI:eq:ghypmom}
+for $p=1$, which means that GH distributions are not closed under convolution
+with the exception of the NIG, and only in the case when the shape and skew parameters
+are the same. The MGF of the NIG is,
+\begin{equation}\label{appendixI:eq:nigmom}
+{M_{NIG(\alpha ,\beta ,\delta ,\mu )}}(u) = {e^{\mu u}}\frac{{{e^{\delta \sqrt {{\alpha ^2} - {\beta ^2}} }}}}{{{e^{\delta \sqrt {{\alpha ^2} - {{(\beta  + u)}^2}} }}}}.
+\end{equation}
+Powers of $p$ are equivalent in this case to multiplication by $p$ of $\delta$ and $\mu$, so that,
+\begin{equation}\label{appendixI:eq:closednig}
+NIG(\alpha ,\beta ,{\delta _1},{\mu _1}) \times...\times NIG(\alpha ,\beta ,{\delta _n},{\mu _n}) = NIG(\alpha ,\beta ,{\delta _1} + ... + {\delta _n},{\mu _1} + ... + {\mu _n}).
+\end{equation}
+When the distribution is not closed under convolution, numerical methods are
+required such as the inversion of the characteristic function by FFT. Because the
+MGF is a holomorphic function for complex $z$, with $\left| z \right| < \alpha  - \beta$,
+we can obtain the characteristic function of the GH distribution, using the following
+representation,
+\begin{equation}\label{appendixI:eq:chartrick}
+{\phi _{GH}}(u) = {M_{GH}}({\text{i}}u),
+\end{equation}
+so that the characteristic function may be written as,
+\begin{equation}\label{appendixI:eq:ghypchar}
+{\phi _{GH(\lambda ,\alpha ,\beta ,\delta ,\mu )}}(u) = {e^{\mu \text{i}u}}{\left( {\frac{{{\alpha ^2} - {\beta ^2}}}{{{\alpha ^2} - {{(\beta  + {\text{i}}u)}^2}}}} \right)^{\lambda /2}}\frac{{{\bfK_\lambda }\left( {\delta \sqrt {{\alpha ^2} - {{(\beta  + {\text{i}}u)}^2}} } \right)}}{{{\bfK_\lambda }\left( {\delta \sqrt {{\alpha ^2} - {\beta ^2}} } \right)}}.
+\end{equation}
+and for the NIG this is simplified to,
+\begin{equation}\label{appendixI:eq:nigchar}
+{\phi _{NIG(\alpha ,\beta ,\delta ,\mu )}}(u) = {e^{\mu {\text{i}}u}}\frac{{{e^{\delta \sqrt {{\alpha ^2} - {\beta ^2}} }}}}{{{e^{\delta \sqrt {{\alpha ^2} - {{(\beta  + {\text{i}}u)}^2}} }}}}.
+\end{equation}
+In order to find the portfolio density in the case of the GO-GARCH (maGH/maNIG) model, the
+characteristic function required for the inversion of the NIG density was already
+used in \cite{Chen2007a} and given below,
+\begin{equation}\label{appendixI:eq:nigcharsum}
+{\phi _{port}}(u) = \exp \left\{ {{\text{i}}u\sum\limits_{j = 1}^d {{{\bar \mu }_j}}  + \sum\limits_{j = 1}^d {{{\bar \delta }_j}\left( {\sqrt {\bar \alpha _j^2 - \bar \beta _j^2}  - \sqrt {\bar \alpha _j^2 - {{({{\bar \beta }_j} + {\text{i}}u)}^2}} } \right)} } \right\}
+\end{equation}
+where $\bar \alpha_j$, $\bar \beta_j$, $\bar \delta_j$ and $\bar \mu_j$
+represent the parameters scaled as described in the main text of the paper.
+In the case of the GH characteristic function, this is a little more complicated
+as it involves the evaluation of modified Bessel function of the
+third kind with complex arguments.\footnote{The Bessel package
+of \cite{Maechler2012} is used for this purpose.} Taking logs and summing,
+\begin{eqnarray}\label{appendixI:eq:ghypcharsum}
+{\phi _{port}}(u) = \exp\Biggl\{\text{i}u \sum\limits_{j = 1}^d \biggl({\bar \mu }_j+ \frac{\lambda _j}{2}\log{\left( {\bar \alpha _j^2 - \bar \beta _j^2} \right)} - \frac{\lambda _j}{2} \log{\left( \bar \alpha _j^2 - ({\bar \beta }_j + {\text{i}}u)^2 \right)} +  \nonumber \\
+\log{\left( \bfK_{\lambda_j}\left( {\bar \delta }_j\sqrt{\bar \alpha _j^2 - ({\bar \beta }_j + \text{i}u)^2}\right) \right)} - \log{\left( \bfK_{\lambda _j}\left({\bar \delta}_j \sqrt{\bar \alpha _j^2 - \bar \beta _j^2} \right) \right)} \biggr) \Biggr\}
+\end{eqnarray}
+which is more than 30 times slower to evaluate than the equivalent NIG function
+because of the Bessel function evaluations.

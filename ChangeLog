@@ -1,0 +1,190 @@
+2014-03-07 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-7.
+	* Fix to mvt and mvlaplace random number generation for 
+	DCC simulation methods.
+	
+2014-01-26 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-6.
+	* Fix for solaris build [thanks to BDR].
+
+2014-01-25 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-5.
+	* Patched to work with recent changes to Rcpp.
+
+2014-01-05 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-4.
+	* Implemented very fast flattened tensor indexing for
+	the gogarch higher co-moment matrices using analytic
+	relationship for coordinates of pairs {i=j,k=l}, leading
+	to a 10x speed increase.
+	* Huge efficiency gains (memory management) from using 
+	the klin functionality for kronecker multiplication of 
+	the very large co-moment matrices.
+	* Fix to DCC estimation method for case of different univariate
+	specifications (reported by Suzanna Linn).
+	* Created and exported the betacovar, betacoskew and betacokurt 
+	methods for higher moment CAPM beta calculation (discussed in 
+	blog post).
+	* Enanced DCC based models to accept the newly released realGARCH model
+	from rugarch (additional argument realizedVol required).
+	
+2013-09-02 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-3.
+	* replaced estimation of Kendall's tau with cor.fk function of pcaPP
+	package which is very fast (affects static mvt copula).
+	* Added some pro-active garbage collection in the simulation code since
+	memory usage was building up without being released (fragmentation). Also 
+	replaced lapply with normal loop for better memory management.
+	* Fix to cgarchspec and dccspec in the presence of external regressors (had 
+	previously saved the wrong dimension).
+	
+2013-05-26 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-2.
+	* Fix to cgarchsim in presence of variance targeting in the univariate
+	models (exited with failure code).
+	* Fixes to some methods to comply with rugarch 1.2-5 (now required as minimum
+	version)
+
+2013-04-25 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-1.
+	* cordist function added to visualize dynamic correlation distances.
+	* Fixed problem of using variance targeting in the multivariate models.
+	* Fixed problem in dccroll and gogarchroll not saving the correct
+	forecast length in the output object.
+	* Fix to gogarch extractor methods when using PCA dimensionality reduction
+	prior to ICA (estimation ok, failed on use of rcor, rcov and related methods).
+	* Some more functions in gogarch ported to Rcpp for speed and memory management
+	(related to large dimensional tensors and kronecker product).
+
+2013-04-10  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-0.
+	* Version bump and update for use with rugarch 1.2-2 and R 3.0.0
+	* Some fixes to methods rcoskew and rcokurt for goGARCHroll class 
+	(standardize option was not being passed and defaulted to TRUE). In any case
+	method failed (with error) because of code bug.
+	* Some fixes to DCC rolling plots and calcultion of moving window size 
+	(consistent with changes in rugarch).
+	* Updated rmgarch.tests.
+
+2013-02-20  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.00-4.
+	
+2013-02-09  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.00-3.
+	* fscenario and fmoments re-worked. Now have fitted, rcov, rcoskew and 
+	rcokurt methods for extracting the scenario and moments.
+	* Some fixes to rocokurt and rcoskew with switch roll="all".
+	* Updated examples in rmgarch.tests folder.
+
+2013-02-02  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.00-2.
+	* As in the rugarch package, xts now exclusively used. The extract methods
+	sigma, fitted and residuals return an xts object, whilst the extractors
+	rcov and rcor (which return arrays) have an attribute called 'index' which
+	contains the time index in order to re-construct a 2-dimensional xts object
+	(useful for printing pairwise correlations). The rolling forecast method has
+	also been re-written to return simpler xts objects (sigma and fitted) and
+	more informative arrays for the covariance and correlation. The optional 
+	argument roll for denoting which rolling estimation window to return results
+	is now deprecated as all the rolling forecasts are returned in a much 
+	simplified container. All 3 models (GOGARCH, CGARCH and DCC) now have a 
+	uniform set of extractors and return a uniform type of value.
+	* Change to the DCC plot functions to conform to new xts output.
+	* Changes to the copula code to reflect the vectorization of distribution
+	functions in rugarch (which return vectors rather than matrices when a matrix
+	is input into the first argument).
+	* GO-GARCH extractors including rcov, rcor, rcoskew and rcokurt moved to C++ 
+	leading to very large speedup (as a result of the affine 
+	transformation/matrix multiplications).
+	* Many CGARCH and DCC extractor and utility functions (e.g.'sigma' as 
+	diag(time varying cov)) moved to C++ (RcppArmadillo) for more than 10x 
+	speed increase.
+	
+2012-12-25  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.00.
+	* Changes to comply with new rugarch package, particularly with regards
+	to parallel functionality (exclusive use of parallel package), and enhancements 
+	to rolling estimation and forecast.
+	* Streamline of gogarch methods and some bug fixes.
+	* Added FDCC model (v. 1.00-1) and rmgarch.test5 examples.
+	* Started on ICA to C++ translation.
+
+2012-11-10  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.99.
+	* Some minor corrections to vignette.
+	* Fix to static t-copula using Kendall's tau (bug in combn in .Kendall).
+
+2012-10-17  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.98.
+	* Fix to dccfit and dccfilter when using fGARCH models in first stage.
+	* Added some details in the vignette on the multi-step ahead forecast
+	algorithm used for the DCC model.
+
+2012-10-03  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.97.
+	* Added a Vignette with the background/details on the models implemented.
+	* Added some examples online (r-forge project website).
+	* Small bug fix to nisurface in GO-GARCH model arising from high precision.
+
+2012-09-31  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.96.
+	* varxfit parallel functionality implemented for expensive robust calculation
+	method.
+	* Substantial Re-Write of ICA functionality and export of ICA functions
+	(africa package on r-forge will not be released to CRAN and eventually
+	removed). Only locally implemented versions of fastica and radical are now
+	allowed (removed PearsonICA and JADE).
+	* Part of RADICAL code ported to C++ for speed.
+	* Added different covariance estimators for the ICA whitening routines.
+	* GO-GARCH model now allows to pass n.comp to ICA routine for dimensionality 
+	reduction during the PCA whitening phase (via the ... argument in gogarchfit).
+	Experimental at present until some theoretical issues are resolved.
+	* Re-write of gogarch methods and functions.
+	* Some corrections to gogarchsim.
+	* Removed some dependencies no longer needed.
+	
+2012-05-31  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.95.
+	* Export and fix of wmargin function.
+	* Changes to gogarchsim to include ability to do rolling simulation
+	based forecast (added example rmgarch.test1j in rmgarch.tests folder).
+	* Some fixes to gogarch under certain lag combinations.
+	* Numerous bug fixes to dccsim and cgarchsim function (now correctly 
+	generates conditional correlated random deviates for the multivariate 
+	laplace and student distributions - new C++ functions). Added small 
+	test rmgarch.test2h in rmgarch.tests folder).	
+	* New function DCCtest. Implements the test of non-constant correlation of
+	Engle and Sheppard (2001) using a static GARCH Copula (Normal).
+	* Reduced verbosity in estimation (mostly related to VAR).
+
+2012-03-16  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.94.
+	* Fix to case when using static copula.
+
+2012-01-03  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.93.
+	* Co-Kurtosis Tensor for GO-GARCH now correct (updated rmgarch.test1-i 
+	with small example of weighted kurtosis).
+	* 100x efficiency increase in intermediate storage requirement for 
+	cokurtosis calculation by using klin.eval from klin package in kronecker
+	product for gogarch model.
+	* GARCH Scaling in DCC turned off by default.
+	
+2011-12-06  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.92.
+	* Some fixes to build and load on newer version of R.
+
+2011-10-09  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.91.
+	* Fixed coefficient extractor method (coef) for goGARCHfit and 
+	goGARCHfilter classes.
+
+2011-09-20  Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 0.9.
+	* Multivariate GARCH models split from rgarch package into rmgarch.
+	* Substantial re-write of multivariate code.
+	* Still more testing remaining and vignette will not be written until
+	late 2011, at which point it will be released to CRAN (the complexity and
+	new method definitions for the GOGARCH model with multivariate affine NIG 
+	and GH distributions will likely make it difficult for people to use without
+	a vignette).

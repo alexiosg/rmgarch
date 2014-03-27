@@ -1,0 +1,166 @@
+%\VignetteIndexEntry{The rmgarch models: Background and properties}
+%\VignetteDepends{parallel}
+%\VignetteKeywords{GARCH}
+%\VignettePackage{rmgarch}
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{appendix}
+\usepackage[round]{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{anysize}
+\usepackage{amsfonts}
+\usepackage{courier}
+\usepackage{lscape}
+\usepackage{ctable}
+\usepackage{subfig}
+\usepackage{etex}
+\usepackage[active]{srcltx}
+\usepackage[]{latexsym}
+\usepackage{inputenc}
+\usepackage{pifont}
+\usepackage{lmodern}
+\usepackage[normalem]{ulem}
+\usepackage{hyperref}
+\marginsize{2cm}{2cm}{1cm}{1cm}
+\setlength{\textwidth}{16cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\textheight}{24cm}
+\setlength{\headheight}{2cm}
+\newtheorem{proof}{Proof}
+\usepackage{Sweave}
+\newtheorem{defn}{Definition}
+\newtheorem{property}{Property}
+\newcommand{\mbSigma}{\ensuremath{\mbox{\boldmath$\Sigma$}}}
+\newcommand{\smbSigma}{\ensuremath{\mbox{\boldmath$\scriptstyle \Sigma$}}}
+\newcommand{\mbLambda}{\ensuremath{\mbox{\boldmath$\Lambda$}}}
+\newcommand{\mbUpsilon}{\ensuremath{\mbox{\boldmath$\Upsilon$}}}
+\newcommand{\mbOmega}{\ensuremath{\mbox{\boldmath$\Omega$}}}
+\newcommand{\smbOmega}{\ensuremath{\mbox{\boldmath$\scriptstyle \Omega$}}}
+\newcommand{\mbPhi}{\ensuremath{\mbox{\boldmath$\Phi$}}}
+\newcommand{\mbPsi}{\ensuremath{\mbox{\boldmath$\Psi$}}}
+\newcommand{\mbGamma}{\ensuremath{\mbox{\boldmath$\Gamma$}}}
+\newcommand{\mbPi}{\ensuremath{\mbox{\boldmath$\Pi$}}}
+\newcommand{\mbTheta}{\ensuremath{\mbox{\boldmath$\Theta$}}}
+\newcommand{\mbXi}{\ensuremath{\mbox{\boldmath$\Xi$}}}
+\newcommand{\smbTheta}{\ensuremath{\mbox{\boldmath$\scriptstyle \Theta$}}}
+\newcommand{\smbXi}{\ensuremath{\mbox{\boldmath$\scriptstyle \Xi$}}}
+\newcommand{\bftheta}{\ensuremath{\mbox{\boldmath$\theta$}}}
+\newcommand{\wbftheta}{\ensuremath{\mbox{\boldmath$\widehat{\theta}$}}}
+\newcommand{\sbftheta}{\ensuremath{\mbox{\boldmath$\scriptstyle \theta$}}}
+\newcommand{\swbftheta}{\ensuremath{\mbox{\boldmath$\scriptstyle \widehat{\theta}$}}}
+\newcommand{\bfmu}{\ensuremath{\mbox{\boldmath$\mu$}}}
+\newcommand{\sbfmu}{\ensuremath{\mbox{\boldmath$\scriptstyle \mu$}}}
+\newcommand{\bfiota}{\ensuremath{\mbox{\boldmath$\iota$}}}
+\newcommand{\sbfiota}{\ensuremath{\mbox{\boldmath$\scriptstyle \iota$}}}
+\newcommand{\bfpsi}{\ensuremath{\mbox{\boldmath$\psi$}}}
+\newcommand{\sbfpsi}{\ensuremath{\mbox{\boldmath$\scriptstyle \psi$}}}
+\newcommand{\bfphi}{\ensuremath{\mbox{\boldmath$\phi$}}}
+\newcommand{\sbfphi}{\ensuremath{\mbox{\boldmath$\scriptstyle \phi$}}}
+\newcommand{\bfkappa}{\ensuremath{\mbox{\boldmath$\kappa$}}}
+\newcommand{\bfvarphi}{\ensuremath{\mbox{\boldmath$\varphi$}}}
+\newcommand{\sbfvarphi}{\ensuremath{\mbox{\boldmath$\scriptstyle \varphi$}}}
+\newcommand{\bfnu}{\ensuremath{\mbox{\boldmath$\nu$}}}
+\newcommand{\sbfnu}{\ensuremath{\mbox{\boldmath$\scriptstyle \nu$}}}
+\newcommand{\bfpi}{\ensuremath{\mbox{\boldmath$\pi$}}}
+\newcommand{\sbfpi}{\ensuremath{\mbox{\boldmath$\scriptstyle \pi$}}}
+\newcommand{\bfepsilon}{\ensuremath{\mbox{\boldmath$\epsilon$}}}
+\newcommand{\bfvarepsilon}{\ensuremath{\mbox{\boldmath$\varepsilon$}}}
+\newcommand{\bfbeta}{\ensuremath{\mbox{\boldmath$\beta$}}}
+\newcommand{\sbfbeta}{\ensuremath{\mbox{\boldmath$\scriptstyle \beta$}}}
+\newcommand{\bfeta}{\ensuremath{\mbox{\boldmath$\eta$}}}
+\newcommand{\sbfeta}{\ensuremath{\mbox{\boldmath$\scriptstyle \eta$}}}
+\newcommand{\swbfbeta}{\ensuremath{\mbox{\boldmath$\scriptstyle \widehat{\beta}$}}}
+\newcommand{\wbfbeta}{\ensuremath{\widehat{\mbox{\boldmath$\beta$}}}}
+\newcommand{\bfgamma}{\ensuremath{\mbox{\boldmath$\gamma$}}}
+\newcommand{\sbfgamma}{\ensuremath{\mbox{\boldmath$\scriptstyle \gamma$}}}
+\newcommand{\bfdelta}{\ensuremath{\mbox{\boldmath$\delta$}}}
+\newcommand{\bflambda}{\ensuremath{\mbox{\boldmath$\lambda$}}}
+\newcommand{\sbflambda}{\ensuremath{\mbox{\boldmath$\scriptstyle \lambda$}}}
+\newcommand{\bfzeta}{\ensuremath{\mbox{\boldmath$\zeta$}}}
+\newcommand{\bfalpha}{\ensuremath{\mbox{\boldmath$\alpha$}}}
+\newcommand{\sbfalpha}{\ensuremath{\mbox{\boldmath$\scriptstyle \alpha$}}}
+\newcommand{\bfsigma}{\ensuremath{\mbox{\boldmath$\sigma$}}}
+\newcommand{\bfomega}{\ensuremath{\mbox{\boldmath$\omega$}}}
+\newcommand{\sbfomega}{\ensuremath{\mbox{\boldmath$\scriptstyle \omega$}}}
+\newcommand{\bftau}{\ensuremath{\mbox{\boldmath$\tau$}}}
+\newcommand{\bfxi}{\ensuremath{\mbox{\boldmath$\xi$}}}
+\newcommand{\wsigma}{\ensuremath{\widehat{\sigma}}}
+\newcommand{\bfx}{\ensuremath{\mbox{\boldmath$x$}}}
+\newcommand{\sbfx}{\ensuremath{\mbox{\boldmath$\scriptstyle x$}}}
+\newcommand{\bfp}{\ensuremath{\mbox{\boldmath$p$}}}
+\newcommand{\bfq}{\ensuremath{\mbox{\boldmath$q$}}}
+\newcommand{\bfy}{\ensuremath{\mbox{\boldmath$y$}}}
+\newcommand{\wbfy}{\ensuremath{\widehat{\mbox{\boldmath$y$}}}}
+\newcommand{\bfz}{\ensuremath{\mbox{\boldmath$z$}}}
+\newcommand{\sbfz}{\ensuremath{\mbox{\boldmath$\scriptstyle z$}}}
+\newcommand{\bfu}{\ensuremath{\mbox{\boldmath$u$}}}
+\newcommand{\wbfu}{\ensuremath{\widehat{\mbox{\boldmath$u$}}}}
+\newcommand{\bfw}{\ensuremath{\mbox{\boldmath$w$}}}
+\newcommand{\sbfw}{\ensuremath{\mbox{\boldmath$\scriptstyle w$}}}
+\newcommand{\bfr}{\ensuremath{\mbox{\boldmath$r$}}}
+\newcommand{\bfh}{\ensuremath{\mbox{\boldmath$h$}}}
+\newcommand{\sbfr}{\ensuremath{\mbox{\boldmath$\scriptstyle r$}}}
+\newcommand{\sbfp}{\ensuremath{\mbox{\boldmath$\scriptstyle p$}}}
+\newcommand{\bfs}{\ensuremath{\mbox{\boldmath$s$}}}
+\newcommand{\sbfs}{\ensuremath{\mbox{\boldmath$\scriptstyle s$}}}
+\newcommand{\bfe}{\ensuremath{\mbox{\boldmath$e$}}}
+\newcommand{\sbfe}{\ensuremath{\mbox{\boldmath$\scriptstyle e$}}}
+\newcommand{\bff}{\ensuremath{\mbox{\boldmath$f$}}}
+\newcommand{\bfg}{\ensuremath{\mbox{\boldmath$g$}}}
+\newcommand{\bfj}{\ensuremath{\mbox{\boldmath$j$}}}
+\newcommand{\bfk}{\ensuremath{\mbox{\boldmath$k$}}}
+\newcommand{\sbff}{\ensuremath{\mbox{\boldmath$\scriptstyle f$}}}
+\newcommand{\bfa}{\ensuremath{\mbox{\boldmath$a$}}}
+\newcommand{\sbfa}{\ensuremath{\mbox{\boldmath$\scriptstyle a$}}}
+\newcommand{\bfb}{\ensuremath{\mbox{\boldmath$b$}}}
+\newcommand{\bfc}{\ensuremath{\mbox{\boldmath$c$}}}
+\newcommand{\bfm}{\ensuremath{\mbox{\boldmath$m$}}}
+\newcommand{\sbfm}{\ensuremath{\mbox{\boldmath$\scriptstyle m$}}}
+\newcommand{\bfv}{\ensuremath{\mbox{\boldmath$v$}}}
+\newcommand{\sbfv}{\ensuremath{\mbox{\boldmath$\scriptstyle v$}}}
+\newcommand{\bft}{\ensuremath{\mbox{\boldmath$t$}}}
+\newcommand{\sbft}{\ensuremath{\mbox{\boldmath$\scriptstyle t$}}}
+\newcommand{\bfzero}{\textbf{0}}
+\newcommand{\bfd}{\ensuremath{\mbox{\boldmath$d$}}}
+\newcommand{\bfA}{\ensuremath{\mbox{\boldmath$A$}}}
+\newcommand{\bfB}{\ensuremath{\mbox{\boldmath$B$}}}
+\newcommand{\bfC}{\ensuremath{\mbox{\boldmath$C$}}}
+\newcommand{\bfD}{\ensuremath{\mbox{\boldmath$D$}}}
+\newcommand{\bfE}{\ensuremath{\mbox{\boldmath$E$}}}
+\newcommand{\bfF}{\ensuremath{\mbox{\boldmath$F$}}}
+\newcommand{\bfG}{\ensuremath{\mbox{\boldmath$G$}}}
+\newcommand{\bfH}{\ensuremath{\mbox{\boldmath$H$}}}
+\newcommand{\bfK}{\ensuremath{\mbox{\boldmath$K$}}}
+\newcommand{\bfJ}{\ensuremath{\mbox{\boldmath$J$}}}
+\newcommand{\bfI}{\ensuremath{\mbox{\boldmath$I$}}}
+\newcommand{\bfL}{\ensuremath{\mbox{\boldmath$L$}}}
+\newcommand{\bfM}{\ensuremath{\mbox{\boldmath$M$}}}
+\newcommand{\bfN}{\ensuremath{\mbox{\boldmath$N$}}}
+\newcommand{\bfR}{\ensuremath{\mbox{\boldmath$R$}}}
+\newcommand{\bfP}{\ensuremath{\mbox{\boldmath$P$}}}
+\newcommand{\bfQ}{\ensuremath{\mbox{\boldmath$Q$}}}
+\newcommand{\bfS}{\ensuremath{\mbox{\boldmath$S$}}}
+\newcommand{\bfU}{\ensuremath{\mbox{\boldmath$U$}}}
+\newcommand{\bfV}{\ensuremath{\mbox{\boldmath$V$}}}
+\newcommand{\bfY}{\ensuremath{\mbox{\boldmath$Y$}}}
+\newcommand{\bfX}{\ensuremath{\mbox{\boldmath$X$}}}
+\newcommand{\bfW}{\ensuremath{\mbox{\boldmath$W$}}}
+\newcommand{\bfZ}{\ensuremath{\mbox{\boldmath$Z$}}}
+\newcommand{\Var}{\ensuremath{\rm Var}}
+\newcommand{\E}{\ensuremath{\rm E}}
+\bibliographystyle{plainnat}
+\begin{document}
+\title{The rmgarch models: Background and properties.\\
+(Version 1.2-6)}
+\author{Alexios Ghalanos}
+\date{\today}
+\maketitle
+\tableofcontents
+\newpage
+\input{rmgarch1.tex}
+\clearpage
+\bibliography{rmgarchbib}
+\end{document}
