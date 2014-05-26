@@ -2,7 +2,7 @@ Package: rmgarch
 Type: Package
 Title: Multivariate GARCH models
 Version: 1.2-8
-Date: 2014-03-15
+Date: 2014-05-27
 Author: Alexios Ghalanos <alexios@4dscape.com>
 Maintainer: Alexios Ghalanos <alexios@4dscape.com>
 Depends: R (>= 3.0.2), methods, rugarch
@@ -11,5 +11,5 @@ Imports: Rsolnp, MASS, parallel, Matrix, zoo, xts, Bessel, ff, fftw, shape, pcaP
 Description: Feasible multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
 Collate: rmgarch-var.R rmgarch-functions.R rmgarch-classes.R rmgarch-ica.R rmgarch-series.R rmgarch-mmean.R gogarch-classes.R gogarch-distributions.R gogarch-main.R gogarch-methods.R rdcc-classes.R rdcc-main.R rdcc-likelihoods.R rdcc-plots.R fdcc-likelihoods.R fdcc-main.R rdcc-methods.R rdcc-mdistributions.R rdcc-postestimation.R rdcc-solver.R copula-classes.R copula-distributions.R copula-likelihoods.R copula-solver.R copula-fn.R copula-transformations.R copula-main.R copula-postestimation.R copula-methods.R rmgarch-tests.R rmgarch-scenario.R zzz.R
 LazyLoad: yes
-URL: http://www.unstarched.net, https://r-forge.r-project.org/projects/teatime/
+URL: http://www.unstarched.net, https://bitbucket.org/alexiosg
 License: GPL-3
