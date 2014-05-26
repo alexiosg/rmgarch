@@ -1,5 +1,5 @@
 2014-03-07 Alexios Ghalanos <alexios@4dscape.com>
-	* DESCRIPTION (Version): New version is 1.2-7.
+	* DESCRIPTION (Version): New version is 1.2-8.
 	* Fix to mvt and mvlaplace random number generation for 
 	DCC simulation methods.
 	

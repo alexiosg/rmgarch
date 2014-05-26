@@ -1637,8 +1637,8 @@
 		minc = umodel$modelinc
 		mpars = model$mpars
 		sxres  = fit@mfit$stdresid
-		clusterEvalQ(cluster, loadNamespace(rmgarch))
-		clusterEvalQ(cluster, loadNamespace(rugarch))
+		clusterEvalQ(cluster, loadNamespace('rmgarch'))
+		clusterEvalQ(cluster, loadNamespace('rugarch'))
 		if(transformation == "spd"){
 			clusterExport(cluster, c("ures", "mpars", "minc", "m", 
 							"sxres", "ssfit", "transformation"), envir = environment())
