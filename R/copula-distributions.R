@@ -126,7 +126,7 @@ rcopula.student = function(n, U, Corr, df)
 {
 	m = dim(Corr)[2]
 	mu = rep(0, m)
-	ans = rugarch:::pstd(.rmvt(n, mu = mu, R = Corr, df = df), shape = df)
+	ans = rugarch:::pstd(.rmvt(n, mu = mu, R = Corr, df = df), mu=0, sigma=1, shape = df)
 	return ( ans )
 }
 
@@ -190,7 +190,7 @@ rcopula.student = function(n, U, Corr, df)
 	Ures = vector(mode = "list", length = m)
 	Usim = array(NA, dim = c(n.sim+n.start, m, m.sim))
 	if(model$modeldesc$distribution  == "mvt"){
-		for(i in 1:m) Ures[[i]] = matrix(rugarch:::pstd(sapply(mtmp, FUN = function(x) x$Z[,i]), shape = cf["mshape"]), ncol = m.sim)
+		for(i in 1:m) Ures[[i]] = matrix(rugarch:::pstd(sapply(mtmp, FUN = function(x) x$Z[,i]), mu=0, sigma=1, shape = cf["mshape"]), ncol = m.sim)
 		for(i in 1:m.sim) Usim[,,i] = matrix(sapply(Ures, FUN = function(x) x[-(1:mo),i]), ncol = m)
 	} else{
 		for(i in 1:m) Ures[[i]] = pnorm(matrix(sapply(mtmp, FUN = function(x) x$Z[,i]), ncol = m.sim))
@@ -213,7 +213,7 @@ rcopula.student = function(n, U, Corr, df)
 		for(i in 1:m.sim){
 			set.seed(rseed[i])
 			tmp = .rmvt(n = nsim, R = Rbar, df = shape, mu = rep(0, m))
-			sim[,,i] = matrix(rugarch:::pstd(tmp, shape = shape), nrow = nsim, ncol = m)
+			sim[,,i] = matrix(rugarch:::pstd(tmp, mu=0, sigma=1, shape = shape), nrow = nsim, ncol = m)
 		}
 	} else{
 		for(i in 1:m.sim){
