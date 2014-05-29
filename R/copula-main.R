@@ -1625,8 +1625,9 @@
 	ures = .sample.copula(model, Qbar = NULL, preQ = NULL, Rbar = Rbar, 
 			Nbar = NULL, preZ = NULL, n.sim = n.sim, n.start = n.start, 
 			m.sim = m.sim, rseed = rseed, cluster = cluster)
+	
 	# ures = [0,1] copula random numbers
-	# now transform back into margins for use in garch	
+	# now transform back into margins for use in garch
 	transformation = model$modeldesc$transformation
 	distu = umodel$modeldesc$distribution
 	
