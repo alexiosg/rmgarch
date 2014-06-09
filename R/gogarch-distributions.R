@@ -116,8 +116,10 @@ cfinv = function(z, f, step = 0.01, ...)
 	cf = f(tt, ...)
 	phi = sgn * cf
 	phi[n/2 + 1] = sgn[n/2 + 1]
-	zplan = planFFT(length(phi))
-	p = s * abs(FFT(phi, plan = zplan))
+	#zplan = planFFT(length(phi))
+	#p = s * abs(FFT(phi, plan = zplan))
+	# 9-June-2014 remove FFTW since maintainers unable to fix mavericks problem
+	p = s * abs(fft(phi))
 	pdf = .wintpl(x, p, zs, w = NULL)
 	return(pdf)
 }
