@@ -18,3 +18,10 @@ src-x64/rmdist.h
 src-x64/rmdist.o
 src-x64/rmgarch.dll
 src-x64/symbols.rds
+src/copulas.o
+src/gogarch.o
+src/ica.o
+src/rdcc.o
+src/rmdist.o
+src/rmgarch.so
+src/symbols.rds
