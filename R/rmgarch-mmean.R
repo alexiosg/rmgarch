@@ -42,7 +42,7 @@ mvmean.varfit = function(model, data, VAR.fit = NULL, T, out.sample = 0, cluster
 			mp = model$modelinc[1+ggn]
 		}
 		p = mp
-		varmodel = varxfit(X = data[1:T, ,drop=FALSE], p = mp, exogen = ex[1:T, , drop=FALSE], 
+		varmodel = varxfit(X = data[1:T, ,drop=FALSE], p = mp, constant = TRUE, exogen = ex[1:T, , drop=FALSE], 
 				robust = model$varmodel$robust, gamma = model$varmodel$robust.control$gamma, 
 				delta = model$varmodel$robust.control$delta, nc = model$varmodel$robust.control$nc, 
 				ns = model$varmodel$robust.control$ns, postpad = "constant", cluster = cluster)
