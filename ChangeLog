@@ -1,8 +1,14 @@
-2014-03-07 Alexios Ghalanos <alexios@4dscape.com>
+2014-06-11 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-8.
+	* Removed fftw dependency
+	* Added logical argument for inclusion or not of 'constant' 
+	in varxfit function and updated related functions (filter,
+	forecast and sim) to take this into account [user request].
+
+2014-03-07 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.2-7.
 	* Fix to mvt and mvlaplace random number generation for 
 	DCC simulation methods.
-	* Removed fftw dependency
 	
 2014-01-26 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-6.

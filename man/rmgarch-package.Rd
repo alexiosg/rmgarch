@@ -20,12 +20,14 @@ the correlation.\cr
 Package: \tab rmgarch\cr
 Type: \tab Package\cr
 Version: \tab 1.2-8\cr
-Date: \tab 2014-05-27\cr
+Date: \tab 2014-06-11\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
-Depends: R (>= 3.0.2), methods, rugarch\cr
-LinkingTo:\tab Rcpp, RcppArmadillo\cr
-Imports: Rsolnp, MASS, parallel, Matrix, zoo, xts, Bessel, ff, fftw, shape, Kendall, spd, Rcpp\cr}
+Depends: \tab R (>= 3.0.2), methods, rugarch\cr
+LinkingTo: \tab Rcpp (>= 0.10.6), RcppArmadillo (>= 0.2.34)\cr
+Imports: \tab Rsolnp, MASS, parallel, Matrix, zoo, xts, Bessel, ff, shape, pcaPP, spd, Rcpp\cr
+Description: Feasible multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.\cr
+}
 The main package functionality, currently supports the \emph{GO-GARCH} with ICA 
 method, and is available through the \code{\link{gogarchspec}}, 
 \code{\link{gogarchfit}}, \code{\link{gogarchfilter}}, \code{\link{gogarchforecast}}, 

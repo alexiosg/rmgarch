@@ -16,7 +16,7 @@
 #################################################################################
 
 # A set of functions to compute VARX models for internal use fit/filter, forecast and simulate.
-varxfit = function(X, p, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+varxfit = function(X, p, constant = TRUE, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
 		postpad = c("none", "constant", "zero", "NA"), cluster = NULL)
 {
 	X = as.matrix(X)
@@ -24,6 +24,7 @@ varxfit = function(X, p, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.
 	if (ncol(X) < 2) stop("\nvarxfit:-->error: The matrix 'X' should contain at least two variables.\n")
 	if (is.null(colnames(X))) colnames(X) = paste("X", 1:ncol(X), sep = "")
 	colnames(X) = make.names(colnames(X))
+	if(constant) ic = 1 else ic = 0
 	obs = dim(X)[1]
 	K = dim(X)[2]
 	xsample = obs - p
@@ -35,8 +36,13 @@ varxfit = function(X, p, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.
 	}
 	colnames(Xlags) = temp1
 	Xend = X[-c(1:p), ]
-	rhs = cbind( Xlags, rep(1, xsample))
-	colnames(rhs) <- c(colnames(Xlags), "const")
+	if(constant){
+		rhs = cbind( Xlags, rep(1, xsample))
+		colnames(rhs) <- c(colnames(Xlags), "const")
+	} else{
+		rhs = Xlags
+		colnames(rhs) <- colnames(Xlags)		
+	}
 	if( !(is.null(exogen)) ) {
 		exogen = as.matrix(exogen)
 		if (!identical(nrow(exogen), nrow(X))) {
@@ -55,79 +61,80 @@ varxfit = function(X, p, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.
 	colnames(datamat) = colnames(rhs)
 	postpad = tolower(postpad[1])
 	if( robust ){
-			sol = robustvar(data = X, exogen = exogen, lags = p, alpha = gamma, ns = ns, nc = nc, delta = delta, cluster = cluster)
-			Bcoef = t(sol$betaR)
-			Bcoef = cbind(Bcoef[,2:(p*K+1)], Bcoef[,1], if(!is.null(exogen)) Bcoef[,(2+p*K):(1+p*K+XK)] else NULL)
-			colnames(Bcoef) = colnames(rhs)
-			rownames(Bcoef) = colnames(X)
-			xfitted = t( Bcoef %*% t( datamat ) )
-			xresiduals = tail(X, obs - p) - xfitted
-			sigma2 = diag( sol$sigmaR )
-			if(postpad!="none"){
-				if(postpad == "constant"){
-					# pre-pad values with the constant
-					xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), 1, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else if(postpad == "zero"){
-					xfitted = t( Bcoef %*% t( rbind(matrix(rep(0, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else if(postpad == "NA"){
-					xfitted = t( Bcoef %*% t( rbind(matrix(rep(NA, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else{
-					# do nothing
-					xfitted = t( Bcoef %*% t( datamat ) )
-					xresiduals = tail(X, obs - p) - xfitted
-				}
+		sol = robustvar(data = X, exogen = exogen, constant = constant, lags = p, alpha = gamma, ns = ns, nc = nc, delta = delta, cluster = cluster)
+		Bcoef = t(sol$betaR)
+		Bcoef = cbind(Bcoef[,(ic+1):(p*K+ic)], if(constant) Bcoef[,1], if(!is.null(exogen)) Bcoef[,(ic+1+p*K):(ic+p*K+XK)] else NULL)
+		colnames(Bcoef) = colnames(rhs)
+		rownames(Bcoef) = colnames(X)
+		xfitted = t( Bcoef %*% t( datamat ) )
+		xresiduals = tail(X, obs - p) - xfitted
+		sigma2 = diag( sol$sigmaR )
+		if(postpad!="none"){
+			if(postpad == "constant"){
+				# pre-pad values with the constant
+				xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), if(constant) 1 else NULL, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else if(postpad == "zero"){
+				xfitted = t( Bcoef %*% t( rbind(matrix(rep(0, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else if(postpad == "NA"){
+				xfitted = t( Bcoef %*% t( rbind(matrix(rep(NA, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else{
+				# do nothing
+				xfitted = t( Bcoef %*% t( datamat ) )
+				xresiduals = tail(X, obs - p) - xfitted
 			}
-			# I think we need to correct this to get the corrected values from the mlts function
-			xp = solve( t(datamat)%*%datamat, diag(p*K + XK + 1)  )
-			Bcov = lapply( as.list(sigma2), FUN = function(x) x * xp )
-			# calculate standard errors and t-stats
-			se = sapply(Bcov, FUN = function(x) sqrt(diag(x)))
-			rownames(se) = colnames(rhs)
-			tstat = t(Bcoef) / se
-			pstat = 2*(1-pnorm(abs(tstat)))
-		} else{
-			Bcoef = matrix(NA, ncol = dim(datamat)[2], nrow = K)
-			Bcoef =  t( apply(Xend, 2, FUN = function(x) solve(t(datamat) %*% datamat) %*% t(datamat) %*% x ) )
-			colnames(Bcoef) = colnames(rhs)
-			rownames(Bcoef) = colnames(X)
-			xfitted = t( Bcoef %*% t( datamat ) )
-			xresiduals = tail(X, obs - p) - xfitted
-			# apply sigma on the unpadded values
-			sigma2 = apply( xresiduals, 2, FUN = function(x) (t(x) %*% x)/(obs - p*K - XK - 1) )
-			if(postpad!="none"){
-				if(postpad == "constant"){
-					# pre-pad values with the constant
-					xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), 1, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else if(postpad == "zero"){
-					xfitted = t( Bcoef %*% t( rbind(matrix(rep(0, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else if(postpad == "NA"){
-					xfitted = t( Bcoef %*% t( rbind(matrix(rep(NA, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
-					xresiduals = X - xfitted
-				} else{
-					# do nothing
-					xfitted = t( Bcoef %*% t( datamat ) )
-					xresiduals = tail(X, obs - p) - xfitted
-				}
+		}
+		# I think we need to correct this to get the corrected values from the mlts function
+		xp = solve( t(datamat)%*%datamat, diag(p*K + XK + ic)  )
+		Bcov = lapply( as.list(sigma2), FUN = function(x) x * xp )
+		# calculate standard errors and t-stats
+		se = sapply(Bcov, FUN = function(x) sqrt(diag(x)))
+		rownames(se) = colnames(rhs)
+		tstat = t(Bcoef) / se
+		pstat = 2*(1-pnorm(abs(tstat)))
+	} else{
+		Bcoef = matrix(NA, ncol = dim(datamat)[2], nrow = K)
+		Bcoef =  t( apply(Xend, 2, FUN = function(x) solve(t(datamat) %*% datamat) %*% t(datamat) %*% x ) )
+		colnames(Bcoef) = colnames(rhs)
+		rownames(Bcoef) = colnames(X)
+		xfitted = t( Bcoef %*% t( datamat ) )
+		xresiduals = tail(X, obs - p) - xfitted
+		# apply sigma on the unpadded values
+		sigma2 = apply( xresiduals, 2, FUN = function(x) (t(x) %*% x)/(obs - p*K - XK - ic) )
+		if(postpad!="none"){
+			if(postpad == "constant"){
+				# pre-pad values with the constant
+				xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), if(constant) 1 else NULL, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else if(postpad == "zero"){
+				xfitted = t( Bcoef %*% t( rbind(matrix(rep(0, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else if(postpad == "NA"){
+				xfitted = t( Bcoef %*% t( rbind(matrix(rep(NA, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+				xresiduals = X - xfitted
+			} else{
+				# do nothing
+				xfitted = t( Bcoef %*% t( datamat ) )
+				xresiduals = tail(X, obs - p) - xfitted
 			}
-			xp = solve( t(datamat)%*%datamat, diag(p*K + XK + 1)  )
-			Bcov = lapply( as.list(sigma2), FUN = function(x) x * xp )
-			# calculate standard errors and t-stats
-			se = sapply(Bcov, FUN = function(x) sqrt(diag(x)))
-			rownames(se) = colnames(rhs)
-			tstat = t(Bcoef) / se
-			pstat = 2*(1-pnorm(abs(tstat)))
+		}
+		xp = solve( t(datamat)%*%datamat, diag(p*K + XK + ic)  )
+		Bcov = lapply( as.list(sigma2), FUN = function(x) x * xp )
+		# calculate standard errors and t-stats
+		se = sapply(Bcov, FUN = function(x) sqrt(diag(x)))
+		rownames(se) = colnames(rhs)
+		tstat = t(Bcoef) / se
+		pstat = 2*(1-pnorm(abs(tstat)))
 	}
 	
 	# We pad the p lags at the start with the constant mean for the fitted for consistency with ugarch.
 	ans = list( Bcoef = Bcoef, xfitted = xfitted, xresiduals = xresiduals, Bcov = Bcov, se = se, tstat = tstat, pstat = pstat, lag = p,
-			mxn = XK )
+			mxn = XK, constant = constant)
 	return( ans )
 }
+
 
 varxfilter = function(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant", "zero", "NA"))
 {
@@ -137,6 +144,13 @@ varxfilter = function(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant"
 	if(is.null(colnames(X))) colnames(X) = paste("X", 1:ncol(X), sep = "")
 	colnames(X) = make.names(colnames(X))
 	postpad = tolower(postpad[1])
+	if(any(colnames(Bcoef)=="const")){
+		constant = TRUE
+		ic = 1
+	} else{
+		constant = FALSE
+		ic = 0
+	}
 	obs = dim(X)[1]
 	K = dim(X)[2]
 	xsample = obs - p
@@ -148,8 +162,13 @@ varxfilter = function(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant"
 	}
 	colnames(Xlags) = temp1
 	Xend = X[-c(1:p), ]
-	rhs = cbind( Xlags, rep(1, xsample))
-	colnames(rhs) <- c(colnames(Xlags), "const")
+	if(constant){
+		rhs = cbind( Xlags, rep(1, xsample))
+		colnames(rhs) <- c(colnames(Xlags), "const")
+	} else{
+		rhs = Xlags
+		colnames(rhs) <- colnames(Xlags)
+	}
 	if( !(is.null(exogen)) ) {
 		exogen = as.matrix(exogen)
 		if (!identical(nrow(exogen), nrow(X))) {
@@ -171,7 +190,7 @@ varxfilter = function(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant"
 	if(postpad!="none"){
 		if(postpad == "constant"){
 			# pre-pad values with the constant
-			xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), 1, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
+			xfitted = t( Bcoef %*% t( rbind(matrix(c(rep(0, p*K), if(constant) 1 else NULL, if(XK>0) rep(0, XK) else NULL), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
 			xresiduals = X - xfitted
 		} else if(postpad == "zero"){
 			xfitted = t( Bcoef %*% t( rbind(matrix(rep(0, dim(Bcoef)[2]), nrow = p, ncol=dim(Bcoef)[2], byrow = TRUE), datamat ) ) )
@@ -185,7 +204,7 @@ varxfilter = function(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant"
 			xresiduals = tail(X, obs - p) - xfitted
 		}
 	}
-	ans = list( Bcoef = Bcoef, xfitted = xfitted, xresiduals = xresiduals, lag = p)
+	ans = list( Bcoef = Bcoef, xfitted = xfitted, xresiduals = xresiduals, lag = p, constant = constant)
 	return( ans )
 }
 
@@ -199,6 +218,13 @@ varxforecast = function(X, Bcoef, p, out.sample, n.ahead, n.roll, mregfor)
 	n = nrow(X)
 	X = X.orig[1:(n - out.sample), ,drop = F]
 	n = nrow(X)
+	if(any(colnames(Bcoef)=="const")){
+		constant = TRUE
+		ic = 1
+	} else{
+		constant = FALSE
+		ic = 0
+	}
 	if(!is.null(mregfor)){
 		mregfor = as.matrix(mregfor)
 		mxn = ncol(mregfor)
@@ -207,7 +233,6 @@ varxforecast = function(X, Bcoef, p, out.sample, n.ahead, n.roll, mregfor)
 	}
 	meanforc = array(NA, dim = c(n.ahead, m, n.roll))
 	if(n.roll == 1){
-		
 		dmat1 = NULL		
 		for(i in 0:(p-1))
 		{
@@ -216,7 +241,7 @@ varxforecast = function(X, Bcoef, p, out.sample, n.ahead, n.roll, mregfor)
 		# for n.ahead > 1 and n.roll == 1
 		dmat1 = as.numeric( tail(dmat1, 1) )
 		for(i in 1:n.ahead){
-			Z = cbind(matrix(dmat1[1 : (m * p)], nrow = 1), matrix(1, ncol = 1, nrow = 1), if(!is.null(mregfor)) matrix(as.numeric(mregfor[i, ]), nrow = 1 ) else NULL)
+			Z = cbind(matrix(dmat1[1 : (m * p)], nrow = 1), if(constant) matrix(1, ncol = 1, nrow = 1) else NULL, if(!is.null(mregfor)) matrix(as.numeric(mregfor[i, ]), nrow = 1 ) else NULL)
 			meanforc[i, ,1] = Bcoef %*% t(Z)
 			dmat1 = c(meanforc[i, ,1], dmat1)
 		}
@@ -231,7 +256,7 @@ varxforecast = function(X, Bcoef, p, out.sample, n.ahead, n.roll, mregfor)
 		dmat1 = dmat = as.numeric( tail(dmat2[1:N, ], 1) )
 		for(i in 1:n.roll){
 			for(j in 1:n.ahead){
-				Z = cbind(matrix(dmat1[1 : (m * p)], nrow = 1), matrix(1, ncol = 1, nrow = 1), if(!is.null(mregfor)) matrix(as.numeric(mregfor[j+(i-1), ]), nrow = 1 ) else NULL)
+				Z = cbind(matrix(dmat1[1 : (m * p)], nrow = 1), if(constant) matrix(1, ncol = 1, nrow = 1) else NULL, if(!is.null(mregfor)) matrix(as.numeric(mregfor[j+(i-1), ]), nrow = 1 ) else NULL)
 				meanforc[j, ,i] = Bcoef %*% t(Z)
 				dmat1 = c(meanforc[j, ,i], dmat1)
 			}
@@ -252,6 +277,13 @@ varxsim = function(X, Bcoef, p, n.sim, n.start, prereturns, resids, mexsimdata)
 	n = dim(X)[1]
 	m = dim(X)[2]
 	ns = n.start + n.sim
+	if(any(colnames(Bcoef)=="const")){
+		constant = TRUE
+		ic = 1
+	} else{
+		constant = FALSE
+		ic = 0
+	}
 	if(!is.null(mexsimdata)){
 		mexsimdata = as.matrix(mexsimdata)
 		mxn = ncol(mexsimdata)
@@ -259,8 +291,6 @@ varxsim = function(X, Bcoef, p, n.sim, n.start, prereturns, resids, mexsimdata)
 		mxn = 0
 		Bcoef = Bcoef[,1:(m*p+1)]
 	}
-
-	
 	dmat2 = NULL
 	if( is.null(prereturns) ){
 		for(i in 0:(p-1))
@@ -277,11 +307,10 @@ varxsim = function(X, Bcoef, p, n.sim, n.start, prereturns, resids, mexsimdata)
 	if( is.null(resids) ){
 		resids = matrix(0, ncol = m, nrow = ns)
 	}
-	
 	dmat = tail(dmat2, 1)
 	meansim = matrix(NA, ncol = m, nrow = ns)
 	for(i in 1:ns){
-		Z = cbind(matrix(dmat[1 : (m * p)], nrow = 1), matrix(1, ncol = 1, nrow = 1), if(!is.null(mexsimdata)) matrix(as.numeric(mexsimdata[i, ]), nrow = 1 ) else NULL)
+		Z = cbind(matrix(dmat[1 : (m * p)], nrow = 1), if(constant) matrix(1, ncol = 1, nrow = 1) else NULL, if(!is.null(mexsimdata)) matrix(as.numeric(mexsimdata[i, ]), nrow = 1 ) else NULL)
 		meansim[i, ] = Bcoef %*% t(Z) + resids[i, ]
 		if( i < ns ) dmat = c(meansim[i, ], dmat)
 	}
@@ -290,13 +319,18 @@ varxsim = function(X, Bcoef, p, n.sim, n.start, prereturns, resids, mexsimdata)
 	return( meansim )
 }
 
-
-
 varxsimXX = function(X, Bcoef, p, m.sim, prereturns, resids, mexsimdata)
 {
 	X = as.matrix(X)
 	n = dim(X)[1]
 	m = dim(X)[2]
+	if(any(colnames(Bcoef)=="const")){
+		constant = TRUE
+		ic = 1
+	} else{
+		constant = FALSE
+		ic = 0
+	}
 	if(!is.null(mexsimdata)){
 		mexsimdata = as.matrix(mexsimdata)
 		mxn = ncol(mexsimdata)
@@ -305,14 +339,12 @@ varxsimXX = function(X, Bcoef, p, m.sim, prereturns, resids, mexsimdata)
 			mexsimdata = t(mexsimdata)
 			mxn = ncol(mexsimdata)
 		}
-		mxBcoef = matrix(Bcoef[,(m*p+2):(m*p+1+mxn)], ncol = mxn)
-		Bcoef = Bcoef[,1:(m*p+1)]
+		mxBcoef = matrix(Bcoef[,(m*p+ic+1):(m*p+ic+mxn)], ncol = mxn)
+		Bcoef = Bcoef[,1:(m*p+ic)]
 	} else{
 		mxn = 0
-		Bcoef = Bcoef[,1:(m*p+1)]
+		Bcoef = Bcoef[,1:(m*p+ic)]
 	}
-	
-	
 	dmat2 = NULL
 	if( is.null(prereturns) ){
 		for(i in 0:(p-1))
@@ -333,7 +365,7 @@ varxsimXX = function(X, Bcoef, p, m.sim, prereturns, resids, mexsimdata)
 	dmat = tail(dmat2, 1)
 	#meansim = matrix(NA, ncol = m, nrow = m.sim)
 	
-	Z = cbind(matrix(dmat[1 : (m * p)], nrow = 1), matrix(1, ncol = 1, nrow = 1) )
+	Z = cbind(matrix(dmat[1 : (m * p)], nrow = 1), if(constant) matrix(1, ncol = 1, nrow = 1) else NULL )
 	meansim = matrix(Bcoef %*% t(Z), ncol = m, nrow = m.sim, byrow = TRUE)
 	if(!is.null(mexsimdata)){
 		for(i in 1:m.sim){
@@ -343,8 +375,6 @@ varxsimXX = function(X, Bcoef, p, m.sim, prereturns, resids, mexsimdata)
 	meansim = meansim + resids	
 	return( meansim )
 }
-
-
 ## VAR lag selection copied and amended from the 'vars' package
 .varxselect = function (y, lag.max = 10, exogen = NULL) 
 {
@@ -392,11 +422,11 @@ varxsimXX = function(X, Bcoef, p, m.sim, prereturns, resids, mexsimdata)
 	return(list(selection = order, criteria = criteria))
 }
 
-.varcovres = function(X, mxn, p, resids){
+.varcovres = function(X, mxn, p, resids, ic=1){
 	n = dim(X)[1]
 	m = dim(X)[2]
 	# series x lags + constant  + exogenous
-	nk = m * p + 1 + mxn
+	nk = m * p + ic + mxn
 	cov(resids) * (n - 1) / (n - nk)
 }
 
@@ -604,15 +634,19 @@ mlts.parallel = function(x, y, gamma, ns = 500, nc = 10, delta = 0.01, cluster =
 #   UB   : The 95# upper bound for the IRF
 #   LB   : The 95# lower bound for the IRF
 # robdis : contains the robust Mahalanobis distances
-		
-	
-robustvar = function(data, exogen = NULL, lags = 2, alpha = 0.01, ns = 500, nc = 10, delta = 0.01, cluster)
+
+robustvar = function(data, exogen = NULL, constant = TRUE, lags = 2, alpha = 0.01, ns = 500, nc = 10, delta = 0.01, cluster)
 {
 	T = dim(data)[1]
 	nvar  = dim(data)[2]
 	ydata = data[(lags+1):T,]
-	xdata = matrix(1, nrow = T - lags, ncol = 1)
-	for(i in 1:lags){ xdata = cbind(xdata, data[((1+lags)-i):(T-i), ])}
+	if(constant){
+		xdata = matrix(1, nrow = T - lags, ncol = 1)
+		for(i in 1:lags){ xdata = cbind(xdata, data[((1+lags)-i):(T-i), ])}
+	} else{
+		xdata = NULL
+		for(i in 1:lags){ xdata = cbind(xdata, data[((1+lags)-i):(T-i), ])}
+	}
 	if(!is.null(exogen)) xdata = cbind(xdata, tail(exogen, T - lags))
 	if(!is.null(cluster)){
 		datamlts = mlts.parallel(x = as.matrix(xdata), y = as.matrix(ydata), 
@@ -652,3 +686,5 @@ robustvar = function(data, exogen = NULL, lags = 2, alpha = 0.01, ns = 500, nc =
 	for(i in 1:p) Id = Id - C[,idx[,i]]
 	muC %*% t(solve(Id - C))
 }
+
+##############################################################################################
