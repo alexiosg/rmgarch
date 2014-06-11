@@ -12,8 +12,9 @@ Fit, Filter, Forecast and Simulation functions for use with multivariate GARCH
 models.
 }
 \usage{
-varxfit(X, p, constant = TRUE, exogen = NULL, robust = FALSE, gamma = 0.25, delta = 0.01, nc = 10, 
-ns = 500, postpad = c("none", "constant", "zero", "NA"), cluster = NULL)
+varxfit(X, p, constant = TRUE, exogen = NULL, robust = FALSE, gamma = 0.25, 
+delta = 0.01, nc = 10, ns = 500, postpad = c("none", "constant", "zero", "NA"), 
+cluster = NULL)
 varxfilter(X, p, Bcoef, exogen = NULL, postpad = c("none", "constant", "zero", "NA"))
 varxforecast(X, Bcoef, p, out.sample, n.ahead, n.roll, mregfor)
 varxsim (X, Bcoef, p, n.sim, n.start, prereturns, resids, mexsimdata)
