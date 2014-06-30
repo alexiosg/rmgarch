@@ -77,8 +77,8 @@ dynamic conditional correlation multivariate GARCH, \emph{NBER Working Paper}.\c
 Genest, C., Ghoudi, K. and Rivest, L. 1995, A semiparametric estimation 
 procedure of dependence parameters in multivariate families of distributions, 
 \emph{Biometrika}, \bold{82}, 543--552.\cr
-Ghalanos, A., Rossi, E., and Urga, G. (2013). \emph{Independent Factor 
-Autoregressive Conditional Density Model}, \bold{forthcoming}.\cr
+Ghalanos, A., Rossi, E., and Urga, G. (2014). \emph{Independent Factor 
+Autoregressive Conditional Density Model}, \bold{Econometric Reviews}.\cr
 Paolella, M.S. 2007, Intermediate Probability - A Computational Approach, 
 \emph{Wiley-Interscience}.\cr
 Schmidt, R., Hrycej, T. and Stutzle 2006, Multivariate distribution models with 
