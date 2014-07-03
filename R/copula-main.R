@@ -1099,22 +1099,39 @@
 }
 
 
-.cgarchfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.cgarchfilter1 = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
+	spec = specORfit
 	type = ifelse(spec@model$modeldesc$timecopula, "dynamic", "static")
 	ans = switch(type, 
-			dynamic = .cgarchfilter.dynamic(spec = spec, data = data, out.sample = out.sample,
+			dynamic = .cgarchfilter1.dynamic(spec = spec, data = data, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...),
-			static = .cgarchfilter.static(spec = spec, data = data, out.sample = out.sample,
+			static = .cgarchfilter1.static(spec = spec, data = data, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...))
 	return( ans )
 }
 
-.cgarchfilter.static = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.cgarchfilter2 = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
+		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
+		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
+{
+	fit = specORfit
+	type = ifelse(fit@model$modeldesc$timecopula, "dynamic", "static")
+	ans = switch(type, 
+			dynamic = .cgarchfilter2.dynamic(fit = fit, data = data, out.sample = out.sample,
+					filter.control = filter.control, spd.control = spd.control, 
+					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...),
+			static = .cgarchfilter2.static(fit = fit, data = data, out.sample = out.sample,
+					filter.control = filter.control, spd.control = spd.control, 
+					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...))
+	return( ans )
+}
+
+.cgarchfilter1.static = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
@@ -1310,8 +1327,197 @@
 	return(ans)
 }
 
+.cgarchfilter2.static = function(fit, data, out.sample = 0, filter.control = list(n.old = NULL), 
+		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
+		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
+{
+	tic = Sys.time()
+	model = fit@model
+	umodel = model$umodel
+	n.old = filter.control$n.old
+	#-----------------------------------------------------------------------------------
+	# Data Extraction
+	m = dim(data)[2]
+	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:m, sep = "") else cnames = colnames(data)
+	colnames(umodel$modelinc) = cnames
+	
+	xdata = .extractmdata(data)
+	if(!is.numeric(out.sample)) 
+		stop("\ndccfilter-->error: out.sample must be numeric\n")
+	if(as.numeric(out.sample) < 0) 
+		stop("\ndccfilter-->error: out.sample must be positive\n")
+	n.start = round(out.sample, 0)
+	n = dim(xdata$data)[1]
+	if( (n-n.start) < 100)
+		stop("\ndccfilter-->error: function requires at least 100 data\n points to run\n")
+	data  = xdata$data
+	index = xdata$index
+	period = xdata$period
+	# save the data to the model spec
+	model$modeldata$data = data
+	model$modeldata$index = index
+	model$modeldata$period = period
+	T = model$modeldata$T = n - n.start
+	model$modeldata$n.start = n.start
+	model$modeldata$asset.names = cnames
+	#-----------------------------------------------------------------------------------
+	transformation = model$modeldesc$transformation
+	if(is.null(filter.control$n.old)) n.old = T
+	#-----------------------------------------------------------------------------------
+	# VAR model
+	if( model$modelinc[1]>0 ){
+		tmp = mvmean.varfilter(model = model, data = data, varcoef = model$varcoef, 
+				T = T, out.sample = out.sample)
+		model = tmp$model
+		zdata = tmp$zdata
+		mu = tmp$mu
+		p = tmp$p
+		N = tmp$N
+	} else{
+		zdata = data
+		ex = NULL
+	}
+	T = dim(zdata)[1] - out.sample
+	#-----------------------------------------------------------------------------------
+	if(is.null(filter.control$n.old)) n.old = model$modeldata$T
+	#-----------------------------------------------------------------------------------
+	# Univariate GARCH filter
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+			.garchcoeflist(fit), umodel$vt)
+	
+	filterlist = multifilter(multifitORspec = mspec, data = xts(zdata, index), out.sample = out.sample, 
+			cluster = cluster, n.old = n.old, realizedVol = realizedVol, ...)
+	
+	if(model$modelinc[1]>0) model$mu = mu else model$mu = fitted(filterlist)
+	model$residuals = res = residuals(filterlist)
+	model$sigma = sig = sigma(filterlist)
+	stdresid = res/sig
+	N = dim(stdresid)[1]
+	
+	modelinc =  model$modelinc
+	# create full par matrix
+	midx = .fullinc2(modelinc, umodel)
+	mpars = midx*0
+	eidx = midx
+	unipars = sapply(filterlist@filter, FUN = function(x) x@filter$ipars[x@filter$ipars[,3]==1,1])
+	if(is.list(unipars)){
+		for(i in 1:length(unipars)){
+			uninames = names(unipars[[i]])
+			mpars[uninames, i] = unipars[[i]]
+		}
+	} else{
+		uninames = rownames(unipars)
+		mpars[uninames, 1:NCOL(unipars)] = unipars
+	}
+	# add include pars from DCC spec (includes the fixed pars)
+	mpars[which(midx[,m+1]==1, arr.ind = TRUE), m+1] = as.numeric( model$pars[model$pars[,3]==1,1] )
+	
+	# DCC parameters
+	ipars = model$pars
+	estidx = as.logical( ipars[,3] )
+	npars = sum(estidx)
+	
+	model$spd.control = spd.control
+	
+	arglist = list()
+	arglist$verbose = FALSE
+	arglist$spd.control = spd.control
+	arglist$cluster = cluster
+	arglist$cnames = cnames
+	arglist$m = m
+	arglist$T = T
+	arglist$data = zdata
+	arglist$index = index
+	arglist$realizedVol = realizedVol
+	arglist$model = model
+	arglist$filterlist = filterlist
+	arglist$umodel = umodel
+	arglist$midx = midx
+	arglist$eidx = eidx
+	arglist$mpars = mpars
+	arglist$ipars = ipars
+	arglist$estidx = estidx
+	arglist$stdresid = stdresid
+	arglist$npars = npars
+	arglist$n.old = n.old
+	arglist$filter.control = filter.control
+	
+	mfilter = list()
+	arglist$returnType = "ALL"
+	mfilter = switch(model$modeldesc$distribution,
+			mvnorm = copula.normalLLH3(arglist = arglist),
+			mvt = copula.studentLLH3(arglist = arglist))
+	mfilter$tailusigma = tail(sigma(filterlist), 50)
+	mfilter$tailuresids = tail(residuals(filterlist), 50)
+	mfilter$tailuret = tail(data, 50)
+	
+	Rt = mfilter$R
+	Ht = array( 0, dim = c(m, m, N) )
+	stdresid = matrix(0, nrow = N, ncol = m)
+	
+	if( !is.null(cluster) ){
+		clusterExport(cluster, c("sig", "Rt", "res"), envir = environment())
+		tmp = parLapply(cluster, as.list(1:N), fun = function(i){
+					tmph = diag( sig[i, ] ) %*% Rt %*% diag( sig[i, ] )
+					zz = eigen( tmph )
+					sqrtzz = ( zz$vectors %*% diag( sqrt( zz$values ) ) %*% solve( zz$vectors ) )
+					tmpz = as.numeric( res[i, ] %*% solve( sqrtzz ) )
+					return( list( H = tmph, Z = tmpz ) )
+				})
+		for(i in 1:N){
+			Ht[,,i] = tmp[[i]]$H
+			stdresid[i,] = tmp[[i]]$Z
+		}
+	} else{
+		tmp = lapply(as.list(1:N), FUN = function(i){
+					tmph = diag( sig[i, ] ) %*% Rt %*% diag( sig[i, ] )
+					zz = eigen( tmph )
+					sqrtzz = ( zz$vectors %*% diag( sqrt( zz$values ) ) %*% solve( zz$vectors ) )
+					tmpz = as.numeric( res[i, ] %*% solve( sqrtzz ) )
+					return( list( H = tmph, Z = tmpz ) )
+				})
+		for(i in 1:N){
+			Ht[,,i] = tmp[[i]]$H
+			stdresid[i,] = tmp[[i]]$Z
+		}
+	}
+	mfilter$H = Ht
+	allnames = NULL
+	for(i in 1:m){
+		allnames = c(allnames, paste("[",cnames[i],"].", rownames(midx[midx[,i]==1,i, drop = FALSE]), sep = ""))
+	}
+	garchnames = allnames
+	dccnames = rownames(midx[midx[,m+1]==1,m+1, drop = FALSE])
+	if(!is.null(dccnames)){
+		allnames = c(garchnames, paste("[Joint]", rownames(midx[midx[,m+1]==1,m+1, drop = FALSE]), sep = ""))
+	} else{
+		allnames = garchnames
+	}
+	mfilter$coef = mpars[which(midx==1, arr.ind = TRUE)]
+	names(mfilter$coef) = allnames
+	mfilter$garchnames = garchnames
+	mfilter$dccnames = dccnames
+	mfilter$stdresid = stdresid
+	# make model list to return some usefule information which
+	model$mpars = mpars
+	model$ipars = ipars
+	model$pars[,1] = ipars[,1]
+	model$midx = midx
+	model$eidx = eidx
+	model$umodel = umodel
+	mfilter$realizedVol = realizedVol
+	mfilter$timer = Sys.time() - tic
+	#model$sfit = sfit
+	
+	ans = new("cGARCHfilter",
+			mfilter = mfilter,
+			model = model)
+	return(ans)
+}
+
 # ToDo : change the likelihood to take into account the n.old argument for the cov calculation.
-.cgarchfilter.dynamic = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.cgarchfilter1.dynamic = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {

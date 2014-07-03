@@ -124,14 +124,15 @@ cgarchfit = function(spec, data, spd.control = list(lower = 0.1, upper = 0.9,
 setMethod("cgarchfit", signature(spec = "cGARCHspec"), .cgarchfit)
 
 
-cgarchfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+cgarchfilter = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("cgarchfilter")
 }
 
-setMethod("cgarchfilter", signature(spec = "cGARCHspec"), .cgarchfilter)
+setMethod("cgarchfilter", signature(specORfit = "cGARCHspec"), .cgarchfilter1)
+setMethod("cgarchfilter", signature(specORfit = "cGARCHfit"), .cgarchfilter2)
 
 cgarchsim = function(fit, n.sim = 1000, n.start = 0, m.sim = 1, 
 		startMethod = c("unconditional", "sample"), presigma = NULL, 
@@ -483,6 +484,22 @@ setMethod("coef", signature(object = "cGARCHfit"), .coef.cgarchfit)
 }
 
 setMethod("coef", signature(object = "cGARCHfilter"), .coef.cgarchfilter)
+
+# internal function to return list of GARCH parameters
+.garchcoeflist = function(mod)
+{
+	m = dim(mod@model$umodel$modelinc)[2]
+	mpars = mod@model$mpars
+	cf = vector(mode="list")
+	rnm = rownames(mpars)
+	for(i in 1:m){
+		idx = which(mod@model$midx[,i]==1)
+		cf[[i]] = mpars[idx,i]
+		names(cf[[i]]) = rnm[idx]
+	}
+	names(cf) = mod@model$modeldata$asset.names
+	return(cf)
+}
 #----------------------------------------------------------------------------------
 # likelihood
 #----------------------------------------------------------------------------------
