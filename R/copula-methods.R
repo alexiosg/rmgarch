@@ -124,15 +124,17 @@ cgarchfit = function(spec, data, spd.control = list(lower = 0.1, upper = 0.9,
 setMethod("cgarchfit", signature(spec = "cGARCHspec"), .cgarchfit)
 
 
-cgarchfilter = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
+cgarchfilter = function(mod, data, newdata = NULL, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("cgarchfilter")
 }
 
-setMethod("cgarchfilter", signature(specORfit = "cGARCHspec"), .cgarchfilter1)
-setMethod("cgarchfilter", signature(specORfit = "cGARCHfit"), .cgarchfilter2)
+setMethod("cgarchfilter", signature(mod = "cGARCHspec"), .cgarchfilter1)
+setMethod("cgarchfilter", signature(mod = "cGARCHfit"),  .cgarchfilter2)
+setMethod("cgarchfilter", signature(mod = "cGARCHfilter"),  .cgarchfilter3)
+
 
 cgarchsim = function(fit, n.sim = 1000, n.start = 0, m.sim = 1, 
 		startMethod = c("unconditional", "sample"), presigma = NULL, 

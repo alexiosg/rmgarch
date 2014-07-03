@@ -3,20 +3,32 @@
 \alias{cgarchfilter}
 \alias{cgarchfilter,ANY-method}
 \alias{cgarchfilter,cGARCHspec-method}
+\alias{cgarchfilter,cGARCHfit-method}
+\alias{cgarchfilter,cGARCHfilter-method}
+
 \title{function: Copula-GARCH Filter}
 \description{
 Method for creating a Copula-GARCH filter object.
 }
 \usage{
-cgarchfilter(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
-spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
+cgarchfilter(mod, data, newdata = NULL, out.sample = 0, 
+filter.control = list(n.old = NULL), spd.control = list(lower = 0.1, 
+upper = 0.9, type = "pwm", kernel = "epanech"), 
 cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)  
 }
 \arguments{
-  	\item{spec}{ A \code{\linkS4class{cGARCHspec}} object created by 
-  	calling \code{\link{cgarchspec}} with fixed parameters for the coeffficients.}
+  	\item{mod}{ Either a \code{\linkS4class{cGARCHspec}} object created by 
+  	calling \code{\link{cgarchspec}} with fixed parameters for the coeffficients,
+  	a \code{\linkS4class{cGARCHfit}} or \code{\linkS4class{cGARCHfilter}} object.}
   	\item{data}{ A multivariate xts data object or one which can be coerced to
   	such.}
+  	\item{newdata}{ In the case of 	a \code{\linkS4class{cGARCHfit}} or 
+  	\code{\linkS4class{cGARCHfilter}} object, instead of filtering based on the
+  	entire dataset (data), the user can pass only the data which is new which is
+  	then filtered based on the last values of the existing dataset in the object.
+  	The returned object will then append this new data to the old data so that
+  	the returned object can then be passed again to this method with updated data.
+  	This provides the possibility of filtering in almost real-time.}
   	\item{out.sample}{ A positive integer indicating the number of periods 
   	before the last to keep for out of sample forecasting.}
 	\item{filter.control}{Control arguments passed to the filtering routine (see

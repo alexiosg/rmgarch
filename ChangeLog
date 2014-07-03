@@ -1,6 +1,7 @@
 2014-07-30 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-9.
-
+	* Added second dispatch method to dccfilter and cgarchfilter.
+	Now accepts either specification (previous) or fitted object.
 
 2014-06-11 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-8.

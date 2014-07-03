@@ -1099,37 +1099,51 @@
 }
 
 
-.cgarchfilter1 = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.cgarchfilter1 = function(mod, data, newdata = NULL, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
-	spec = specORfit
-	type = ifelse(spec@model$modeldesc$timecopula, "dynamic", "static")
+	type = ifelse(mod@model$modeldesc$timecopula, "dynamic", "static")
 	ans = switch(type, 
-			dynamic = .cgarchfilter1.dynamic(spec = spec, data = data, out.sample = out.sample,
+			dynamic = .cgarchfilter1.dynamic(spec = mod, data = data, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...),
-			static = .cgarchfilter1.static(spec = spec, data = data, out.sample = out.sample,
+			static = .cgarchfilter1.static(spec = mod, data = data, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...))
 	return( ans )
 }
 
-.cgarchfilter2 = function(specORfit, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.cgarchfilter2 = function(mod, data, newdata = NULL, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
-	fit = specORfit
-	type = ifelse(fit@model$modeldesc$timecopula, "dynamic", "static")
+	type = ifelse(mod@model$modeldesc$timecopula, "dynamic", "static")
 	ans = switch(type, 
-			dynamic = .cgarchfilter2.dynamic(fit = fit, data = data, out.sample = out.sample,
+			dynamic = .cgarchfilter2.dynamic(fit = mod, data = data, newdata = newdata, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...),
-			static = .cgarchfilter2.static(fit = fit, data = data, out.sample = out.sample,
+			static = .cgarchfilter2.static(fit = mod, data = data, newdata = newdata, out.sample = out.sample,
 					filter.control = filter.control, spd.control = spd.control, 
 					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...))
 	return( ans )
 }
+
+.cgarchfilter3 = function(mod, data, newdata = NULL, out.sample = 0, filter.control = list(n.old = NULL), 
+		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
+		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
+{
+	type = ifelse(mod@model$modeldesc$timecopula, "dynamic", "static")
+	ans = switch(type, 
+			dynamic = .cgarchfilter3.dynamic(flt = mod, data = data, newdata = newdata, out.sample = out.sample,
+					filter.control = filter.control, spd.control = spd.control, 
+					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...),
+			static = .cgarchfilter3.static(flt = mod, data = data, newdata = newdata, out.sample = out.sample,
+					filter.control = filter.control, spd.control = spd.control, 
+					cluster = cluster, varcoef = varcoef, realizedVol = realizedVol, ...))
+	return( ans )
+}
+
 
 .cgarchfilter1.static = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
 		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
