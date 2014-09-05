@@ -29,5 +29,5 @@ export("gogarchspec", "gogarchfit", "gogarchfilter", "gogarchforecast", "gogarch
 export("dccspec", "dccfit", "dccfilter", "dccforecast", "dccsim", "dccroll", "rshape", "rskew")
 export("cgarchspec", "cgarchfit", "cgarchfilter", "cgarchsim")
 export("first", "last", "cordist")
-export("fastica", "radical")
+export("fastica", "radical", "ewmacov")
 export("varxfit", "varxfilter", "varxforecast", "varxsim", "wmargin", "DCCtest")

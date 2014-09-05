@@ -1111,3 +1111,112 @@ SEXP fdccsimmvn(SEXP model, SEXP A, SEXP B, SEXP C, SEXP Qbar, SEXP preQ, SEXP R
 	}
 	return R_NilValue;
 }
+
+SEXP dewmacov1(SEXP X, SEXP vlambda, SEXP mlambda)
+{
+	try {
+		arma::mat Z = Rcpp::as<arma::mat>(X);
+		int n = (int) Z.n_rows;
+		int m = (int) Z.n_cols;
+		arma::mat vlam = Rcpp::as<arma::mat>(vlambda);
+		arma::mat vmal = arma::eye(m,m) - vlam;
+		arma::rowvec mlam = Rcpp::as<arma::rowvec>(mlambda);
+		arma::rowvec mmal = arma::ones(1,m) - mlam;
+		arma::cube C(m,m,n);
+		arma::mat M(n,m);
+		arma::mat initC = arma::cov(Z,1);
+		arma::rowvec initM = arma::mean(Z);
+		int i;
+		C.slice(0) = vlam*initC*arma::trans(vlam);
+		M.row(0) = mlam % initM;
+		for(i=1;i<n;i++){
+			M.row(i) = mmal % Z.row(i-1) + mlam % M.row(i-1);
+			C.slice(i) = vmal*(arma::trans(Z.row(i-1)-M.row(i-1))*(Z.row(i-1)-M.row(i-1)))*arma::trans(vmal)+vlam*C.slice(i-1)*arma::trans(vlam);
+		}
+		return wrap( C ) ;
+	} catch( std::exception &ex ) {
+			forward_exception_to_r( ex );
+	} catch(...) {
+			::Rf_error( "rmgarch-->dewmacov1 c++ exception (unknown reason)" );
+	}
+	return R_NilValue;
+}
+
+SEXP dewmacov2(SEXP X, SEXP vlambda)
+{
+	try {
+		arma::mat Z = Rcpp::as<arma::mat>(X);
+		int n = (int) Z.n_rows;
+		int m = (int) Z.n_cols;
+		arma::mat vlam = Rcpp::as<arma::mat>(vlambda);
+		arma::mat vmal = arma::eye(m,m) - vlam;
+		arma::cube C(m,m,n);
+		arma::mat initC = arma::cov(Z,1);
+		int i;
+		C.slice(0) = vlam*initC*arma::trans(vlam);
+		for(i=1;i<n;i++){
+			C.slice(i) = vmal*(arma::trans(Z.row(i-1)*Z.row(i-1))*arma::trans(vmal)+vlam*C.slice(i-1)*arma::trans(vlam);
+		}
+		return wrap( C ) ;
+	} catch( std::exception &ex ) {
+			forward_exception_to_r( ex );
+	} catch(...) {
+			::Rf_error( "rmgarch-->dewmacov2 c++ exception (unknown reason)" );
+	}
+	return R_NilValue;
+}
+
+
+SEXP sewmacov1(SEXP X, SEXP vlambda, SEXP mlambda)
+{
+	try {
+		arma::mat Z = Rcpp::as<arma::mat>(X);
+		int n = (int) Z.n_rows;
+		int m = (int) Z.n_cols;
+		arma::mat vlam = Rcpp::as<arma::mat>(vlambda);
+		arma::mat vmal = arma::eye(m,m) - vlam;
+		arma::rowvec mlam = Rcpp::as<arma::rowvec>(mlambda);
+		arma::rowvec mmal = arma::ones(1,m) - mlam;
+		arma::cube C(m,m,n);
+		arma::mat M(n,m);
+		arma::mat initC = arma::cov(Z,1);
+		arma::rowvec initM = arma::mean(Z);
+		int i;
+		C.slice(0) = vlam*initC;
+		M.row(0) = mlam % initM;
+		for(i=1;i<n;i++){
+			M.row(i) = mmal % Z.row(i-1) + mlam % M.row(i-1);
+			C.slice(i) = vmal*(arma::trans(Z.row(i-1)-M.row(i-1))*(Z.row(i-1)-M.row(i-1)))+vlam*C.slice(i-1);
+		}
+		return wrap( C ) ;
+	} catch( std::exception &ex ) {
+			forward_exception_to_r( ex );
+	} catch(...) {
+			::Rf_error( "rmgarch-->sewmacov1 c++ exception (unknown reason)" );
+	}
+	return R_NilValue;
+}
+
+SEXP sewmacov2(SEXP X, SEXP vlambda)
+{
+	try {
+		arma::mat Z = Rcpp::as<arma::mat>(X);
+		int n = (int) Z.n_rows;
+		int m = (int) Z.n_cols;
+		arma::mat vlam = Rcpp::as<arma::mat>(vlambda);
+		arma::mat vmal = arma::eye(m,m) - vlam;
+		arma::cube C(m,m,n);
+		arma::mat initC = arma::cov(Z,1);
+		int i;
+		C.slice(0) = vlam*initC;
+		for(i=1;i<n;i++){
+			C.slice(i) = vmal*(arma::trans(Z.row(i-1)*Z.row(i-1))+vlam*C.slice(i-1);
+		}
+		return wrap( C ) ;
+	} catch( std::exception &ex ) {
+			forward_exception_to_r( ex );
+	} catch(...) {
+			::Rf_error( "rmgarch-->sewmacov2 c++ exception (unknown reason)" );
+	}
+	return R_NilValue;
+}

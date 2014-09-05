@@ -31,4 +31,8 @@ RcppExport SEXP dccsimmvl(SEXP , SEXP , SEXP, SEXP , SEXP , SEXP , SEXP , SEXP ,
 RcppExport SEXP fdccnormC1(SEXP , SEXP , SEXP , SEXP , SEXP , SEXP );
 RcppExport SEXP fdccnormC2(SEXP , SEXP , SEXP , SEXP , SEXP , SEXP , SEXP );
 RcppExport SEXP fdccsimmvn(SEXP , SEXP , SEXP , SEXP , SEXP , SEXP, SEXP , SEXP , SEXP );
+RcppExport SEXP dewmacov1(SEXP , SEXP , SEXP );
+RcppExport SEXP dewmacov2(SEXP , SEXP );
+RcppExport SEXP sewmacov1(SEXP , SEXP , SEXP );
+RcppExport SEXP sewmacov2(SEXP , SEXP );
 #endif
