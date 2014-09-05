@@ -1251,7 +1251,7 @@
 	stdresid = matrix(0, nrow = N, ncol = m)
 	
 	if( !is.null(cluster) ){
-			parallel::clusterExport(cluster, c("sig", "Rt", "res"), envir = environment())
+			clusterExport(cluster, c("sig", "Rt", "res"), envir = environment())
 			tmp = parLapply(cluster, as.list(1:N), fun = function(i){
 						tmph = diag( sig[i, ] ) %*% Rt %*% diag( sig[i, ] )
 						zz = eigen( tmph )
@@ -1446,7 +1446,7 @@
 	stdresid = matrix(0, nrow = N, ncol = m)
 	
 	if( !is.null(cluster) ){
-			parallel::clusterExport(cluster, c("sig", "Rt", "res"), envir = environment())
+			clusterExport(cluster, c("sig", "Rt", "res"), envir = environment())
 			tmp = parLapply(cluster, as.list(1:N), fun = function(i){
 						tmph = diag( sig[i, ] ) %*% Rt[[i]] %*% diag( sig[i, ] )
 						zz = eigen( tmph )
@@ -1945,13 +1945,13 @@
 			minc = umodel$modelinc
 			mpars = model$mpars
 			sxres  = fit@mfit$stdresid
-			parallel::clusterEvalQ(cluster, require('rmgarch'))
+			clusterEvalQ(cluster, require('rmgarch'))
 			if(transformation == "spd"){
-				parallel::clusterExport(cluster, c("ures", "mpars", "minc", 
+				clusterExport(cluster, c("ures", "mpars", "minc", 
 								"m", "sxres", "ssfit", "transformation"), 
 						envir = environment())
 			} else{
-				parallel::clusterExport(cluster, c("ures", "mpars", "minc", 
+				clusterExport(cluster, c("ures", "mpars", "minc", 
 								"m", "sxres", "ssfit", "transformation"), 
 						envir = environment())
 			}
