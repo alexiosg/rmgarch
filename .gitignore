@@ -25,3 +25,4 @@ src/rdcc.o
 src/rmdist.o
 src/rmgarch.so
 src/symbols.rds
+src/rmgarch.dll
