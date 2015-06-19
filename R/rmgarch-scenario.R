@@ -279,7 +279,7 @@ scenario.gogarch = function(Data, spec, sim = 1000, roll = 0, solver = "solnp",
 	T0 = fit@model$modeldata$index[(T):(T+roll)]
 	indexf = c(T0[-1], generatefwd(tail(T0, 1), length.out=1, by = fit@model$modeldata$period))
 	nam = fit@model$modeldata$asset.names
-	m  = NCOL(Data)
+	m = NCOL(Data)
 	#xfit<<-fit
 	A = fit@mfit$A
 	K = fit@mfit$K
@@ -307,8 +307,8 @@ scenario.gogarch = function(Data, spec, sim = 1000, roll = 0, solver = "solnp",
 		zseed = as.integer( runif( roll+1, 0, as.integer(Sys.time()) ) )
 	}
 	for(i in 1:(roll+1)){
-		preres = matrix(fit@mfit$Y[(T-p+i):(T-1+i),,drop=FALSE], ncol = m, byrow = TRUE)
-		presigma = matrix(filt@mfilter$factor.sigmas[(T-p+i):(T-1+i),,drop=FALSE], ncol = m, byrow = TRUE)
+		preres = matrix(fit@mfit$Y[(T-p+i):(T-1+i),,drop=FALSE], ncol = NCOL(fit@mfit$Y), byrow = TRUE)
+		presigma = matrix(filt@mfilter$factor.sigmas[(T-p+i):(T-1+i),,drop=FALSE], ncol = NCOL(fit@mfit$Y), byrow = TRUE)
 		prereturns = as.matrix(fit@model$modeldata$data[(T-p+i):(T-1+i),,drop=FALSE])
 		fsim = gogarchsim(fit, n.sim = 1, m.sim = sim, startMethod = "sample",
 				preresiduals = preres, presigma = presigma, 
