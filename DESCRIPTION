@@ -1,6 +1,6 @@
 Package: rmgarch
 Type: Package
-Title: Multivariate GARCH models
+Title: Multivariate GARCH Models
 Version: 1.2-9
 Date: 2015-07-02
 Author: Alexios Ghalanos <alexios@4dscape.com>
