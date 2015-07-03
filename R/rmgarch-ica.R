@@ -140,7 +140,7 @@
 # FASTICA - Fast Independent Component Analysis
 # FastICA for Matlab 7.x and 6.x
 # Version 2.5, October 19 2005
-# Copyright (c) Hugo Gävert, Jarmo Hurri, Jaakko Särelä, and Aapo Hyvärinen.
+# Copyright (c) Hugo Gavert, Jarmo Hurri, Jaakko Sarela, and Aapo Hyvarinen.
 # A translation of the matlab function from the FastICA toolbox
 # http://www.cis.hut.fi/projects/ica/fastica/
 # R translation: 2009 Alexios Ghalanos
