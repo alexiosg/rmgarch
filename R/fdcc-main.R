@@ -1097,7 +1097,7 @@ getfdccpars = function(pars, model){
 	# the C++ code to deal with arrays/lists for this input).
 	if(startMethod == "sample"){
 		if(is.null(preZ)){
-			preZ = matrix(tail(fit@mfit$stdresid, mo), ncol = m)
+			preZ = matrix(tail(residuals(fit)/sigma(fit), mo), ncol = m)
 		} else{
 			preZ = matrix(tail(preZ, 1), ncol = m, nrow = mo, byrow = TRUE)
 		}
