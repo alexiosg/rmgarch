@@ -38,7 +38,7 @@ incseq = function (a, b)
 		if(transpose) Y <- Matrix::crossprod(A[[k]], X) else Y <- A[[k]] %*% X
 		X <- Matrix::t(Y)
 	}
-	return(Matrix::as.vector(X))
+	return(as.vector(X))
 }
 #---------------------------------------------------------------------------------
 fast_kron_M = function(rhs, lhs, n, p=3)

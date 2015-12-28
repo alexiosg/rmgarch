@@ -1,8 +1,9 @@
-2015-07-27 Alexios Ghalanos <alexios@4dscape.com>
+2015-12-27 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-0.
 	* Fix to dccsim when using startMethod sample. The 
 	wrong standardized residuals were being passed
 	to the simulation routine.
+	* Some fixes to some wrongly exported methods from other packages.
 	
 2015-07-02 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-9.
