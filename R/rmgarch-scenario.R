@@ -340,10 +340,10 @@ scenario.dcc = function(Data, spec, sim, roll, solver = "solnp",
 		save.name = NULL, debug = FALSE, ...)
 {
 	pars = list(...)
-	modv = spec@spec[[1]]@model$modeldesc$vmodel
+	modv = spec@umodel$modeldesc$vmodel
 	if(is.null(pars$fit)) xfit = NULL else xfit = pars$fit
 	if(is.null(pars$VAR.fit)) VAR.fit = NULL else VAR.fit = pars$VAR.fit
-	if(modv=="realGARCH"){
+	if(any(modv=="realGARCH")){
 		if(is.null(pars$realizedVol)){
 			stop("\nfscenario-->error: realizedVol required for realGARCH model.\n")
 		} else{
@@ -407,7 +407,7 @@ scenario.dcc = function(Data, spec, sim, roll, solver = "solnp",
 	for(i in 1:(roll+1)){
 		preQ = C[,,(T+i-1)]
 		presigma = sig[(T-p+i):(T-1+i), , drop=FALSE]
-		if(modv=="realGARCH") prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
+		if(any(modv=="realGARCH")) prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
 		preresiduals = res[(T-p+i):(T-1+i), , drop=FALSE]
 		prereturns = as.matrix(Data[(T+i-p):(T+i-1),], ncol = m)
 		preZ = matrix(Z[(T-p+i):(T-1+i),], ncol = m)
@@ -443,10 +443,10 @@ scenario.cgarch = function(Data, spec, spd.control, sim, roll, solver = "solnp",
 		save.name = NULL, debug = FALSE, ...)
 {
 	pars = list(...)
-	modv = spec@spec[[1]]@model$modeldesc$vmodel
+	modv = spec@umodel$modeldesc$vmodel
 	if(is.null(pars$fit)) xfit = NULL else xfit = pars$fit
 	if(is.null(pars$VAR.fit)) VAR.fit = NULL else VAR.fit = pars$VAR.fit
-	if(modv=="realGARCH"){
+	if(any(modv=="realGARCH")){
 		if(is.null(pars$realizedVol)){
 			stop("\nfscenario-->error: realizedVol required for realGARCH model.\n")
 		} else{
@@ -519,7 +519,7 @@ scenario.cgarch = function(Data, spec, spd.control, sim, roll, solver = "solnp",
 			diag(preR) = 1
 			preQ = Q[[(T+i-1)]]
 			presigma = sig[(T-p+i):(T-1+i),, drop=FALSE]
-			if(modv=="realGARCH") prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
+			if(any(modv=="realGARCH")) prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
 			preresiduals = res[(T-p+i):(T-1+i),, drop=FALSE]
 			prereturns = as.matrix(Data[(T-p+i):(T-1+i),], ncol = m)
 			preZ = matrix(Z[(T-p+i):(T-1+i),], ncol = m)
@@ -541,7 +541,7 @@ scenario.cgarch = function(Data, spec, spd.control, sim, roll, solver = "solnp",
 			# extra check
 			diag(preR) = 1
 			presigma = sig[(T-p+i):(T-1+i),, drop=FALSE]
-			if(modv=="realGARCH") prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
+			if(any(modv=="realGARCH")) prerealized = coredata(realizedVol)[(T-p+i):(T-1+i), , drop=FALSE] else prerealized = NULL
 			
 			preresiduals = res[(T-p+i):(T-1+i),, drop=FALSE]
 			prereturns = as.matrix(Data[(T-p+i):(T-1+i),], ncol = m)
