@@ -428,7 +428,7 @@ ghypmvcf = function(z, lambda, alpha, beta, delta, mu)
 	idx = vector(mode="list", length = unique_pairs)
 	prs = t(combn(n, 2))
 	prs = cbind(prs[,2], prs[,1], prs[,2] - prs[,1])
-	prs = prs[order(prs[,1]-prs[,2]), ]
+	prs = prs[order(prs[,1]-prs[,2]), ,drop=FALSE]
 	colnames(prs) = c("ij","kl","d")
 	ix = n+2
 	# first pair is always : {2,1}
