@@ -19,7 +19,7 @@
 #-----------------------------------------------------------------------------------------------
 
 .gogarchfit = function(spec, data, out.sample = 0, solver = "solnp",
-		fit.control = list(stationarity = 1), solver.control = list(), 
+		fit.control = list(stationarity = 1), solver.control = list(),
 		cluster = NULL, VAR.fit = NULL, ARcoef = NULL, ...)
 {
 	tic = Sys.time()
@@ -27,13 +27,13 @@
 	umodel = spec@umodel
 	ufit.control = list()
 	if(is.null(fit.control$stationarity)){
-		ufit.control$stationarity = TRUE 
+		ufit.control$stationarity = TRUE
 	} else {
 		ufit.control$stationarity = fit.control$stationarity
 		fit.control$stationarity = NULL
 	}
 	if(is.null(fit.control$scale)){
-		ufit.control$scale = TRUE 
+		ufit.control$scale = TRUE
 	} else{
 		ufit.control$scale = fit.control$scale
 		fit.control$scale = NULL
@@ -42,15 +42,15 @@
 	# Data Extraction
 	m = dim(data)[2]
 	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:m, sep = "") else cnames = colnames(data)
-	
+
 	xdata = .extractmdata(data)
-	if(!is.numeric(out.sample)) 
+	if(!is.numeric(out.sample))
 		stop("\ngogarchfit-->error: out.sample must be numeric\n")
-	if(as.numeric(out.sample) < 0) 
+	if(as.numeric(out.sample) < 0)
 		stop("\ngogarchfit-->error: out.sample must be positive\n")
 	n.start = round(out.sample, 0)
 	n = dim(xdata$data)[1]
-	if( (n-n.start) < 100) 
+	if( (n-n.start) < 100)
 		stop("\ngogarchfit-->error: function requires at least 100 data\n points to run\n")
 	data   = xdata$data
 	index  = xdata$index
@@ -73,9 +73,9 @@
 		mu = tmp$mu
 		varcoef = tmp$varcoef
 		p = tmp$p
-		N = tmp$N		
+		N = tmp$N
 	} else{
-		tmp = mvmean.arfit(model, data, ARcoef, T, out.sample, solver, solver.control, fit.control, 
+		tmp = mvmean.arfit(model, data, ARcoef, T, out.sample, solver, solver.control, fit.control,
 				cluster = cluster)
 		model = tmp$model
 		zdata = tmp$zdata
@@ -85,7 +85,7 @@
 		N = tmp$N
 	}
 	T = dim(zdata)[1] - out.sample
-	
+
 	#-----------------------------------------------------------------------------------
 	# ICA estimation
 	# 	iidret = rmgarch:::.makeiid(zdata[1:T, ], method = spec@model$ica, ica.fix = spec@model$ica.fix, gfun = "tanh", maxiter1 = 100000, e)
@@ -96,12 +96,12 @@
 	K = iidret$K
 	Kinv = iidret$Kinv
 	U = iidret$U
-	
+
 	#-----------------------------------------------------------------------------------
 	# Factor Dynamics
 	xspec = ugarchspec(mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
-			variance.model = list(model = umodel$vmodel, garchOrder = umodel$garchOrder, 
-					submodel = umodel$vsubmodel, variance.targeting = umodel$variance.targeting), 
+			variance.model = list(model = umodel$vmodel, garchOrder = umodel$garchOrder,
+					submodel = umodel$vsubmodel, variance.targeting = umodel$variance.targeting),
 			distribution.model = umodel$distribution)
 	# n.comp defines speclist length
 	# A (mixing matrix) = n.comp (factors) x n.assets
@@ -109,10 +109,10 @@
 	# Expand the Signals if needed to the full length (to include out.sample) without
 	# any lookeahead bias.
 	Y = zdata %*% t(W)
-	
-	fitlist = multifit(multispec = speclist, data = Y, out.sample = out.sample, solver = solver, 
+
+	fitlist = multifit(multispec = speclist, data = Y, out.sample = out.sample, solver = solver,
 			solver.control = solver.control, fit.control = fit.control, cluster = cluster)
-	
+
 	garchcoef = coef(fitlist)
 	converge = sapply(fitlist@fit, FUN = function(x) x@fit$convergence)
 	if(any(converge == 1)){
@@ -147,7 +147,7 @@
 	tmp$residuals = zdata
 	model$umodel = umodel
 	tmp$timer = Sys.time() - tic
-	
+
 	ans = new("goGARCHfit",
 			mfit = tmp,
 			model = model)
@@ -159,11 +159,11 @@
 	tic = Sys.time()
 	#-----------------------------------------------------------------------------------
 	# Data Extraction
-	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:m, sep = "") else cnames = colnames(data)	
+	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:m, sep = "") else cnames = colnames(data)
 	xdata = .extractmdata(data)
-	if(!is.numeric(out.sample)) 
+	if(!is.numeric(out.sample))
 		stop("\ngogarchfit-->error: out.sample must be numeric\n")
-	if(as.numeric(out.sample) < 0) 
+	if(as.numeric(out.sample) < 0)
 		stop("\ngogarchfit-->error: out.sample must be positive\n")
 	n.start = round(out.sample, 0)
 	n = dim(xdata$data)[1]
@@ -188,7 +188,7 @@
 		p = tmp$p
 		N = tmp$N
 	} else{
-		tmp = mvmean.arfilter(model, data, arcoef = fit@mfit$arcoef, T, out.sample, 
+		tmp = mvmean.arfilter(model, data, arcoef = fit@mfit$arcoef, T, out.sample,
 				cluster = cluster)
 		zdata = tmp$zdata
 		mu = tmp$mu
@@ -210,11 +210,11 @@
 	m = NCOL(A)
 	specx = vector(mode = "list", length = m)
 	for(i in 1:m) specx[[i]] = ugarchspec(mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
-				variance.model = list(model = umodel$vmodel, garchOrder = umodel$garchOrder, 
-						submodel = umodel$vsubmodel, variance.targeting = FALSE), 
+				variance.model = list(model = umodel$vmodel, garchOrder = umodel$garchOrder,
+						submodel = umodel$vsubmodel, variance.targeting = FALSE),
 				distribution.model = umodel$distribution, fixed.pars = as.list(fit@mfit$garchcoef[,i]))
 	mspec = multispec( specx )
-	filterlist = multifilter(multifitORspec = mspec, data = Y, out.sample = out.sample, n.old = NULL, 
+	filterlist = multifilter(multifitORspec = mspec, data = Y, out.sample = out.sample, n.old = NULL,
 			cluster = cluster)
 	#-----------------------------------------------------------------------------------
 	# Multivariate Affine Distribution
@@ -224,10 +224,10 @@
 	tmp$mu = mu
 	tmp$factor.likelihoods = likelihood(filterlist)
 	distr = model$modeldesc$distribution
-	
+
 	xtmp = .gogarchllh.independent(W, filterlist)
 	tmp$llh = xtmp$llh
-	
+
 	#-----------------------------------------------------------------------------------
 	# Return List
 	tmp$ufilter = filterlist
@@ -257,9 +257,9 @@
 	ns = fit@model$modeldata$n.start
 	if( n.roll > ns )
 		stop("\ngogarchforecast-->error: n.roll must not be greater than out.sample!")
-	if(n.roll>0 && n.ahead>1) 
+	if(n.roll>0 && n.ahead>1)
 		stop("\ngogarchforecast-->error: n.ahead must be equal to 1 when using n.roll\n")
-	
+
 	#-----------------------------------------------------------------------------------
 	# Data Extraction
 	model = fit@model
@@ -278,21 +278,21 @@
 	if( model$modelinc[3] > 0 ){
 		Mu = mvmean.varforecast(model, mregfor, fit@mfit$varcoef, n.ahead, n.roll, ns, ggn = 2)
 	} else{
-		Mu = mvmean.arforecast(model, mregfor, fit@mfit$arcoef, n.ahead, n.roll, 
+		Mu = mvmean.arforecast(model, mregfor, fit@mfit$arcoef, n.ahead, n.roll,
 				ns, cluster = cluster)
 	}
 	#-----------------------------------------------------------------------------------
 	# ICA & Factor Dynamics
 	A = fit@mfit$A
 	m = NCOL(A)
-	
+
 	specx = vector(mode = "list", length = m)
 	for(i in 1:m) specx[[i]] = ugarchspec(mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
-				variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder, 
-						submodel = model$umodel$vsubmodel, variance.targeting = FALSE), 
+				variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder,
+						submodel = model$umodel$vsubmodel, variance.targeting = FALSE),
 				distribution.model = model$umodel$distribution, fixed.pars = as.list(fit@mfit$garchcoef[,i]))
 	mspec = multispec( specx )
-	forclist = multiforecast(multifitORspec = mspec, data = fit@mfit$Y, 
+	forclist = multiforecast(multifitORspec = mspec, data = fit@mfit$Y,
 			n.ahead = n.ahead, out.sample = ns, n.roll = n.roll, cluster = cluster, ...)
 	#-----------------------------------------------------------------------------------
 	# Multivariate Affine Distribution
@@ -320,37 +320,37 @@
 	model$n.ahead = n.ahead
 	model$n.roll = n.roll
 	tmp$timer = Sys.time() - tic
-	
+
 	ans = new("goGARCHforecast",
 			mforecast = tmp,
 			model = model)
 	return(ans)
 }
 
-.gogarchsim = function(fit, n.sim, n.start, m.sim, startMethod, prereturns, 
+.gogarchsim.fit = function(object, n.sim, n.start, m.sim, startMethod, prereturns,
 		preresiduals, presigma, mexsimdata, rseed, cluster = NULL, ...)
 {
 	tic = Sys.time()
-	T = fit@model$modeldata$T
-	Data = fit@model$modeldata$data[1:T, ]
-	A = fit@mfit$A
+	T = object@model$modeldata$T
+	Data = object@model$modeldata$data[1:T, ]
+	A = object@mfit$A
 	m = NCOL(A)
 	simlist = vector(mode = "list", length = m)
-	model = fit@model
+	model = object@model
 	p = sum(model$modelinc[2:3])
 	idx = 1:T
-	#mo = fit@ufit@fit[[1]]@model$maxOrder
+	#mo = object@ufit@fit[[1]]@model$maxOrder
 	if(is.null(startMethod[1])) startMethod = "unconditional" else startMethod = startMethod[1]
 	if( !is.null(rseed) ){
 		if( !is.matrix(rseed) ){
 			xseed = matrix(NA, ncol = m, nrow = m.sim)
-			if( length(rseed) != 1 ) 
+			if( length(rseed) != 1 )
 				stop("\ngogarchsim-->error: if not matrix, rseed must be a single value!\n")
 			xseed = matrix(rseed+seq(1,m.sim*m,by=1), ncol = m, nrow = m.sim, byrow=TRUE)
 		} else{
-			if(dim(rseed)[2] != m) 
+			if(dim(rseed)[2] != m)
 				stop("\ngogarchsim-->error: rseed must have N (= n.assets) columns!\n")
-			if(dim(rseed)[1] != m.sim) 
+			if(dim(rseed)[1] != m.sim)
 				stop("\ngogarchsim-->error: rseed must have m.sim rows!\n")
 			xseed = rseed
 		}
@@ -361,11 +361,11 @@
 	if(startMethod == "sample"){
 		if(!is.na(presigma[1])){
 			presigma = as.matrix(presigma)
-			if(dim(presigma)[1]<mx) 
+			if(dim(presigma)[1]<mx)
 				stop(paste("\ngogarchsim-->error: presigma must have row dimension ", mx, sep = ""))
 			presig = tail(presigma, max(model$umodel$garchOrder))
 		} else{
-			presig = tail(fit@mfit$factor.sigmas, max(model$umodel$garchOrder))
+			presig = tail(object@mfit$factor.sigmas, max(model$umodel$garchOrder))
 		}
 		sm = TRUE
 	} else{
@@ -375,19 +375,19 @@
 	if(startMethod == "sample"){
 		if(!is.na(preresiduals[1])){
 			preresiduals = as.matrix(preresiduals)
-			if(dim(preresiduals)[1]<mx) 
+			if(dim(preresiduals)[1]<mx)
 				stop(paste("\ngogarchsim-->error: preresiduals must have row dimension ", mx, sep = ""))
 			factor.preres = tail(preresiduals, max(model$umodel$garchOrder))
 			preres  = tail(preresiduals, mx) %*% t(A)
 		} else{
-			factor.preres = tail(fit@mfit$Y[idx, ], max(model$umodel$garchOrder))
-			preres = tail(fit@mfit$residuals[idx, ], mx)
+			factor.preres = tail(object@mfit$Y[idx, ], max(model$umodel$garchOrder))
+			preres = tail(object@mfit$residuals[idx, ], mx)
 		}
 		sm = TRUE
 	} else{
 		factor.preres = NA
 		sm = FALSE
-		preres = tail(fit@mfit$residuals[idx, ], mx)
+		preres = tail(object@mfit$residuals[idx, ], mx)
 	}
 	#-----------------------------------------------------------------------------------
 	# Factor Dynamics
@@ -395,17 +395,17 @@
 		specx = vector(mode = "list", length = m)
 		mo = max(model$umodel$garchOrder)
 		for(i in 1:m) specx[[i]] = ugarchspec(mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
-					variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder, 
-							submodel = model$umodel$vsubmodel, variance.targeting = FALSE), 
-					distribution.model = model$umodel$distribution, fixed.pars = as.list(fit@mfit$garchcoef[,i]))
+					variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder,
+							submodel = model$umodel$vsubmodel, variance.targeting = FALSE),
+					distribution.model = model$umodel$distribution, fixed.pars = as.list(object@mfit$garchcoef[,i]))
 		clusterEvalQ(cluster, loadNamespace("rugarch"))
-		clusterExport(cluster, c("presig", "factor.preres", "sm", "specx", 
-						"n.sim", "n.start", "m.sim", "startMethod", "xseed"), 
+		clusterExport(cluster, c("presig", "factor.preres", "sm", "specx",
+						"n.sim", "n.start", "m.sim", "startMethod", "xseed"),
 				envir = environment())
 		simlist = parLapply(cluster, as.list(1:m), fun = function(i){
-					rugarch::ugarchpath(specx[[i]], n.sim = n.sim + n.start, n.start = 0, 
+					rugarch::ugarchpath(specx[[i]], n.sim = n.sim + n.start, n.start = 0,
 							m.sim = m.sim, rseed = xseed[,i],
-							presigma = if(sm) presig[,i] else NA, 
+							presigma = if(sm) presig[,i] else NA,
 							preresiduals  = if(sm) factor.preres[,i] else NA)
 				})
 	} else{
@@ -413,16 +413,16 @@
 		for(i in 1:m){
 			specx = ugarchspec(
 					mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
-					variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder, 
-							submodel = model$umodel$vsubmodel, variance.targeting = FALSE), 
-					distribution.model = model$umodel$distribution, fixed.pars = as.list(fit@mfit$garchcoef[,i]))
-			simlist[[i]] = ugarchpath(specx, n.sim = n.sim + n.start, 
+					variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder,
+							submodel = model$umodel$vsubmodel, variance.targeting = FALSE),
+					distribution.model = model$umodel$distribution, fixed.pars = as.list(object@mfit$garchcoef[,i]))
+			simlist[[i]] = ugarchpath(specx, n.sim = n.sim + n.start,
 								n.start = 0, m.sim = m.sim, rseed = xseed[,i],
-								presigma = if(sm) presig[,i] else NA, 
+								presigma = if(sm) presig[,i] else NA,
 								preresiduals  = if(sm) factor.preres[,i] else NA)
 		}
 	}
-	
+
 	#-----------------------------------------------------------------------------------
 	# ICA & Multivariate Affine Distribution
 	factor.sigmas = vector(mode = "list", length = m.sim)
@@ -430,34 +430,34 @@
 	for(i in 1:m.sim){
 		factor.sigmas[[i]] = matrix(sapply(simlist, FUN = function(x) tail(x@path$sigmaSim[,i], n.sim + n.start)), ncol = m)
 		factor.res[[i]] = matrix(sapply(simlist, FUN = function(x) tail(x@path$residSim[,i], n.sim + n.start)), ncol = m)
-		res[[i]] = matrix(t(apply(factor.res[[i]], 1, FUN = function(x) x %*% t(A))), ncol = NROW(A))		
+		res[[i]] = matrix(t(apply(factor.res[[i]], 1, FUN = function(x) x %*% t(A))), ncol = NROW(A))
 		factor.res[[i]] = tail(factor.res[[i]], n.sim)
 		factor.sigmas[[i]] = tail(factor.sigmas[[i]], n.sim)
 	}
 	#-----------------------------------------------------------------------------------
 	# Conditional Mean Equation
 	if( model$modelinc[3] > 0 ){
-		seriesSim = mvmean.varsim(model, Data, res, mexsimdata, prereturns, m.sim, n.sim, 
+		seriesSim = mvmean.varsim(model, Data, res, mexsimdata, prereturns, m.sim, n.sim,
 				n.start, startMethod = startMethod, cluster =  cluster, ggn = 2)
 	} else{
-		seriesSim = mvmean.arsim(model, Data, res, arcoef = fit@mfit$arcoef, 
-				 mxn = fit@mfit$mxn, mexdata = fit@modeldata$mexdata, mexsimdata, 
-				 prereturns, preres, m.sim, n.sim, n.start, startMethod = startMethod, 
+		seriesSim = mvmean.arsim(model, Data, res, arcoef = object@mfit$arcoef,
+				 mxn = object@mfit$mxn, mexdata = object@model$modeldata$mexdata, mexsimdata,
+				 prereturns, preres, m.sim, n.sim, n.start, startMethod = startMethod,
 				 cluster =  cluster)
 	}
 	#-----------------------------------------------------------------------------------
 	# Return List
 	tmp = list()
-	tmp$distribution = fit@mfit$distr$model
+	tmp$distribution = object@mfit$distr$model
 	tmp$A = A
-	tmp$Y = fit@mfit$Y
-	tmp$W = fit@mfit$W
-	tmp$K = fit@mfit$K
-	tmp$Kinv = fit@mfit$Kinv
-	tmp$U = fit@mfit$U
-	tmp$arcoef = fit@mfit$arcoef
-	tmp$varcoef = fit@mfit$varcoef
-	tmp$garchcoef = fit@mfit$garchcoef
+	tmp$Y = object@mfit$Y
+	tmp$W = object@mfit$W
+	tmp$K = object@mfit$K
+	tmp$Kinv = object@mfit$Kinv
+	tmp$U = object@mfit$U
+	tmp$arcoef = object@mfit$arcoef
+	tmp$varcoef = object@mfit$varcoef
+	tmp$garchcoef = object@mfit$garchcoef
 	tmp$factor.sigmaSim = factor.sigmas
 	tmp$factor.residSim = factor.res
 	tmp$residSim = res
@@ -472,12 +472,159 @@
 }
 
 
+
+.gogarchsim.filter = function(object, n.sim, n.start, m.sim, startMethod, prereturns,
+                       preresiduals, presigma, mexsimdata, rseed, cluster = NULL, ...)
+{
+  tic = Sys.time()
+  T = object@model$modeldata$T
+  Data = object@model$modeldata$data[1:T, ]
+  A = object@mfilter$A
+  m = NCOL(A)
+  simlist = vector(mode = "list", length = m)
+  model = object@model
+  p = sum(model$modelinc[2:3])
+  idx = 1:T
+  #mo = object@ufit@fit[[1]]@model$maxOrder
+  if(is.null(startMethod[1])) startMethod = "unconditional" else startMethod = startMethod[1]
+  if( !is.null(rseed) ){
+    if( !is.matrix(rseed) ){
+      xseed = matrix(NA, ncol = m, nrow = m.sim)
+      if( length(rseed) != 1 )
+        stop("\ngogarchsim-->error: if not matrix, rseed must be a single value!\n")
+      xseed = matrix(rseed+seq(1,m.sim*m,by=1), ncol = m, nrow = m.sim, byrow=TRUE)
+    } else{
+      if(dim(rseed)[2] != m)
+        stop("\ngogarchsim-->error: rseed must have N (= n.assets) columns!\n")
+      if(dim(rseed)[1] != m.sim)
+        stop("\ngogarchsim-->error: rseed must have m.sim rows!\n")
+      xseed = rseed
+    }
+  } else{
+    xseed = matrix( as.integer( runif( m*m.sim, 0, as.integer(Sys.time()) ) ), ncol = m, nrow = m.sim, byrow = TRUE)
+  }
+  mx = max(c(model$umodel$garchOrder), p)
+  if(startMethod == "sample"){
+    if(!is.na(presigma[1])){
+      presigma = as.matrix(presigma)
+      if(dim(presigma)[1]<mx)
+        stop(paste("\ngogarchsim-->error: presigma must have row dimension ", mx, sep = ""))
+      presig = tail(presigma, max(model$umodel$garchOrder))
+    } else{
+      presig = tail(object@mfilter$factor.sigmas, max(model$umodel$garchOrder))
+    }
+    sm = TRUE
+  } else{
+    presig = NA
+    sm = FALSE
+  }
+  if(startMethod == "sample"){
+    if(!is.na(preresiduals[1])){
+      preresiduals = as.matrix(preresiduals)
+      if(dim(preresiduals)[1]<mx)
+        stop(paste("\ngogarchsim-->error: preresiduals must have row dimension ", mx, sep = ""))
+      factor.preres = tail(preresiduals, max(model$umodel$garchOrder))
+      preres  = tail(preresiduals, mx) %*% t(A)
+    } else{
+      factor.preres = tail(object@mfilter$Y[idx, ], max(model$umodel$garchOrder))
+      preres = tail(object@mfilter$residuals[idx, ], mx)
+    }
+    sm = TRUE
+  } else{
+    factor.preres = NA
+    sm = FALSE
+    preres = tail(object@mfilter$residuals[idx, ], mx)
+  }
+  #-----------------------------------------------------------------------------------
+  # Factor Dynamics
+  if( !is.null(cluster) ){
+    specx = vector(mode = "list", length = m)
+    mo = max(model$umodel$garchOrder)
+    for(i in 1:m) specx[[i]] = ugarchspec(mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
+                                          variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder,
+                                                                submodel = model$umodel$vsubmodel, variance.targeting = FALSE),
+                                          distribution.model = model$umodel$distribution, fixed.pars = as.list(object@mfilter$garchcoef[,i]))
+    clusterEvalQ(cluster, loadNamespace("rugarch"))
+    clusterExport(cluster, c("presig", "factor.preres", "sm", "specx",
+                             "n.sim", "n.start", "m.sim", "startMethod", "xseed"),
+                  envir = environment())
+    simlist = parLapply(cluster, as.list(1:m), fun = function(i){
+      rugarch::ugarchpath(specx[[i]], n.sim = n.sim + n.start, n.start = 0,
+                          m.sim = m.sim, rseed = xseed[,i],
+                          presigma = if(sm) presig[,i] else NA,
+                          preresiduals  = if(sm) factor.preres[,i] else NA)
+    })
+  } else{
+    specx = vector(mode = "list", length = m)
+    for(i in 1:m){
+      specx = ugarchspec(
+        mean.model = list(include.mean = FALSE, armaOrder=c(0,0)),
+        variance.model = list(model = model$umodel$vmodel, garchOrder = model$umodel$garchOrder,
+                              submodel = model$umodel$vsubmodel, variance.targeting = FALSE),
+        distribution.model = model$umodel$distribution, fixed.pars = as.list(object@mfilter$garchcoef[,i]))
+      simlist[[i]] = ugarchpath(specx, n.sim = n.sim + n.start,
+                                n.start = 0, m.sim = m.sim, rseed = xseed[,i],
+                                presigma = if(sm) presig[,i] else NA,
+                                preresiduals  = if(sm) factor.preres[,i] else NA)
+    }
+  }
+
+  #-----------------------------------------------------------------------------------
+  # ICA & Multivariate Affine Distribution
+  factor.sigmas = vector(mode = "list", length = m.sim)
+  res = factor.res = vector(mode = "list", length = m.sim)
+  for(i in 1:m.sim){
+    factor.sigmas[[i]] = matrix(sapply(simlist, FUN = function(x) tail(x@path$sigmaSim[,i], n.sim + n.start)), ncol = m)
+    factor.res[[i]] = matrix(sapply(simlist, FUN = function(x) tail(x@path$residSim[,i], n.sim + n.start)), ncol = m)
+    res[[i]] = matrix(t(apply(factor.res[[i]], 1, FUN = function(x) x %*% t(A))), ncol = NROW(A))
+    factor.res[[i]] = tail(factor.res[[i]], n.sim)
+    factor.sigmas[[i]] = tail(factor.sigmas[[i]], n.sim)
+  }
+  #-----------------------------------------------------------------------------------
+  # Conditional Mean Equation
+  if( model$modelinc[3] > 0 ){
+    seriesSim = mvmean.varsim(model, Data, res, mexsimdata, prereturns, m.sim, n.sim,
+                              n.start, startMethod = startMethod, cluster =  cluster, ggn = 2)
+  } else{
+    seriesSim = mvmean.arsim(model, Data, res, arcoef = object@mfilter$arcoef,
+                             mxn = object@mfilter$mxn, mexdata = object@model$modeldata$mexdata, mexsimdata,
+                             prereturns, preres, m.sim, n.sim, n.start, startMethod = startMethod,
+                             cluster =  cluster)
+  }
+  #-----------------------------------------------------------------------------------
+  # Return List
+  tmp = list()
+  tmp$distribution = object@mfilter$distr$model
+  tmp$A = A
+  tmp$Y = object@mfilter$Y
+  tmp$W = object@mfilter$W
+  tmp$K = object@mfilter$K
+  tmp$Kinv = object@mfilter$Kinv
+  tmp$U = object@mfilter$U
+  tmp$arcoef = object@mfilter$arcoef
+  tmp$varcoef = object@mfilter$varcoef
+  tmp$garchcoef = object@mfilter$garchcoef
+  tmp$factor.sigmaSim = factor.sigmas
+  tmp$factor.residSim = factor.res
+  tmp$residSim = res
+  tmp$seriesSim = seriesSim
+  tmp$rseed = xseed
+  tmp$n.sim = n.sim
+  tmp$m.sim = m.sim
+  ans = new("goGARCHsim",
+            msim = tmp,
+            model = model)
+  return(ans)
+}
+
+
+
 #-----------------------------------------------------------------------------------------------
 # Rolling
-.rollgogarch = function(spec, data, n.ahead = 1, forecast.length = 50, 
-		n.start = NULL, refit.every = 25, refit.window = c("recursive", "moving"), 
-		window.size = NULL, solver = "solnp", solver.control = list(), 
-		fit.control = list(), rseed = NULL, cluster = NULL, save.fit = FALSE, 
+.rollgogarch = function(spec, data, n.ahead = 1, forecast.length = 50,
+		n.start = NULL, refit.every = 25, refit.window = c("recursive", "moving"),
+		window.size = NULL, solver = "solnp", solver.control = list(),
+		fit.control = list(), rseed = NULL, cluster = NULL, save.fit = FALSE,
 		save.wdir = NULL, ...)
 {
 	model = spec@model
@@ -500,16 +647,16 @@
 	if(is.null(fit.control$stationarity)) fit.control$stationarity = 1
 	if(is.null(fit.control$fixed.se)) fit.control$fixed.se = 0
 	T = NROW(data)
-	if(n.ahead>1) 
+	if(n.ahead>1)
 		stop("\ngogarchroll:--> n.ahead>1 not supported...try again.")
 	if(is.null(n.start)){
-		if(is.null(forecast.length)) 
+		if(is.null(forecast.length))
 			stop("\ngogarchroll:--> forecast.length amd n.start are both NULL....try again.")
 		n.start = T - forecast.length
 	} else{
 		forecast.length = T - n.start
 	}
-	if(T<=n.start) 
+	if(T<=n.start)
 		stop("\ngogarchroll:--> start cannot be greater than length of data")
 	# the ending points of the estimation window
 	s = seq(n.start+refit.every, T, by = refit.every)
@@ -532,7 +679,7 @@
 			rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refit.every):s[i])
 		}
 	}
-		
+
 	if(is.null(rseed)) rseed = as.numeric(Sys.time()) else rseed = as.integer(rseed)
 	WD <- getwd()
 	if(is.null(save.wdir)){
@@ -551,17 +698,17 @@
 	for(i in 1:m){
 		if(i == 1){
 			set.seed(rseed)
-			gofit = gogarchfit(spec, data = data[rollind[[i]],], out.sample = out.sample[i], 
-					solver = solver, fit.control = fit.control, 
+			gofit = gogarchfit(spec, data = data[rollind[[i]],], out.sample = out.sample[i],
+					solver = solver, fit.control = fit.control,
 					solver.control = solver.control, cluster = cluster, ...)
 			A = gofit@mfit$A
 			icaA[[i]] = A
 			forc[[i]] = gogarchforecast(gofit, n.ahead = 1, n.roll = out.sample[i]-1, cluster = cluster)
 			spec@model$ica.fix = list(A = NULL, K = NULL)
 		} else{
-			gofit = gogarchfit(spec, data = data[rollind[[i]],], out.sample = out.sample[i], 
-					solver = solver, fit.control = fit.control, 
-					solver.control = solver.control, cluster = cluster, 
+			gofit = gogarchfit(spec, data = data[rollind[[i]],], out.sample = out.sample[i],
+					solver = solver, fit.control = fit.control,
+					solver.control = solver.control, cluster = cluster,
 					A.init = A, ...)
 			A = gofit@mfit$A
 			icaA[[i]] = A
@@ -595,7 +742,7 @@
 
 # The likelihood of the affine linear model with independent margins is simply the
 # sum of the univariate/independent log-likelihoods plus a term for the mixing matrix A
-# It is not yet clear what to do when W is not square (PCA based dimensionality 
+# It is not yet clear what to do when W is not square (PCA based dimensionality
 # reduced system).
 .gogarchllh.independent = function(W, fit)
 {
@@ -630,7 +777,7 @@
 #}
 
 # quadrature based numerical moments from the convoluted density
-.dcintmoments = function(z, y, sm1 = NULL, fix.sm1 = TRUE, subdivisions = 200, 
+.dcintmoments = function(z, y, sm1 = NULL, fix.sm1 = TRUE, subdivisions = 200,
 		rel.tol = .Machine$double.eps^0.5, n.approx = 100, error.reltol = 0.05, ...)
 {
 	# convoluted density arising from numerical inversion of characteristic function of multivariate affine distribution
