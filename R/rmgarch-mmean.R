@@ -503,7 +503,7 @@ mvmean.arsim = function(model, Data, res, arcoef, mxn, mexdata, mexsimdata,
 								preresiduals = if(p>0) tres[,i] else NA,
 								custom.dist = list(name = "sample",
 										distfit = matrix(sapply(res, FUN = function(x) x[,i]),
-												ncol = m.sim, nrow = n.sim, byrow = TRUE),
+												ncol = m.sim, nrow = n.sim, byrow = FALSE),
 										type = "res"),
 								mexsimdata = mexsimdata)
 						return(ans)
@@ -520,7 +520,7 @@ mvmean.arsim = function(model, Data, res, arcoef, mxn, mexdata, mexsimdata,
 							preresiduals = if(p>0) tail(preresiduals[,i], p) else NA,
 							custom.dist = list(name = "sample",
 									distfit = matrix(sapply(res, FUN = function(x) x[,i]),
-											ncol = m.sim, nrow = n.sim, byrow = TRUE),
+											ncol = m.sim, nrow = n.sim, byrow = FALSE),
 									type = "res"),
 							mexsimdata = mexsimdata)
 					return(ans)
