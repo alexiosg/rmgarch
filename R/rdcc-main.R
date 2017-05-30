@@ -1618,11 +1618,11 @@
 	
 }
 
-.rolldcc = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
+.rolldcc.assets = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
 		n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
 		solver = "solnp", solver.control = list(), 
 		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-		cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL, ...)
+		cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL,...)
 {
 	if(spec@model$DCC=="FDCC") stop("\nFDCC model rolling estimation not yet implemented.")
 	model = spec@model
@@ -1680,13 +1680,6 @@
 		} else{
 			rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refit.every):s[i])
 		}
-	}
-	WD <- getwd()
-	if(is.null(save.wdir)){
-		if (!is.null(WD)) setwd(WD)
-	} else{
-		ND = save.wdir
-		if (!is.null(ND)) setwd(ND)
 	}
 	cf = lik = forc = vector(mode = "list", length = m)
 	plik = vector(mode = "list", length = m)
@@ -1763,8 +1756,7 @@
 		lik[[i]]  = likelihood(mcfit)
 		forc[[i]] = dccforecast(mcfit, n.ahead = 1, n.roll = out.sample[i]-1, cluster = cluster)
 		if(save.fit){
-			eval(parse(text = paste("dccroll_",i,"=mcfit",sep = "")))
-			eval(parse(text = paste("save(dccroll_",i,",file='dccroll_",i,".rda')",sep = "")))
+		  saveRDS(mcfit,file=paste0(save.wdir,"/dccroll_",i,".rds"))
 		}
 	}
 	model$n.start = n.start
@@ -1787,8 +1779,174 @@
 			mforecast = forc,
 			model = model)
 	# return to the current directory
-	setwd(WD)
 	return(ans)
+}
+
+
+.rolldcc.windows = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
+                           n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
+                           solver = "solnp", solver.control = list(), 
+                           fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
+                           cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL,...)
+{
+  if(spec@model$DCC=="FDCC") stop("\nFDCC model rolling estimation not yet implemented.")
+  model = spec@model
+  verbose = FALSE
+  model$umodel = spec@umodel
+  if(is.null(solver.control$trace)) solver.control$trace = 0
+  if(is.null(fit.control$stationarity)) fit.control$stationarity = TRUE
+  if(is.null(fit.control$eval.se)) fit.control$eval.se = FALSE
+  if(is.null(fit.control$scale)) fit.control$scale = FALSE
+  
+  mm = match(names(fit.control), c("stationarity", "eval.se", "scale"))
+  if(any(is.na(mm))){
+    idx = which(is.na(mm))
+    enx = NULL
+    for(i in 1:length(idx)) enx = c(enx, names(fit.control)[idx[i]])
+    warning(paste(c("unidentified option(s) in fit.control:\n", enx), sep="", collapse=" "), call. = FALSE, domain = NULL)
+  }
+  asset.names = colnames(data)
+  xdata = .extractmdata(data)
+  data = xts(xdata$data, xdata$index)
+  index = xdata$index
+  period = xdata$period
+  if(is.null(fit.control$stationarity)) fit.control$stationarity = 1
+  if(is.null(fit.control$fixed.se)) fit.control$fixed.se = 0
+  T = dim(data)[1]
+  
+  if(n.ahead>1) 
+    stop("\ndccroll:--> n.ahead>1 not supported...try again.")
+  if(is.null(n.start)){
+    if(is.null(forecast.length)) 
+      stop("\ndccroll:--> forecast.length amd n.start are both NULL....try again.")
+    n.start = T - forecast.length
+  } else{
+    forecast.length = T - n.start
+  }
+  if(T<=n.start) 
+    stop("\ndccroll:--> start cannot be greater than length of data")
+  # the ending points of the estimation window
+  s = seq(n.start+refit.every, T, by = refit.every)
+  m = length(s)
+  # the rolling forecast length
+  out.sample = rep(refit.every, m)
+  # adjustment to include all the datapoints from the end
+  if(s[m]<T){
+    s = c(s,T)
+    m = length(s)
+    out.sample = c(out.sample, s[m]-s[m-1])
+  }
+  if(refit.window == "recursive"){
+    rollind = lapply(1:m, FUN = function(i) 1:s[i])
+  } else{
+    if(!is.null(window.size)){
+      if(window.size<100) stop("\ndccroll:--> window size must be greater than 100.")
+      rollind = lapply(1:m, FUN = function(i) max(1, (s[i]-window.size-out.sample[i])):s[i])
+    } else{
+      rollind = lapply(1:m, FUN = function(i) (1+(i-1)*refit.every):s[i])
+    }
+  }
+  cf = lik = forc = vector(mode = "list", length = m)
+  plik = vector(mode = "list", length = m)
+  
+  mspec = .makemultispec(model$umodel$modelinc, model$umodel$modeldesc$vmodel, model$umodel$modeldesc$vsubmodel, 
+                         model$umodel$modeldata$mexdata, model$umodel$modeldata$vexdata, model$umodel$start.pars, 
+                         model$umodel$fixed.pars, model$umodel$vt)
+  # changed estimation strategy to catch non-converged or problematic solutions
+  res = parLapply(cluster, as.list(1:m), function(i){
+    if(!is.null(realizedVol)){
+      mfit = multifit(mspec, data[rollind[[i]],], out.sample = out.sample[i], 
+                      solver = solver[1], fit.control = fit.control, cluster = NULL, 
+                      realizedVol = realizedVol[rollind[[i]],], solver.control = solver.control)
+      k=1
+      while(k==1){
+        conv = sapply(mfit@fit, function(x) convergence(x))
+        if(any(conv==1)){
+          idx = which(conv==1)
+          for(j in idx){ mfit@fit[[j]] = ugarchfit(mspec@spec[[j]], data[rollind[[i]],j], 
+                                                   out.sample = out.sample[i], solver = "gosolnp", fit.control = fit.control,
+                                                   realizedVol = realizedVol[rollind[[i]],j])
+          }
+        } else{
+          k=0
+        }
+      }
+      # for some reason realGARCH might converge to a problematic value
+      k=1
+      while(k==1){
+        tmp = sapply(mfit@fit, function(x){
+          L = try(likelihood(x), silent=TRUE)
+          if(inherits(L, 'try-error') | !is.numeric(L)) L = 1e10
+          L})
+        conv=diff(log(abs(tmp)))
+        if(any(conv>1)){
+          idx = which(conv>1)+1
+          for(j in idx){ 
+            mfit@fit[[j]] = ugarchfit(mspec@spec[[j]], data[rollind[[i]],j], 
+                                      out.sample = out.sample[i], 
+                                      solver = "gosolnp", fit.control = fit.control,
+                                      realizedVol = realizedVol[rollind[[i]],j])
+          }
+        } else{
+          k=0
+        }
+      }
+      mcfit = dccfit(spec, data[rollind[[i]],], out.sample = out.sample[i], 
+                     solver = solver, fit.control = fit.control, solver.control=solver.control,
+                     cluster = NULL, realizedVol = realizedVol[rollind[[i]],], 
+                     fit = mfit)
+      plik = mcfit@mfit$plik
+    } else{
+      mfit = multifit(mspec, data[rollind[[i]],], out.sample = out.sample[i], 
+                      solver = solver[1], fit.control = fit.control, solver.control = solver.control,
+                      cluster = NULL)
+      k=1
+      while(k==1){
+        conv = sapply(mfit@fit, function(x) convergence(x))
+        if(any(conv==1)){
+          idx = which(conv==1)
+          for(j in idx){ mfit@fit[[j]] = ugarchfit(mspec@spec[[j]], data[rollind[[i]],j], 
+                                                   out.sample = out.sample[i], solver = "gosolnp", fit.control = fit.control)
+          }
+        } else{
+          k=0
+        }
+      }
+      mcfit = dccfit(spec, data[rollind[[i]],], out.sample = out.sample[i], 
+                     solver = solver, fit.control = fit.control, solver.control = solver.control, 
+                     cluster = NULL, fit = mfit)
+      plik = mcfit@mfit$plik
+    }
+    cf   = mcfit@model$mpars
+    lik  = likelihood(mcfit)
+    forc = dccforecast(mcfit, n.ahead = 1, n.roll = out.sample[i]-1, cluster = NULL)
+    if(save.fit){
+      saveRDS(mcfit,file=paste0(save.wdir,"/dccroll_",i,".rds"))
+    }
+    return(list(cf=cf, lik=lik, forc=forc, plik=plik))
+  })
+  model$n.start = n.start
+  model$n.refits = m
+  model$refit.every = refit.every
+  model$refit.window = refit.window
+  model$window.size = window.size
+  model$forecast.length = forecast.length
+  model$n.start = n.start
+  model$rollind = rollind
+  model$out.sample = out.sample
+  model$modeldata$asset.names = asset.names
+  model$rollcoef = lapply(res, function(x) x$cf)
+  model$rolllik = lapply(res, function(x) x$lik)
+  model$index = index
+  model$period = period
+  model$data = xdata$data
+  model$plik = lapply(res, function(x) x$plik)
+  forc = lapply(res, function(x) x$forc)
+  ans = new("DCCroll",
+            mforecast = forc,
+            model = model)
+  # return to the current directory
+  return(ans)
 }
 
 .dccsimf = function(model, Z, Qbar, preQ, Nbar, Rbar, mo, n.sim, n.start, m, rseed)

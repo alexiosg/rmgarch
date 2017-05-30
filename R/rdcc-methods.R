@@ -238,13 +238,42 @@ dccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 
 		solver = "solnp", solver.control = list(), 
 		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
 		cluster = NULL, save.fit = FALSE, save.wdir = NULL, 
-		realizedVol = NULL, ...)
+		realizedVol = NULL, clusterOnAssets=FALSE, ...)
 {
 	UseMethod("dccroll")
 }
+.xdccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
+                     n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
+                     solver = "solnp", solver.control = list(), 
+                     fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
+                     cluster = NULL, save.fit = FALSE, save.wdir = NULL, 
+                     realizedVol = NULL, clusterOnAssets=FALSE, ...)
+{
+  if(!is.null(cluster)){
+    if(clusterOnAssets){
+      out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
+                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
+                          window.size = window.size, solver = solver, solver.control = solver.control, 
+                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+                          realizedVol = realizedVol,...)
+    } else{
+      out=.rolldcc.windows(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
+                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
+                          window.size = window.size, solver = solver, solver.control = solver.control, 
+                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+                          realizedVol = realizedVol,...)
+    }
+  } else{
+    out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
+                        refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
+                        window.size = window.size, solver = solver, solver.control = solver.control, 
+                        fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+                        realizedVol = realizedVol,...)
+  }
+  return(out)
+}
 
-
-setMethod("dccroll", signature(spec = "DCCspec"), .rolldcc)
+setMethod("dccroll", signature(spec = "DCCspec"), .xdccroll)
 
 
 #----------------------------------------------------------------------------------

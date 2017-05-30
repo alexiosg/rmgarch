@@ -28,3 +28,4 @@ src/symbols.rds
 src/rmgarch.dll
 vignettes/.Rhistory
 .Rproj.user
+rmgarch.Rproj

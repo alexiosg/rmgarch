@@ -12,7 +12,8 @@ dccroll(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25,
 n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
 solver = "solnp", solver.control = list(), 
 fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL, ...)
+cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL, 
+clusterOnAssets=FALSE, ...)
 }
 \arguments{
 	\item{spec}{ A \code{\linkS4class{DCCspec}} object with fixed parameters.}
@@ -47,6 +48,8 @@ cluster = NULL, save.fit = FALSE, save.wdir = NULL, realizedVol = NULL, ...)
   	\item{save.wdir}{ If \dQuote{save.fit} is true, the directory in which to 
   	save the \code{\linkS4class{DCCfit}} objects (1 for each \dQuote{refit.every}).}
   	\item{realizedVol}{ Required xts matrix for the realGARCH model.}
+  	\item{clusterOnAssets}{If a cluster object is provided, use parallel resources on 
+  	the univariate estimation (TRUE) else on the rolling windows (FALSE).}
   	\item{\dots}{.}
 }
 \value{
