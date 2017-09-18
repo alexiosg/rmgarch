@@ -138,28 +138,28 @@
 #######################################################################################
 # copula likelihood functions (cpp coded)
 #------------------------------------------------------------------------------------
-.tvtcopulafn = function(pars, data, type = "LLH")
-{
-	nu = pars[1]
-	alpha = pars[2]
-	beta = pars[3]
-	# this is the slowest part of the routine (student quantile)
-	# qt is vectorized but no discernable difference in using apply instead
-	Qdata = apply(data, 2, FUN = function(x) rugarch:::qstd(p = x, shape = nu))
-	n = dim(data)[1]
-	m = dim(data)[2]
-	Qbar = cov(Qdata)
-	Rbar = cov2cor(Qbar)
-	ans = try(.Call("dccCopulaStudent", Qbar = Qbar, U = Qdata, Rbar = Rbar, dcca = alpha, 
-					dccb = beta, tnu = nu, dccorder = c(1,1,1), dccsum = alpha + beta, 
-					PACKAGE="rmgarch"), silent = TRUE)
-	if(inherits(ans, "try-error")){
-		ret = Inf
-	} else {
-		ret = switch(type, LLH = -ans[[3]], ALL = ans)
-	}
-	return(ret)
-}
+# .tvtcopulafn = function(pars, data, type = "LLH")
+# {
+# 	nu = pars[1]
+# 	alpha = pars[2]
+# 	beta = pars[3]
+# 	# this is the slowest part of the routine (student quantile)
+# 	# qt is vectorized but no discernable difference in using apply instead
+# 	Qdata = apply(data, 2, FUN = function(x) rugarch:::qstd(p = x, shape = nu))
+# 	n = dim(data)[1]
+# 	m = dim(data)[2]
+# 	Qbar = cov(Qdata)
+# 	Rbar = cov2cor(Qbar)
+# 	ans = try(.Call("dccCopulaStudent", Qbar = Qbar, U = Qdata, Rbar = Rbar, dcca = alpha, 
+# 					dccb = beta, tnu = nu, dccorder = c(1,1,1), dccsum = alpha + beta, 
+# 					PACKAGE="rmgarch"), silent = TRUE)
+# 	if(inherits(ans, "try-error")){
+# 		ret = Inf
+# 	} else {
+# 		ret = switch(type, LLH = -ans[[3]], ALL = ans)
+# 	}
+# 	return(ret)
+# }
 
 .tcopulafn = function(pars, data, Rbar, type = "LLH")
 {
@@ -174,25 +174,25 @@
 	return(ret)
 }
 
-.tvgausscopulafn = function(pars, data, type = "LLH")
-{
-	alpha = pars[2]
-	beta = pars[3]
-	Qdata = apply(data, 2, FUN = function(x) qnorm(p = x))
-	n = dim(data)[1]
-	m = dim(data)[2]
-	Qbar = cov(Qdata)
-	Rbar = cov2cor(Qbar)
-	ans = try(.Call("dccCopulaNormal", Qbar = Qbar, U = Qdata, Rbar = Rbar, dcca = alpha, 
-					dccb = beta, dccorder = c(1,1,1), dccsum = alpha + beta, 
-					PACKAGE="rmgarch"), silent = TRUE)
-	if(inherits(ans, "try-error")){
-		ret = Inf
-	} else {
-		ret = switch(type, LLH = -ans[[3]], ALL = ans)
-	}
-	return(ret)
-}
+# .tvgausscopulafn = function(pars, data, type = "LLH")
+# {
+# 	alpha = pars[2]
+# 	beta = pars[3]
+# 	Qdata = apply(data, 2, FUN = function(x) qnorm(p = x))
+# 	n = dim(data)[1]
+# 	m = dim(data)[2]
+# 	Qbar = cov(Qdata)
+# 	Rbar = cov2cor(Qbar)
+# 	ans = try(.Call("dccCopulaNormal", Qbar = Qbar, U = Qdata, Rbar = Rbar, dcca = alpha, 
+# 					dccb = beta, dccorder = c(1,1,1), dccsum = alpha + beta, 
+# 					PACKAGE="rmgarch"), silent = TRUE)
+# 	if(inherits(ans, "try-error")){
+# 		ret = Inf
+# 	} else {
+# 		ret = switch(type, LLH = -ans[[3]], ALL = ans)
+# 	}
+# 	return(ret)
+# }
 
 .gausscopulafn = function(pars, data, Rbar, type = "LLH")
 {

@@ -15,6 +15,11 @@
 ##
 #################################################################################
 
+# ToDo:
+# 1. use saveRDS
+# 2. use new cluster on time dimension
+# 3. Make it faster
+
 # DCC CGARCH and GOGARCH
 .fmoments = function(spec, Data, n.ahead = 1, roll = 0, solver = "solnp", 
 		solver.control = list(), fit.control = list(eval.se=FALSE), 

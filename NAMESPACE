@@ -1,4 +1,4 @@
-useDynLib(rmgarch)
+useDynLib(rmgarch,.registration = TRUE)
 importFrom("graphics", "plot", "lines", "abline", "axis", "contour", "grid", "image", "layout", "legend", "mtext", "par", "persp", "title")
 importFrom("grDevices","colorRampPalette", "colors", "dev.cur", "dev.flush", "dev.hold", "dev.new", "dev.next", "heat.colors", "hsv", "terrain.colors")
 importFrom("stats", "coef", "residuals", "fitted", "approx", "approxfun", "cor", "cov", "cov.wt", "cov2cor", "dnorm", "ecdf", "embed", "fft", "integrate", "lm", "mahalanobis", "median", "na.omit", "nlminb", "optim", "pchisq", "pnorm", "qchisq", "qnorm", "rchisq", "resid", "rnorm", "runif", "stepfun")
