@@ -86,7 +86,7 @@
 		W = ica$W
 		K = ica$K
 		A = ica$A
-		Y = ica$Y 
+		Y = ica$Y
 		Kinv = ica$Kinv
 		U = ica$U
 		D = ica$D
@@ -97,7 +97,7 @@
 
 
 .fastica = function(x, ...)
-{	
+{
 	ans = fastica(X = x, ...)
 	W = ans$W
 	A = ans$A
@@ -111,8 +111,8 @@
 }
 
 #.fastICA = function(x, ...)
-#{	
-#	ans = fastICA(X = x, n.comp = ncol(x), method = "C", ...)	
+#{
+#	ans = fastICA(X = x, n.comp = ncol(x), method = "C", ...)
 #	W = ans$K %*% ans$W
 #	A = ans$A
 #	Y = ans$S
@@ -148,11 +148,11 @@
 #############################################################################
 
 fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2], demean = TRUE,
-		pca.cov = c("ML", "LW", "ROB", "EWMA"), gfun = c("pow3", "tanh", "gauss", "skew"), 
+		pca.cov = c("ML", "LW", "ROB", "EWMA"), gfun = c("pow3", "tanh", "gauss", "skew"),
 		finetune = c("none", "pow3", "tanh", "gauss", "skew"),
-		tanh.par = 1, gauss.par = 1, step.size = 1, stabilization = FALSE, 
-		epsilon = 1e-4, maxiter1 = 1000, maxiter2 = 5, A.init = NULL, pct.sample = 1, 
-		firstEig = NULL, lastEig = NULL, pcaE = NULL, pcaD = NULL, 
+		tanh.par = 1, gauss.par = 1, step.size = 1, stabilization = FALSE,
+		epsilon = 1e-4, maxiter1 = 1000, maxiter2 = 5, A.init = NULL, pct.sample = 1,
+		firstEig = NULL, lastEig = NULL, pcaE = NULL, pcaD = NULL,
 		whiteSig = NULL, whiteMat = NULL, dewhiteMat = NULL, rseed = NULL, trace = FALSE, ...)
 {
 	########################################
@@ -165,12 +165,12 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	idx = match(tolower(pca.cov[1]), tolower(c("ML", "LW", "ROB", "EWMA")))
 	if(is.na(idx)) stop("\nfastica-->error: pca.cov choice not recognized.")
 	pca.cov = c("ML", "LW", "ROB", "EWMA")[idx]
-	
+
 	########################################
 	# STAGE 1: Demean Data
-	
+
 	# Remove the mean and check the data
-	if(demean){ 
+	if(demean){
 		mixedmean = apply(X, 1, "mean")
 		mixedsig  = t(apply(X, 1, FUN = function(x) x - mean(x) ))
 	} else{
@@ -180,8 +180,8 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	Dim = dim(mixedsig)[1]
 	nsamples = dim(mixedsig)[2]
 	myy = step.size
-	
-	
+
+
 	# n.comps + firstEig/lastEig choice
 	if(n.comp>nrow(X)) stop("\nCannot Choose more components than signals!")
 	if(is.null(firstEig)) firstEig = 1
@@ -215,7 +215,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		# recover the covariance matrix (for non-dimensionality reduced systems)
 		if(NROW(pcaE) == NCOL(pcaE)) C = pcaE %*% pcaD %*% solve(pcaE) else C = NULL
 	}
-	
+
 	# whiteSig (n by f)
 	if(!is.null(whiteSig)){
 		if(!is.matrix(whiteSig)) stop("\nwhiteSig must be an n by f matrix (see documentation)")
@@ -229,13 +229,13 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 			whiteSig = t(whiteSig)
 		}
 	}
-	
+
 	if(!is.null(dewhiteMat)){
 		if(is.null(whiteMat)) stop("\ndewhiteMat cannot be provided without whiteMat.")
 		if(nrow(dewhiteMat)!=nrow(X)) stop("\ndewhiteMat must be an m by f matrix (see documentation)")
 		if(ncol(dewhiteMat)!=n.comp) stop("\ndewhiteMat must be an m by f matrix (see documentation)")
 	}
-	
+
 	# whiteMat (m by f)
 	if(!is.null(whiteMat)){
 		if(!is.matrix(whiteMat)) stop("\nwhiteMat must be an f by m matrix (see documentation)")
@@ -254,24 +254,24 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 			whiteSig = t(whiteSig)
 		}
 	}
-	
-	
+
+
 	# some basic checks
 	if(length(which(is.na(X)))>0) stop("\nfastica-->error: NA's in data. Remove and retry.\n", call. = FALSE)
-	
+
 	approach = approach[1]
 	if(!any(approach == c("symmetric", "deflation"))) stop("\nfastica-->error: Invalid input for approach.\n", call. = FALSE)
-	
+
 	gfun = tolower(gfun)[1]
 	if(!any(gfun == c("pow3", "tanh", "gauss", "skew"))) stop("\nfastica-->error: Invalid input for gfun.\n", call. = FALSE)
-	
+
 	finetune = tolower(finetune)[1]
 	if(!any(finetune == c("pow3", "tanh", "gauss", "skew", "none"))) stop("\nfastica-->error: Invalid input for finetune.\n", call. = FALSE)
-	
+
 	########################################
-	# STAGE 2: PCA decomposition to obtain eigenvalues and eigenvectors, 
+	# STAGE 2: PCA decomposition to obtain eigenvalues and eigenvectors,
 	# and optionally reduce dimension
-	
+
 	# PCA
 	jumpPCA = 0
 	E = NULL
@@ -328,11 +328,11 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		}
 	}
 	########################################
-	# STAGE 3: Use PCA values to whiten/decorrelate the Data and return the 
+	# STAGE 3: Use PCA values to whiten/decorrelate the Data and return the
 	# whitening and de-whitening matrix
 	# 	whiteningMatrix = solve(sqrt(D))%*%t(E)
 	#   dewhiteningMatrix = E %*% sqrt(D)
-	
+
 	if(jumpWhitening == 3){
 		if(trace) cat("\nWhitening not needed.\n")
 	} else{
@@ -342,10 +342,10 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		dewhiteningMatrix = tmp$dewhiteningMatrix
 		#print(whiteningMatrix, digits = 5)
 	}
-	
+
 	Dim = dim(whiteningsig)[1]
-	
-	if(n.comp > Dim) 
+
+	if(n.comp > Dim)
 	{
 		n.comp = Dim
 		# Show warning only if verbose = 'on' and user supplied a value for 'n.comp'
@@ -357,7 +357,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	########################################
 	# STAGE 4: ICA rotation to seperate out independent signals. Return mixing (A) and unmixing matrices (W)
 	# Calculate the ICA with fixed point algorithm.
-	tmp = .fpica(whiteningsig, whiteningMatrix, dewhiteningMatrix, approach, n.comp, gfun, finetune, tanh.par, gauss.par, myy, 
+	tmp = .fpica(whiteningsig, whiteningMatrix, dewhiteningMatrix, approach, n.comp, gfun, finetune, tanh.par, gauss.par, myy,
 			stabilization, epsilon, maxiter1, maxiter2, A.init, pct.sample, rseed, trace)
 	A = tmp$A
 	W = tmp$W
@@ -368,20 +368,20 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		S = NULL
 	}
 	U = t(A) %*% t(tmp$whiteningMatrix)
-	
+
 	toc = Sys.time() - tic
-	
-	return(list(A = A, W = W, U = t(U), S = t(S), E = E, D = D, C = C, mu = mixedmean, 
-					whiteningMatrix = (tmp$whiteningMatrix), 
-					dewhiteningMatrix = (tmp$dewhiteningMatrix), 
+
+	return(list(A = A, W = W, U = t(U), S = t(S), E = E, D = D, C = C, mu = mixedmean,
+					whiteningMatrix = (tmp$whiteningMatrix),
+					dewhiteningMatrix = (tmp$dewhiteningMatrix),
 					rseed = tmp$rseed, elapsed = toc))
 }
 # A translation of the matlab function from the FastICA toolbox
 # http://www.cis.hut.fi/projects/ica/fastica/
 
-.fpica = function(X, whiteningMatrix, dewhiteningMatrix, approach = c("symmetric","deflation"), 
-		n.comp = dim(X)[2], gfun = c("pow3", "tanh", "gauss", "skew"), finetune = c("none", "pow3", "tanh", "gauss", "skew"), 
-		tanh.par = 1, gauss.par = 1, myy = 1, stabilization = TRUE, epsilon = 1e-4, maxiter1 = 1000, 
+.fpica = function(X, whiteningMatrix, dewhiteningMatrix, approach = c("symmetric","deflation"),
+		n.comp = dim(X)[2], gfun = c("pow3", "tanh", "gauss", "skew"), finetune = c("none", "pow3", "tanh", "gauss", "skew"),
+		tanh.par = 1, gauss.par = 1, myy = 1, stabilization = TRUE, epsilon = 1e-4, maxiter1 = 1000,
 		maxiter2 = 100, A.init = NULL, pct.sample = 1, rseed = NULL, trace = FALSE)
 {
 	vectorSize = dim(X)[1]
@@ -395,7 +395,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	approach = approach[1]
 	if(!any(tolower(approach) == c("symmetric","deflation")))
 		stop("\nfastica-->error: invalid input value for approach.\n", call. = FALSE)
-	
+
 	# gfun
 	if(!any(tolower(gfun) == c("pow3", "tanh", "gauss", "skew")))
 		stop("\nfastica-->error: invalid input value for gfun.\n", call. = FALSE)
@@ -418,7 +418,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 			skew  = 40)
 	if(pct.sample != 1) gOrig = gOrig + 2
 	if(myy != 1) gOrig = gOrig + 1
-	
+
 	finetune = finetune[1]
 	finetuningEnabled = 1
 	gFine = switch(tolower(finetune),
@@ -427,15 +427,15 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 			gauss = 30 + 1,
 			skew  = 40 + 1,
 			none  = if(myy != 1) gOrig else gOrig + 1)
-	
+
 	if(tolower(finetune) == "none") finetuningEnabled = 0
-	
+
 	if(stabilization){
 		stabilizationEnabled = 1
 	} else{
 		if(myy != 1) stabilizationEnabled = 1 else stabilizationEnabled = 0
 	}
-	
+
 	myyOrig = myy
 	#% When we start fine-tuning we'll set myy = myyK * myy
 	myyK = 0.01
@@ -445,7 +445,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	stroke = 0
 	notFine = 1
 	long = 0
-	
+
 	# Checking the value for initial state.
 	if(is.null(A.init)){
 		initialStateMode = 0
@@ -463,29 +463,29 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 				A.init[,dim(A.init)[2] + (1:n.comp)]  = matrix(runif(vectorSize * (n.comp-dim(A.init)[2]))-.5, ncol = n.comp-dim(A.init)[2])
 			} else{
 				if(dim(A.init)[2] > n.comp && trace) warning(paste("\nfastica-->warning: Initial guess too large. The excess column are dropped.\n", sep = ""))
-				A.init = A.init[, 1:n.comp]				
+				A.init = A.init[, 1:n.comp]
 			}
 			if(trace) cat("\nfastica-->Using initial A.init.\n")
 		}
 	}
-	
+
 	if(trace) cat("\nStarting ICA calculation...\n")
-	
+
 	# symmetric case
 	ans = switch(approach,
-			symmetric = .fpsymm(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init, 
-					maxiter1, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples, 
+			symmetric = .fpsymm(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init,
+					maxiter1, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples,
 					pct.sample, tanh.par, gauss.par, gFine, trace, rseed),
-			deflation = .fpdefl(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init, 
-					maxiter1, maxiter2, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, 
+			deflation = .fpdefl(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init,
+					maxiter1, maxiter2, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig,
 					nsamples, pct.sample, tanh.par, gauss.par, gFine, trace, rseed))
-	
+
 	return(list(A = ans$A, W = ans$W, whiteningMatrix = whiteningMatrix, dewhiteningMatrix = dewhiteningMatrix,
 					rseed = rseed))
 }
 
-.fpsymm = function(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init, 
-		maxiter1, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples, pct.sample, 
+.fpsymm = function(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init,
+		maxiter1, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples, pct.sample,
 		tanh.par, gauss.par, gFine, trace, rseed)
 {
 	usedNlinearity = gOrig
@@ -538,7 +538,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 				A = dewhiteningMatrix %*% B
 				break()
 			}
-			
+
 		}
 		if(stabilizationEnabled)
 		{
@@ -573,7 +573,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 			{
 				cat(paste("Step no. ", i,"\n", sep = ""))
 			} else{
-				cat(paste("Step no. ", i,", change in value of estimate ", round(1 - minAbsCos,3),"\n", sep = ""))				
+				cat(paste("Step no. ", i,", change in value of estimate ", round(1 - minAbsCos,3),"\n", sep = ""))
 			}
 		}
 		#A = dewhiteningMatrix %*% B
@@ -587,8 +587,8 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	return(list(W = W, A = A))
 }
 
-.fpdefl = function(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init, 
-		maxiter1, maxiter2, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples, pct.sample, 
+.fpdefl = function(X, gOrig, n.comp, vectorSize, initialStateMode, whiteningMatrix, dewhiteningMatrix, A.init,
+		maxiter1, maxiter2, epsilon, stabilizationEnabled, finetuningEnabled, failureLimit, myy, myyK, myyOrig, nsamples, pct.sample,
 		tanh.par, gauss.par, gFine, trace, rseed)
 {
 	B = .zeros(vectorSize, vectorSize)
@@ -641,7 +641,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 						}
 						return(list(W = W, A = A))
 					}
-				} 
+				}
 			} else{
 				if(i >= endFinetuning) wOld = w
 			}
@@ -687,7 +687,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 					long = 1
 					myy = .5 * myy
 					if( (usedNlinearity%%2) == 0) usedNlinearity = usedNlinearity + 1
-				}	
+				}
 			}
 			wOld2 = wOld
 			wOld = w
@@ -842,7 +842,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	gauss = Y * ex
 	Beta = apply(Y * gauss, 2, "sum")
 	D = diag(1 / (Beta - sum((1 - gauss.par * (Y^2))* ex)))
-	ans = B + myy * B %*% ( t(Y) %*% gauss - diag(Beta)) %*% D				
+	ans = B + myy * B %*% ( t(Y) %*% gauss - diag(Beta)) %*% D
 	ans
 }
 
@@ -1053,7 +1053,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 # RADICAL   Solve the ICA problem in arbitrary dimension.
 #
 #    Version 1.1. Major bug fix. Faster entropy estimator.
-# 
+#
 #    Apr.1, 2004. Major bug fix. Whitening matrix was wrong. Thanks
 #      to Sergey Astakhov for spotting this one.
 #
@@ -1065,9 +1065,9 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 # R translation-Alexios Ghalanos and code
 
 radical = function(X, n.comp = dim(X)[2], demean = TRUE,
-		pca.cov = c("ML", "LW", "ROB", "EWMA"), k = 150, 
-		augment = FALSE, replications = 30, sd = 0.175, firstEig = 1, 
-		lastEig = dim(X)[1], pcaE = NULL, pcaD = NULL, whiteSig = NULL, whiteMat = NULL, 
+		pca.cov = c("ML", "LW", "ROB", "EWMA"), k = 150,
+		augment = FALSE, replications = 30, sd = 0.175, firstEig = 1,
+		lastEig = dim(X)[1], pcaE = NULL, pcaD = NULL, whiteSig = NULL, whiteMat = NULL,
 		dewhiteMat = NULL, rseed = NULL, trace = FALSE, ...)
 {
 	tic = Sys.time()
@@ -1079,12 +1079,12 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	idx = match(tolower(pca.cov[1]), tolower(c("ML", "LW", "ROB", "EWMA")))
 	if(is.na(idx)) stop("\nradical-->error: pca.cov choice not recognized.")
 	pca.cov = c("ML", "LW", "ROB", "EWMA")[idx]
-	
+
 	########################################
 	# STAGE 1: Demean Data
-	
+
 	# Remove the mean and check the data
-	if(demean){ 
+	if(demean){
 		mixedmean = apply(X, 1, "mean")
 		mixedsig  = t(apply(X, 1, FUN = function(x) x - mean(x) ))
 	} else{
@@ -1125,7 +1125,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 		# recover the covariance matrix (for non-dimensionality reduced systems)
 		if(NROW(pcaE) == NCOL(pcaE)) C = pcaE %*% pcaD %*% solve(pcaE) else C = NULL
 	}
-	
+
 	# whiteSig (n by f)
 	if(!is.null(whiteSig)){
 		if(!is.matrix(whiteSig)) stop("\nwhiteSig must be an n by f matrix (see documentation)")
@@ -1139,13 +1139,13 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 			whiteSig = t(whiteSig)
 		}
 	}
-	
+
 	if(!is.null(dewhiteMat)){
 		if(is.null(whiteMat)) stop("\ndewhiteMat cannot be provided without whiteMat.")
 		if(nrow(dewhiteMat)!=nrow(X)) stop("\ndewhiteMat must be an m by f matrix (see documentation)")
 		if(ncol(dewhiteMat)!=n.comp) stop("\ndewhiteMat must be an m by f matrix (see documentation)")
 	}
-	
+
 	# whiteMat (m by f)
 	if(!is.null(whiteMat)){
 		if(!is.matrix(whiteMat)) stop("\nwhiteMat must be an f by m matrix (see documentation)")
@@ -1164,7 +1164,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 			whiteSig = t(whiteSig)
 		}
 	}
-	
+
 	if(is.null(rseed)) rseed = runif(1, 1, 100000)
 	# When augment is FALSE, do not augment data. Use original data only.
 	if(!augment) replications = 1
@@ -1241,7 +1241,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	sweepIter = 0
 	totalRot = diag(Dim)
 	xcur = whiteningsig
-	
+
 	# K represents the number of rotations to examine on the FINAL
 	# sweep. To optimize performance, we start with a smaller number of
 	# rotations to examine. Then, we increase the
@@ -1254,7 +1254,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	for(sweepNum in 1:sweeps){
 		if(trace) cat(paste("\nSweep: ", sweepNum,"/", sweeps, "\n", sep = ""))
 		range = pi/2
-		# Compute number of angle samples for this sweep.	
+		# Compute number of angle samples for this sweep.
 		if(sweepNum >(sweeps/2)){
 			newKfloat = newKfloat*1.3
 			newK = floor(newKfloat)
@@ -1269,7 +1269,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 				# Extract dimensions (i,j) from the current data.
 				# **********************************************
 				curSubSpace = rbind(xcur[i, ], xcur[j, ])
-				
+
 				# ***************************************************
 				# Find the best angle theta for this Jacobi rotation.
 				# ***************************************************
@@ -1294,12 +1294,12 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	S = W %*% mixedsig + (W %*% mixedmean) %*% .ones(1, nsamples)
 	U = totalRot
 	A = t(t(solve(U)) %*% t(dewhiteningMatrix))
-	
+
 	toc = Sys.time() - tic
-	
-	return(list(A = (A), W = (W), U = t(U), S = t(S), E = E, D = D, C = C, mu = mixedmean, 
-					whiteningMatrix = (whiteningMatrix), 
-					dewhiteningMatrix = (dewhiteningMatrix), 
+
+	return(list(A = (A), W = (W), U = t(U), S = t(S), E = E, D = D, C = C, mu = mixedmean,
+					whiteningMatrix = (whiteningMatrix),
+					dewhiteningMatrix = (dewhiteningMatrix),
 					rseed = tmp$rseed, elapsed = toc))
 }
 
@@ -1317,21 +1317,21 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	d = dim(X)[1]
 	N = dim(X)[2]
 	# This routine assumes that it gets whitened data.
-	# First, we augment the points with reps near copies of each point.		
+	# First, we augment the points with reps near copies of each point.
 	if(replications == 1){
 		xAug = X
 	} else{
 		set.seed(rseed)
-		xAug = matrix(rnorm(d*N*replications, mean = 0, sd = sd), nrow = d, 
+		xAug = matrix(rnorm(d*N*replications, mean = 0, sd = sd), nrow = d,
 				ncol = N*replications, byrow = TRUE) + .repmat(X, 1, replications)
 	}
-	# Then we rotate this data to various angles, evaluate the sum of 
-	# the marginals, and take the min.		
+	# Then we rotate this data to various angles, evaluate the sum of
+	# the marginals, and take the min.
 	#perc = range/(pi/2)
 	#numberK = perc*K
 	#start = floor(K/2-numberK/2)+1
 	#endPt = ceiling(K/2+numberK/2)
-	ent = .Call("radicalrot", X = as.matrix(xAug), idx = as.integer(c(m,K)), 
+	ent = .Call("radicalrot", X = as.matrix(xAug), idx = as.integer(c(m,K)),
 			PACKAGE = "rmgarch")
 	tmp = sort.int(ent, index.return = TRUE)
 	val = tmp$x
@@ -1401,7 +1401,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 	if(maxLastEig == 0)
 	{
 		cat("\nEigenvalues of the covariance matrix are all smaller than tolerance
-						of 1e-7. Please make sure that your data matrix contains. nonzero values. If the values 
+						of 1e-7. Please make sure that your data matrix contains. nonzero values. If the values
 						are very small try rescaling the data matrix.\n")
 		stop("\nafrica-->error: Unable to continue, aborting.\n", call. = FALSE)
 	}
@@ -1434,23 +1434,23 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 		higherLimitValue = eigenvalues[1] + 1
 	}
 	higherColumns = diag(D) < higherLimitValue
-	
+
 	# Combine the results from above
 	selectedColumns = lowerColumns & higherColumns
-	
+
 	# print some info for the user
 	if(trace) cat(paste("Selected ", sum (selectedColumns), "dimensions.\n", sep = ""))
-	
-	if(sum(selectedColumns) != (lastEig - firstEig + 1)) 
+
+	if(sum(selectedColumns) != (lastEig - firstEig + 1))
 		stop("\nafrica-->error: Selected wrong number of dimensions.\n", call. = FALSE)
-	
+
 	if(trace)
 	{
 		cat(paste("Smallest remaining (non-zero) eigenvalue ", round(eigenvalues[lastEig],5), "\n", sep = ""))
 		cat(paste("Largest remaining (non-zero) eigenvalue ", round(eigenvalues[firstEig],5), "\n", sep = ""))
 		cat(paste("Sum of removed eigenvalues ", round(sum(diag(D)*(!selectedColumns)), 5), "\n", sep = ""))
 	}
-	
+
 	# Select the colums which correspond to the desired range
 	# of eigenvalues.
 	E = .selcol(E, selectedColumns)
@@ -1483,7 +1483,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 			numTaken = numTaken + 1
 		}
 	}
-	newMatrix = oldMatrix[, takingMask]
+	newMatrix = oldMatrix[, takingMask, drop = FALSE]
 	return(newMatrix)
 }
 
@@ -1493,11 +1493,11 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 whitenv  = function(vectors, E, D, trace)
 {
 	if (any(diag(D) < 0))
-		stop("\nafrica-->error: negative eigenvalues computed from the 
-						covariance matrix. These are due to rounding errors 
-						in R (the correct eigenvalues are probably very small). 
-						To correct the situation please reduce the number of 
-						dimensions in the data by using the lastEig argument in 
+		stop("\nafrica-->error: negative eigenvalues computed from the
+						covariance matrix. These are due to rounding errors
+						in R (the correct eigenvalues are probably very small).
+						To correct the situation please reduce the number of
+						dimensions in the data by using the lastEig argument in
 						function the ICA function.\n", call. = FALSE)
 	whiteningMatrix = solve(sqrt(D))%*%t(E)
 	dewhiteningMatrix = E %*% sqrt(D)
@@ -1505,8 +1505,8 @@ whitenv  = function(vectors, E, D, trace)
 	# newVectors calculated for check
 	newVectors =  whiteningMatrix %*% vectors
 	if(any(is.complex(newVectors))) stop("\nfastica-->error: Whitened vectors have imaginary values.\n", call. = FALSE)
-	
-	return(list(newVectors = newVectors, whiteningMatrix = whiteningMatrix, 
+
+	return(list(newVectors = newVectors, whiteningMatrix = whiteningMatrix,
 					dewhiteningMatrix = dewhiteningMatrix))
 }
 .zeros = function(n = 1, m = 1)
@@ -1557,7 +1557,7 @@ lw.cov = function(X, shrink = -1, demean = FALSE){
 	prior = meanvar * diag(m)
 	if(shrink == -1){
 		# compute shrinkage parameters
-		# p in paper 
+		# p in paper
 		y = X^2
 		phiMat = (t(y)%*%y)/n - 2*(t(X)%*%X)*samplecov/n + samplecov^2
 		phi = sum(apply(phiMat, 1, "sum"))
@@ -1606,7 +1606,7 @@ check_ICA<-function(Data, A, W, U, E, D, S, mu, whiteningMatrix, dewhiteningMatr
 	cat("\n")
 	print(head(dX %*% t(whiteningMatrix), 4))
 	cat("\nW [f by m] = solve(dewhiteningMatrix %*% U)")
-	cat("\nW [f by m] = t(t(whiteningMatrix) %*% U) [for dimensionality reduced systems]\n")	
+	cat("\nW [f by m] = t(t(whiteningMatrix) %*% U) [for dimensionality reduced systems]\n")
 	cat("\n")
 	print(round(W,8) == round(t(t(whiteningMatrix) %*% U),8))
 	if(dim(U)[2] == ncol(Data)) print(round(W,8) == round(solve(dewhiteningMatrix %*% U),8))

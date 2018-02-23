@@ -1,9 +1,15 @@
+2018-02-12 Alexios Ghalanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.3-4.
+	* Cleanup and routine registration
+	* Small fix .pca in rmgarch-ica.R file for not dropping dimension
+	when n=2 (thanks to Johannes Scheuplein for fix).
+
 2017-06-01 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-3.
 	* Added option to use cluster on the window dimension rather than assets
 	in dccroll.
 	* Numerous minor changes to underlying functionality.
-	
+
 2016-09-20 Alexios Ghalanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-2.
   * gogarchsim now takes either a goGARCHfit or goGARCHfilter object. First argument

@@ -26,39 +26,39 @@ rmgarch.test3a = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
+
 	# DCC timecopula MVN (check against DCC-NORM)--> They should be the same
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH", variance.targeting=FALSE), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH", variance.targeting=FALSE),
 		distribution.model = "norm")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), asymmetric = TRUE, 
-			distribution.model = list(copula = "mvnorm", method = "Kendall", 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), asymmetric = TRUE,
+			distribution.model = list(copula = "mvnorm", method = "Kendall",
 					time.varying = TRUE, transformation = "parametric"))
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster, solver.control=list(trace=1))
-	
+
 	# Create and Check the Filter method
 	specx1 = spec1
 	for(i in 1:3) specx1@umodel$fixed.pars[[i]] = as.list(fit1@model$mpars[fit1@model$midx[,i]==1,i])
 	setfixed(specx1)<-as.list(fit1@model$mpars[fit1@model$midx[,4]==1,4])
 	filt1 = cgarchfilter(specx1, data = Dat, cluster = cluster)
-	
+
 	options(width = 120)
 	zz <- file("test3a1.txt", open="wt")
 	sink(zz)
-	print(all.equal(last(rcov(fit1))[,,1], last(rcov(filt1))[,,1]))
-	print(all.equal(first(rcov(fit1))[,,1], first(rcov(filt1))[,,1]))
+	print(all.equal(rmgarch::last(rcov(fit1))[,,1], rmgarch::last(rcov(filt1))[,,1]))
+	print(all.equal(rmgarch::first(rcov(fit1))[,,1], rmgarch::first(rcov(filt1))[,,1]))
 	print(all.equal(head(fitted(fit1)), head(fitted(filt1))))
 	print(all.equal(head(sigma(fit1)), head(sigma(filt1))))
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
-	spec2 = dccspec(uspec = multispec( replicate(3, uspec) ), dccOrder = c(1,1), VAR = FALSE, 
+
+
+	spec2 = dccspec(uspec = multispec( replicate(3, uspec) ), dccOrder = c(1,1), VAR = FALSE,
 			model = "aDCC", distribution = "mvnorm")
 	fit2 = dccfit(spec2, data = Dat, cluster = cluster)
-		
+
 	options(width = 120)
 	zz <- file("test3a2.txt", open="wt")
 	sink(zz)
@@ -68,29 +68,29 @@ rmgarch.test3a = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	# DCC timecopula MVT (check against DCC-Student)--> They should be the same
-	uspec3 = ugarchspec(mean.model = list(armaOrder = c(2,1)), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec3 = ugarchspec(mean.model = list(armaOrder = c(2,1)),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 		distribution.model = "std", fixed.pars = list(shape = 6))
 
-	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec3) ), VAR = FALSE, 
-			robust = FALSE, lag = 1, lag.max = NULL, 
+	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec3) ), VAR = FALSE,
+			robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = TRUE, 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					method = c("Kendall", "ML")[1], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = TRUE,
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					method = c("Kendall", "ML")[1], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			start.pars = list(), fixed.pars = list(mshape = 6))
 	fit3 = cgarchfit(spec3, data = Dat, cluster = cluster, solver.control=list(trace=1))
-	
+
 	# Create and Check the Filter method
 	specx3 = spec3
 	for(i in 1:3) specx3@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx3)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
 	filt3 = cgarchfilter(specx3, data = Dat, cluster = cluster)
-	
+
 	options(width = 120)
 	zz <- file("test3a3.txt", open="wt")
 	sink(zz)
@@ -102,10 +102,10 @@ rmgarch.test3a = function(cluster = NULL)
 	sink()
 	close(zz)
 
-	spec4 = dccspec(uspec = multispec( replicate(3, uspec3) ), dccOrder = c(1,1), 
+	spec4 = dccspec(uspec = multispec( replicate(3, uspec3) ), dccOrder = c(1,1),
 			model = "aDCC", distribution = "mvt", fixed.pars = list(mshape = 6))
 	fit4 = dccfit(spec4, data = Dat, cluster = cluster)
-	
+
 	options(width = 120)
 	zz <- file("test3a4.txt", open="wt")
 	sink(zz)
@@ -116,34 +116,34 @@ rmgarch.test3a = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	postscript("test3a-1.eps")
 	plot(rcor(fit4)[1,2,], type="l")
 	lines(rcor(fit3)[1,2,], col = 2, lty=4)
 	dev.off()
-	
+
 	# Some Alternative Parametrizations
-	uspec4 = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec4 = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "jsu")
-	
-	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec4) ), VAR = TRUE, 
-			robust = FALSE, lag = 1, lag.max = NULL, 
-			dccOrder = c(1,1), asymmetric = FALSE, 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					time.varying = TRUE, 
+
+	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec4) ), VAR = TRUE,
+			robust = FALSE, lag = 1, lag.max = NULL,
+			dccOrder = c(1,1), asymmetric = FALSE,
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[2]))
-	
+
 	fit4 = cgarchfit(spec4, data = Dat, cluster = cluster)
-	
-	
+
+
 	# Create and Check the Filter method
 	specx4 = spec4
 	for(i in 1:3) specx4@umodel$fixed.pars[[i]] = as.list(fit4@model$mpars[fit4@model$midx[,i]==1,i])
 	setfixed(specx4)<-as.list(fit4@model$mpars[fit4@model$midx[,4]==1,4])
 	filt4 = cgarchfilter(specx4, data = Dat, cluster = cluster,
 			varcoef = fit4@model$varcoef)
-	
+
 	options(width = 120)
 	zz <- file("test3a5.txt", open="wt")
 	sink(zz)
@@ -154,26 +154,26 @@ rmgarch.test3a = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	# Check out of sample (VAR)
-	uspec5 = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec5 = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "jsu")
-	
-	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec5) ), VAR = TRUE, 
-			robust = FALSE, lag = 1, lag.max = NULL, 
-			dccOrder = c(1,1), asymmetric = FALSE, 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					time.varying = TRUE, 
+
+	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec5) ), VAR = TRUE,
+			robust = FALSE, lag = 1, lag.max = NULL,
+			dccOrder = c(1,1), asymmetric = FALSE,
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[3]))
-	
+
 	fit5 = cgarchfit(spec5, data = Dat, out.sample = 100, cluster = cluster)
 	specx5 = spec5
 	for(i in 1:3) specx5@umodel$fixed.pars[[i]] = as.list(fit5@model$mpars[fit5@model$midx[,i]==1,i])
 	setfixed(specx5)<-as.list(fit5@model$mpars[fit5@model$midx[,4]==1,4])
-	filt5 = cgarchfilter(specx5, data = Dat, out.sample = 100, 
+	filt5 = cgarchfilter(specx5, data = Dat, out.sample = 100,
 			cluster = cluster, varcoef = fit5@model$varcoef)
-	
+
 	options(width = 120)
 	zz <- file("test3a6.txt", open="wt")
 	sink(zz)
@@ -185,8 +185,8 @@ rmgarch.test3a = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
@@ -198,26 +198,26 @@ rmgarch.test3b = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
+
 	# GARCH-Normal MVN (equivalent to CCC-Normal)
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			start.pars = list(), fixed.pars = list())
-	
-	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster, fit.control = list(eval.se=TRUE))	
-	
+
+	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster, fit.control = list(eval.se=TRUE))
+
 	specx1 = spec1
 	for(i in 1:3) specx1@umodel$fixed.pars[[i]] = as.list(fit1@model$mpars[fit1@model$midx[,i]==1,i])
 	setfixed(specx1)<-as.list(fit1@model$mpars[fit1@model$midx[,4]==1,4])
 	filt1 = cgarchfilter(specx1, data = Dat, cluster = cluster)
-	
-	
+
+
 	options(width = 120)
 	zz <- file("test3b1.txt", open="wt")
 	sink(zz)
@@ -228,31 +228,31 @@ rmgarch.test3b = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	# GARCH-Student MVT (equivalent to CCC-Student)
-	uspec2 = ugarchspec(mean.model = list(armaOrder = c(2,1)), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec2 = ugarchspec(mean.model = list(armaOrder = c(2,1)),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "std", fixed.pars = list(shape = 6))
-	
-	spec2 = cgarchspec(uspec = multispec( replicate(3, uspec2) ), 
-			VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+
+	spec2 = cgarchspec(uspec = multispec( replicate(3, uspec2) ),
+			VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					method = c("Kendall", "ML")[1], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					method = c("Kendall", "ML")[1], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			fixed.pars = list(mshape = 6))
 	fit2a = cgarchfit(spec2, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=TRUE))
 	fit2b = cgarchfit(spec2, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
-	
+
 	specx2 = spec2
 	for(i in 1:3) specx2@umodel$fixed.pars[[i]] = as.list(fit2a@model$mpars[fit2a@model$midx[,i]==1,i])
 	setfixed(specx2)<-as.list(fit2a@model$mpars[fit2a@model$midx[,4]==1,4])
 	filt2 = cgarchfilter(specx2, data = Dat, cluster = cluster)
-	
-	
+
+
 	options(width = 120)
 	zz <- file("test3b2.txt", open="wt")
 	sink(zz)
@@ -268,20 +268,20 @@ rmgarch.test3b = function(cluster = NULL)
 	sink()
 	close(zz)
 
-	
+
 	# GARCH-Student MVT + VAR+ML
 	# Notice that even though we 'forget' to set arma to (0,0) and exclude the
 	# mean, the program will do that check and exclude them when using VAR for
-	# mean filtration (check done in the cgarchspec stage). 
-	uspec3 = ugarchspec(mean.model = list(armaOrder = c(2,1)), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	# mean filtration (check done in the cgarchspec stage).
+	uspec3 = ugarchspec(mean.model = list(armaOrder = c(2,1)),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "std")
-	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec3) ), 
-			VAR = TRUE, robust = TRUE, lag = 2, lag.max = NULL, 
+	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec3) ),
+			VAR = TRUE, robust = TRUE, lag = 2, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[2]),
 			fixed.pars = list(mshape = 5.5))
 	fit3a = cgarchfit(spec3, data = Dat, cluster = cluster,
@@ -292,13 +292,13 @@ rmgarch.test3b = function(cluster = NULL)
 	varobj = varxfilter(X = Dat, p = 2, Bcoef = fit3a@model$varcoef, postpad = "constant")
 	fit3b = cgarchfit(spec3, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=FALSE), VAR.fit = varobj)
-	
+
 	specx3 = spec3
 	for(i in 1:3) specx3@umodel$fixed.pars[[i]] = as.list(fit3a@model$mpars[fit3a@model$midx[,i]==1,i])
 	setfixed(specx3)<-as.list(fit3a@model$mpars[fit3a@model$midx[,4]==1,4])
 	filt3 = cgarchfilter(specx3, data = Dat, cluster = cluster,
-			varcoef = varobj$Bcoef)	
-	
+			varcoef = varobj$Bcoef)
+
 	options(width = 120)
 	zz <- file("test3b3.txt", open="wt")
 	sink(zz)
@@ -313,13 +313,13 @@ rmgarch.test3b = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
-	
-	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec3) ), 
-			VAR = TRUE, robust = FALSE, lag = 2, 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+
+
+
+	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec3) ),
+			VAR = TRUE, robust = FALSE, lag = 2,
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[2]),
 			fixed.pars = list(mshape = 5.5))
 	fit4a = cgarchfit(spec4, data = Dat, out.sample = 101, cluster = cluster,
@@ -331,16 +331,16 @@ rmgarch.test3b = function(cluster = NULL)
 	# reference paper on algorithm to understand why).
 	varobj1 = varxfilter(X = Dat[1:(NROW(Dat)-101),], p = 2, Bcoef = fit4a@model$varcoef, postpad = "constant")
 	varobj2 = varxfit(X = Dat[1:(NROW(Dat)-101),], p = 2, postpad = "constant")
-	
+
 	fit4b = cgarchfit(spec4, data = Dat, out.sample = 101, cluster = cluster,
 			fit.control = list(eval.se=FALSE), VAR.fit = varobj2)
-	
+
 	specx4 = spec4
 	for(i in 1:3) specx4@umodel$fixed.pars[[i]] = as.list(fit4a@model$mpars[fit4a@model$midx[,i]==1,i])
 	setfixed(specx4)<-as.list(fit4a@model$mpars[fit4a@model$midx[,4]==1,4])
 	filt4 = cgarchfilter(specx4, data = Dat, out.sample = 101, cluster = cluster,
 			varcoef = varobj1$Bcoef)
-	
+
 	options(width = 120)
 	zz <- file("test3b4.txt", open="wt")
 	sink(zz)
@@ -355,13 +355,13 @@ rmgarch.test3b = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	# Test one with time-varying
-	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec3) ), 
-			VAR = TRUE, robust = FALSE, lag = 2, 
-			distribution.model = list(copula = c("mvnorm", "mvt")[2], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec3) ),
+			VAR = TRUE, robust = FALSE, lag = 2,
+			distribution.model = list(copula = c("mvnorm", "mvt")[2],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[2]),
 			fixed.pars = list(mshape = 5.5))
 	fit5 = cgarchfit(spec5, data = Dat, out.sample = 101, cluster = cluster,
@@ -371,16 +371,16 @@ rmgarch.test3b = function(cluster = NULL)
 	# Data prior to passing to varxfilter
 	# NB: if robust=TRUE, then you will never get exactly the same results (see
 	# reference paper on algorithm to understand why).
-	
+
 	fit5 = cgarchfit(spec5, data = Dat, out.sample = 101, cluster = cluster,
 			fit.control = list(eval.se=FALSE), VAR.fit = varobj2)
-	
+
 	specx5 = spec5
 	for(i in 1:3) specx5@umodel$fixed.pars[[i]] = as.list(fit5@model$mpars[fit5@model$midx[,i]==1,i])
 	setfixed(specx5)<-as.list(fit5@model$mpars[fit5@model$midx[,4]==1,4])
 	filt5 = cgarchfilter(specx5, data = Dat, out.sample = 101, cluster = cluster,
-			varcoef = varobj1$Bcoef)	
-	
+			varcoef = varobj1$Bcoef)
+
 	options(width = 120)
 	zz <- file("test3b5.txt", open="wt")
 	sink(zz)
@@ -391,7 +391,7 @@ rmgarch.test3b = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
@@ -403,31 +403,31 @@ rmgarch.test3c = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
+
 	# GARCH-Normal MVN (equivalent to CCC-Normal)
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx1 = spec1
 	for(i in 1:3) specx1@umodel$fixed.pars[[i]] = as.list(fit1@model$mpars[fit1@model$midx[,i]==1,i])
 	setfixed(specx1)<-as.list(fit1@model$mpars[fit1@model$midx[,4]==1,4])
-	
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt1 = cgarchfilter(specx1, data = Dat[1:(T+100), ], filter.control  = list(n.old = T))
 	# without using n.old
 	filt2 = cgarchfilter(specx1, data = Dat[1:(T+100), ])
-	
+
 	options(width = 120)
 	zz <- file("test3c1.txt", open="wt")
 	sink(zz)
@@ -445,32 +445,32 @@ rmgarch.test3c = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	# spd
-	spec2 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec2 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[3]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit2 = cgarchfit(spec2, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx2 = spec2
 	for(i in 1:3) specx2@umodel$fixed.pars[[i]] = as.list(fit2@model$mpars[fit2@model$midx[,i]==1,i])
 	setfixed(specx2)<-as.list(fit2@model$mpars[fit2@model$midx[,4]==1,4])
-	
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt2a = cgarchfilter(specx2, data = Dat[1:(T+100), ], filter.control  = list(n.old = T))
 	# without using n.old
 	filt2b = cgarchfilter(specx2, data = Dat[1:(T+100), ])
-	
+
 	filt2c = cgarchfilter(specx2, data = Dat[1:(T), ])
-	
+
 	options(width = 120)
 	zz <- file("test3c2.txt", open="wt")
 	sink(zz)
@@ -488,35 +488,35 @@ rmgarch.test3c = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	# Parametric & timecopula & VAR
-	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-			variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE),
+			variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec3 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit3 = cgarchfit(spec3, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx3 = spec3
 	for(i in 1:3) specx3@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx3)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
-	
-	
+
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt3a = cgarchfilter(specx3, data = Dat[1:(T+100), ], filter.control = list(n.old = T), varcoef = fit3@model$varcoef)
 	# without using n.old
 	filt3b = cgarchfilter(specx3, data = Dat[1:(T+100), ], varcoef = fit3@model$varcoef)
-	
+
 	filt3c = cgarchfilter(specx3, data = Dat[1:(T), ], varcoef = fit3@model$varcoef)
-	
+
 	options(width = 120)
 	zz <- file("test3c3.txt", open="wt")
 	sink(zz)
@@ -525,7 +525,7 @@ rmgarch.test3c = function(cluster = NULL)
 	print(all.equal(rcov(fit3)[,,1], rcov(filt3c)[,,1]))
 	print(all.equal(head(fitted(fit3)), head(fitted(filt3a))))
 	print(all.equal(head(fitted(fit3)), head(fitted(filt3b))))
-	print(all.equal(head(fitted(fit3)), head(fitted(filt3c))))	
+	print(all.equal(head(fitted(fit3)), head(fitted(filt3c))))
 	# ... as T grow, the impact of the initial values decays and the results is
 	# the same for methods using either n.old and without (almost for 3b..)
 	print(all.equal(rcov(fit3)[,,T-2], rcov(filt3a)[,,T-2]))
@@ -533,34 +533,34 @@ rmgarch.test3c = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	# spd & timecopula & VAR
-	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL, 
+	spec4 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[3]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit4 = cgarchfit(spec4, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx4 = spec4
 	for(i in 1:3) specx4@umodel$fixed.pars[[i]] = as.list(fit4@model$mpars[fit4@model$midx[,i]==1,i])
 	setfixed(specx4)<-as.list(fit4@model$mpars[fit4@model$midx[,4]==1,4])
-	
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt4a = cgarchfilter(specx4, data = Dat[1:(T+100), ], filter.control  = list(n.old = T), varcoef = fit4@model$varcoef)
 	# without using n.old
 	filt4b = cgarchfilter(specx4, data = Dat[1:(T+100), ], varcoef = fit4@model$varcoef)
-	
+
 	filt4c = cgarchfilter(specx4, data = Dat[1:(T), ], varcoef = fit4@model$varcoef)
-	
+
 	options(width = 120)
 	zz <- file("test3c3.txt", open="wt")
 	sink(zz)
@@ -579,34 +579,34 @@ rmgarch.test3c = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	# spd & timecopula & ARMA
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec5 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[3]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit5 = cgarchfit(spec5, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx5 = spec5
 	for(i in 1:3) specx5@umodel$fixed.pars[[i]] = as.list(fit5@model$mpars[fit5@model$midx[,i]==1,i])
 	setfixed(specx5)<-as.list(fit5@model$mpars[fit5@model$midx[,4]==1,4])
-	
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt5a = cgarchfilter(specx5, data = Dat[1:(T+100), ], filter.control  = list(n.old = T))
 	# without using n.old
 	filt5b = cgarchfilter(specx5, data = Dat[1:(T+100), ])
-	
+
 	filt5c = cgarchfilter(specx5, data = Dat[1:(T), ])
-	
+
 	options(width = 120)
 	zz <- file("test3c3.txt", open="wt")
 	sink(zz)
@@ -626,34 +626,34 @@ rmgarch.test3c = function(cluster = NULL)
 	sink(type="message")
 	sink()
 	close(zz)
-	
-	
+
+
 	# empirial & timecopula & ARMA
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec6 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec6 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[2]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit6 = cgarchfit(spec6, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
 	T = dim(Dat)[1]-100
-	
+
 	specx6 = spec6
 	for(i in 1:3) specx6@umodel$fixed.pars[[i]] = as.list(fit6@model$mpars[fit6@model$midx[,i]==1,i])
 	setfixed(specx6)<-as.list(fit6@model$mpars[fit6@model$midx[,4]==1,4])
-	
+
 	# including n.old filters based on the full assumptions of the fitted model
 	filt6a = cgarchfilter(specx6, data = Dat[1:(T+100), ], filter.control  = list(n.old = T))
 	# without using n.old
 	filt6b = cgarchfilter(specx6, data = Dat[1:(T+100), ])
-	
+
 	filt6c = cgarchfilter(specx6, data = Dat[1:(T), ])
-	
+
 	options(width = 120)
 	zz <- file("test3c3.txt", open="wt")
 	sink(zz)
@@ -679,25 +679,25 @@ rmgarch.test3c = function(cluster = NULL)
 ## Simulation static copula
 rmgarch.test3d = function(cluster = NULL)
 {
-	
+
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
+
 	# GARCH-Normal MVN (equivalent to CCC-Normal)
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = FALSE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = FALSE,
 					transformation = c("parametric", "empirical", "spd")[1]),
 			start.pars = list(), fixed.pars = list())
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
-	
+
 	sim1 = cgarchsim(fit1, n.sim = 1000, m.sim = 10, startMethod = "sample")
 	sim2 = cgarchsim(fit1, n.sim = 2, m.sim = 1000, startMethod = "sample")
 	# 2-ahead mean covariance (1-ahead has no uncertainty).
@@ -708,15 +708,15 @@ rmgarch.test3d = function(cluster = NULL)
 	ebars[,1] = sapply(sim2@msim$simH, FUN = function(x) x[1,2,2])
 	ebars[,2] = sapply(sim2@msim$simH, FUN = function(x) x[1,3,2])
 	ebars[,3] = sapply(sim2@msim$simH, FUN = function(x) x[2,3,2])
-	
+
 	postscript("test3d1.eps", width = 10, height = 8)
 	boxplot(ebars, notch = TRUE, names = c("H12", "H13", "H23"), main = "Simulated 2-ahead Covariance",
 			col = 2:4)
 	dev.off()
-	
+
 	# constant correlation:
 	#print(all.equal(cov2cor(sim1@msim$simH[[1]][,,1]), cov2cor(sim1@msim$simH[[2]][,,40]), cov2cor(sim1@msim$simH[[10]][,,1000])))
-	
+
 	# 1-ahead rolling forecast exercise
 	fit3 = cgarchfit(spec1, data = Dat, out.sample = 100, cluster = cluster,
 		fit.control = list(eval.se=FALSE))
@@ -727,28 +727,28 @@ rmgarch.test3d = function(cluster = NULL)
 	specx = spec1
 	for(i in 1:3) specx@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
-	
+
 	for(i in 1:100){
 		if(i==1){
 			presigma = matrix(tail(sigma(fit3), 2), ncol = 3)
 			# arma = c(2,1) therefore need 2 lags
 			prereturns = matrix(unlist(Dat[(T-1):T, ]), ncol = 3, nrow = 2)
 			preresiduals = matrix(tail(residuals(fit3),2), ncol = 3, nrow = 2)
-			
+
 			tmp = cgarchfilter(specx, Dat[1:(T+1), ], filter.control = list(n.old = T))
 			filtMu[i,] = tail(fitted(tmp), 1)
 			filtS[i,] = tail(sigma(tmp), 1)
-			filtC[,,i] = last(rcov(tmp))[,,1]
+			filtC[,,i] = rmgarch::last(rcov(tmp))[,,1]
 		} else{
 			presigma = matrix(tail(sigma(tmp), 2), ncol = 3)
 			# arma = c(2,1) therefore need 2 lags
 			prereturns = matrix(unlist(Dat[(T+i-2):(T+i-1), ]), ncol = 3, nrow = 2)
 			preresiduals = matrix(tail(residuals(tmp),2), ncol = 3, nrow = 2)
-			
-			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T))			
+
+			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T))
 			filtMu[i,] = tail(fitted(tmp), 1)
 			filtS[i,] = tail(sigma(tmp), 1)
-			filtC[,,i] = last(rcov(tmp))[,,1]
+			filtC[,,i] = rmgarch::last(rcov(tmp))[,,1]
 		}
 		sim3 = cgarchsim(fit3, n.sim = 1, m.sim = 10000, startMethod = "sample", prereturns = prereturns,
 				presigma = presigma, preresiduals = preresiduals)
@@ -757,19 +757,19 @@ rmgarch.test3d = function(cluster = NULL)
 		simS[i,] = colSd(simx)
 		simC[,,i] = cov(simx)
 		print(i)
-		
+
 		# CHECK:
 		# X[t+1] = mu[t+1] + e[t+1]
 		# sim3@msim$simX[[i]][1,] - (sim3@msim$simZ[,,i]*sqrt(diag(sim3@msim$simH[[i]][,,1])))
 		# is equal to filtMu[i,]
 		if(i < 3 ){
-			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))),
 							filtMu[i,]))
-			print(all.equal(sim3@msim$simX[[10000]][1,] - (sim3@msim$simZ[,,10000]*sqrt(diag(sim3@msim$simH[[10000]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[10000]][1,] - (sim3@msim$simZ[,,10000]*sqrt(diag(sim3@msim$simH[[10000]][,,1]))),
 							filtMu[i,]))
 		}
 	}
-	
+
 	postscript("test3d2.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simMu[,1], type = "l", main = "AA Conditional Mean\nRolling Forecast",
@@ -784,9 +784,9 @@ rmgarch.test3d = function(cluster = NULL)
 			ylab = "mu", xlab = "Time")
 	lines(filtMu[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	dev.off()
-	
+
 	postscript("test3d3.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simS[,1], type = "l", main = "AA Conditional Sigma\nRolling Forecast",
@@ -802,7 +802,7 @@ rmgarch.test3d = function(cluster = NULL)
 	lines(filtS[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3d4.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simC[1,2,], type = "l", main = "AA-AXP Conditional Covariance\nRolling Forecast",
@@ -813,18 +813,18 @@ rmgarch.test3d = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtC[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simC[2,3,], type = "l", main = "AXP-BA Conditional Covariance\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtC[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	dev.off()
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
-		
+
 }
 
 ## Simulation dynamic copula (parametric)
@@ -833,21 +833,21 @@ rmgarch.test3e = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
-	
+
+
 	# GARCH-Normal MVN
-	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "norm")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[1]))
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster, fit.control = list(eval.se=FALSE))
-	
-	
+
+
 	sim1 = cgarchsim(fit1, n.sim = 1000, m.sim = 10, startMethod = "sample", cluster=cluster)
 	sim2 = cgarchsim(fit1, n.sim = 2, m.sim = 1000, startMethod = "sample", cluster=cluster)
 	# 2-ahead mean covariance (1-ahead has no uncertainty).
@@ -858,13 +858,13 @@ rmgarch.test3e = function(cluster = NULL)
 	ebars[,1] = sapply(sim2@msim$simH, FUN = function(x) x[1,2,2])
 	ebars[,2] = sapply(sim2@msim$simH, FUN = function(x) x[1,3,2])
 	ebars[,3] = sapply(sim2@msim$simH, FUN = function(x) x[2,3,2])
-	
+
 	postscript("test3e1.eps", width = 10, height = 8)
 	boxplot(ebars, notch = TRUE, names = c("H12", "H13", "H23"), main = "Simulated 2-ahead Covariance",
 			col = 2:4)
 	dev.off()
 
-	
+
 	# 1-ahead rolling forecast exercise (but without updating initial VAR model)
 	fit3 = cgarchfit(spec1, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
@@ -875,7 +875,7 @@ rmgarch.test3e = function(cluster = NULL)
 	specx = spec1
 	for(i in 1:3) specx@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
-	
+
 	for(i in 1:100){
 		if(i==1){
 			presigma = matrix(tail(sigma(fit3), 2), ncol = 3)
@@ -900,7 +900,7 @@ rmgarch.test3e = function(cluster = NULL)
 			diag(preR) = 1
 			preQ = tmp@mfilter$Qt[[length(tmp@mfilter$Qt)]]
 			preZ = tail(tmp@mfilter$Z, 1)
-			
+
 			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T), varcoef = fit3@model$varcoef)
 			filtMu[i,] = tail(fitted(tmp), 1)
 			filtS[i,] = tail(sigma(tmp), 1)
@@ -922,19 +922,19 @@ rmgarch.test3e = function(cluster = NULL)
 		# sim3@msim$simX[[i]][1,] - sim3@msim$simRes[[i]][1,]
 		# is equal to filtMu[i,]
 		if(i == 1){
-			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))),
 							filtMu[i,]))
-			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))),
 							filtMu[i,]))
 		}
 		if(i == 2){
-			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))),
 							filtMu[i,]))
-			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))),
 							filtMu[i,]))
 		}
 	}
-	
+
 
 	postscript("test3e2.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
@@ -951,7 +951,7 @@ rmgarch.test3e = function(cluster = NULL)
 	lines(filtMu[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3e3.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simS[,1], type = "l", main = "AA Conditional Sigma\nRolling Forecast",
@@ -967,7 +967,7 @@ rmgarch.test3e = function(cluster = NULL)
 	lines(filtS[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3e4.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simC[1,2,], type = "l", main = "AA-AXP Conditional Covariance\nRolling Forecast",
@@ -978,13 +978,13 @@ rmgarch.test3e = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtC[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simC[2,3,], type = "l", main = "AXP-BA Conditional Covariance\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtC[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3e5.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simCor[1,2,], type = "l", main = "AA-AXP Conditional Correlation\nRolling Forecast",
@@ -995,20 +995,20 @@ rmgarch.test3e = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simCor[2,3,], type = "l", main = "AXP-BA Conditional Correlation\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
-	
+
+
 	# n-ahead forecast exercise
-	# when m.sim == 1, no need to supply any pre-data since the startMethod 
+	# when m.sim == 1, no need to supply any pre-data since the startMethod
 	# indicates that we extract the last values from the fit object
-	
+
 	sim4 = cgarchsim(fit3, n.sim = 1000, n.start = 500, m.sim = 100, startMethod = "sample", cluster = cluster)
-	
+
 	mR = matrix(0, nrow = 100, ncol = 3)
 	for(i in 1:100){
 		rc = rcor(sim4, sim = i)
@@ -1021,25 +1021,25 @@ rmgarch.test3e = function(cluster = NULL)
 	}
 	UQ = fit3@mfit$Qbar*(1-sum(coef(fit3, "dcc")))
 	UR = UQ/(sqrt(diag(UQ)) %*% t(sqrt(diag(UQ)) ))
-	
+
 	postscript("test3e6.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	hist(mR[,1], main = "AA-AXP Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,2], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,2], main = "AA-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,3], main = "AXP-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[2,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
 	dev.off()
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
@@ -1051,22 +1051,22 @@ rmgarch.test3f = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
-	
+
+
 	# GARCH-Normal MVN
-	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(0,0)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "jsu")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = TRUE, robust = FALSE, lag = 2, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1], 
-					method = c("Kendall", "ML")[2], time.varying = TRUE, 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt")[1],
+					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[3]))
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
-	
-	
+
+
 	sim1 = cgarchsim(fit1, n.sim = 1000, m.sim = 10, startMethod = "sample", cluster = cluster)
 	sim2 = cgarchsim(fit1, n.sim = 2, m.sim = 1000, startMethod = "sample", cluster = cluster)
 	# 2-ahead mean covariance (1-ahead has no uncertainty).
@@ -1077,13 +1077,13 @@ rmgarch.test3f = function(cluster = NULL)
 	ebars[,1] = sapply(sim2@msim$simH, FUN = function(x) x[1,2,2])
 	ebars[,2] = sapply(sim2@msim$simH, FUN = function(x) x[1,3,2])
 	ebars[,3] = sapply(sim2@msim$simH, FUN = function(x) x[2,3,2])
-	
+
 	postscript("test3f1.eps", width = 10, height = 8)
 	boxplot(ebars, notch = TRUE, names = c("H12", "H13", "H23"), main = "Simulated 2-ahead Covariance",
 			col = 2:4)
 	dev.off()
-	
-	
+
+
 	# 1-ahead rolling forecast exercise
 	fit3 = cgarchfit(spec1, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
@@ -1094,7 +1094,7 @@ rmgarch.test3f = function(cluster = NULL)
 	specx = spec1
 	for(i in 1:3) specx@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
-	
+
 	for(i in 1:100){
 		if(i==1){
 			presigma = matrix(tail(sigma(fit3), 2), ncol = 3)
@@ -1119,8 +1119,8 @@ rmgarch.test3f = function(cluster = NULL)
 			diag(preR) = 1
 			preQ = tmp@mfilter$Qt[[length(tmp@mfilter$Qt)]]
 			preZ = tail(tmp@mfilter$Z, 1)
-			
-			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T), varcoef = fit3@model$varcoef)			
+
+			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T), varcoef = fit3@model$varcoef)
 			filtMu[i,] = tail(fitted(tmp), 1)
 			filtS[i,] = tail(sigma(tmp), 1)
 			filtC[,,i] = last(rcov(tmp))[,,1]
@@ -1134,21 +1134,21 @@ rmgarch.test3f = function(cluster = NULL)
 		simC[,,i] = sim3@msim$simH[[1]][,,1]
 		simCor[,,i] = sim3@msim$simR[[1]][,,1]
 		simS[i,] = sqrt(diag(simC[,,i]))
-		
+
 		print(i)
 		# CHECK:
 		# X[t+1] = mu[t+1] + e[t+1]
 		# sim3@msim$simX[[i]][1,] - sim3@msim$simRes[[i]][1,]
 		# is equal to filtMu[i,]
 		if(i < 3){
-			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))),
 							filtMu[i,]))
-			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))),
 							filtMu[i,]))
 		}
 	}
-	
-	
+
+
 	postscript("test3f2.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simMu[,1], type = "l", main = "AA Conditional Mean\nRolling Forecast",
@@ -1164,7 +1164,7 @@ rmgarch.test3f = function(cluster = NULL)
 	lines(filtMu[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3f3.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simS[,1], type = "l", main = "AA Conditional Sigma\nRolling Forecast",
@@ -1180,7 +1180,7 @@ rmgarch.test3f = function(cluster = NULL)
 	lines(filtS[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3f4.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simC[1,2,], type = "l", main = "AA-AXP Conditional Covariance\nRolling Forecast",
@@ -1191,13 +1191,13 @@ rmgarch.test3f = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtC[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simC[2,3,], type = "l", main = "AXP-BA Conditional Covariance\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtC[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3f5.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simCor[1,2,], type = "l", main = "AA-AXP Conditional Correlation\nRolling Forecast",
@@ -1208,20 +1208,20 @@ rmgarch.test3f = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simCor[2,3,], type = "l", main = "AXP-BA Conditional Correlation\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
-	
+
+
 	# n-ahead forecast exercise
-	# when m.sim == 1, no need to supply any pre-data since the startMethod 
+	# when m.sim == 1, no need to supply any pre-data since the startMethod
 	# indicates that we extract the last values from the fit object
-	
+
 	sim4 = cgarchsim(fit3, n.sim = 1000, n.start = 500, m.sim = 100, startMethod = "sample", cluster = cluster)
-	
+
 	mR = matrix(0, nrow = 100, ncol = 3)
 	for(i in 1:100){
 		rc = rcor(sim4, sim = i)
@@ -1234,25 +1234,25 @@ rmgarch.test3f = function(cluster = NULL)
 	}
 	UQ = fit3@mfit$Qbar*(1-sum(coef(fit3, "dcc")))
 	UR = UQ/(sqrt(diag(UQ)) %*% t(sqrt(diag(UQ)) ))
-	
+
 	postscript("test3f6.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	hist(mR[,1], main = "AA-AXP Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,2], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,2], main = "AA-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,3], main = "AXP-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[2,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
 	dev.off()
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
@@ -1264,22 +1264,22 @@ rmgarch.test3g = function(cluster = NULL)
 	tic = Sys.time()
 	data(dji30retw)
 	Dat = dji30retw[, 1:3, drop = FALSE]
-	
-	
+
+
 	# GARCH-Normal MVN
-	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"), 
+	uspec = ugarchspec(mean.model = list(armaOrder = c(2,1)), variance.model = list(garchOrder = c(1,1), model = "sGARCH"),
 			distribution.model = "jsu")
-	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 2, lag.max = NULL, 
+	spec1 = cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, robust = FALSE, lag = 2, lag.max = NULL,
 			lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-			dccOrder = c(1,1), asymmetric = TRUE, distribution.model = list(copula = c("mvnorm", "mvt")[2], 
+			robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+			dccOrder = c(1,1), asymmetric = TRUE, distribution.model = list(copula = c("mvnorm", "mvt")[2],
 					method = c("Kendall", "ML")[2], time.varying = TRUE,
 					transformation = c("parametric", "empirical", "spd")[2]))
-	
+
 	fit1 = cgarchfit(spec1, data = Dat, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
-	
-	
+
+
 	sim1 = cgarchsim(fit1, n.sim = 1000, m.sim = 10, startMethod = "sample")
 	sim2 = cgarchsim(fit1, n.sim = 2, m.sim = 1000, startMethod = "sample", cluster = cluster)
 	# 2-ahead mean covariance (1-ahead has no uncertainty).
@@ -1290,13 +1290,13 @@ rmgarch.test3g = function(cluster = NULL)
 	ebars[,1] = sapply(sim2@msim$simH, FUN = function(x) x[1,2,2])
 	ebars[,2] = sapply(sim2@msim$simH, FUN = function(x) x[1,3,2])
 	ebars[,3] = sapply(sim2@msim$simH, FUN = function(x) x[2,3,2])
-	
+
 	postscript("test3g1.eps", width = 10, height = 8)
 	boxplot(ebars, notch = TRUE, names = c("H12", "H13", "H23"), main = "Simulated 2-ahead Covariance",
 			col = 2:4)
 	dev.off()
-	
-	
+
+
 	# 1-ahead rolling forecast exercise
 	fit3 = cgarchfit(spec1, data = Dat, out.sample = 100, cluster = cluster,
 			fit.control = list(eval.se=FALSE))
@@ -1307,7 +1307,7 @@ rmgarch.test3g = function(cluster = NULL)
 	specx = spec1
 	for(i in 1:3) specx@umodel$fixed.pars[[i]] = as.list(fit3@model$mpars[fit3@model$midx[,i]==1,i])
 	setfixed(specx)<-as.list(fit3@model$mpars[fit3@model$midx[,4]==1,4])
-	
+
 	for(i in 1:25){
 		if(i==1){
 			presigma = matrix(tail(sigma(fit3), 2), ncol = 3)
@@ -1332,8 +1332,8 @@ rmgarch.test3g = function(cluster = NULL)
 			diag(preR) = 1
 			preQ = tmp@mfilter$Qt[[length(tmp@mfilter$Qt)]]
 			preZ = tail(tmp@mfilter$Z, 1)
-			
-			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T))			
+
+			tmp = cgarchfilter(specx, Dat[1:(T+i), ], filter.control = list(n.old = T))
 			filtMu[i,] = tail(fitted(tmp), 1)
 			filtS[i,] = tail(sigma(tmp), 1)
 			filtC[,,i] = last(rcov(tmp))[,,1]
@@ -1353,14 +1353,14 @@ rmgarch.test3g = function(cluster = NULL)
 		# sim3@msim$simX[[i]][1,] - sim3@msim$simRes[[i]][1,]
 		# is equal to filtMu[i,]
 		if(i < 4 ){
-			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2]][1,] - (sim3@msim$simZ[,,2]*sqrt(diag(sim3@msim$simH[[2]][,,1]))),
 							filtMu[i,]))
-			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))), 
+			print(all.equal(sim3@msim$simX[[2000]][1,] - (sim3@msim$simZ[,,2000]*sqrt(diag(sim3@msim$simH[[2000]][,,1]))),
 							filtMu[i,]))
 		}
 	}
-	
-	
+
+
 	postscript("test3g2.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simMu[,1], type = "l", main = "AA Conditional Mean\nRolling Forecast",
@@ -1376,7 +1376,7 @@ rmgarch.test3g = function(cluster = NULL)
 	lines(filtMu[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3g3.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simS[,1], type = "l", main = "AA Conditional Sigma\nRolling Forecast",
@@ -1392,7 +1392,7 @@ rmgarch.test3g = function(cluster = NULL)
 	lines(filtS[,3], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3g4.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simC[1,2,], type = "l", main = "AA-AXP Conditional Covariance\nRolling Forecast",
@@ -1403,13 +1403,13 @@ rmgarch.test3g = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtC[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simC[2,3,], type = "l", main = "AXP-BA Conditional Covariance\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtC[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
+
 	postscript("test3g5.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	plot(simCor[1,2,], type = "l", main = "AA-AXP Conditional Correlation\nRolling Forecast",
@@ -1420,20 +1420,20 @@ rmgarch.test3g = function(cluster = NULL)
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[1,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
-	
+
 	plot(simCor[2,3,], type = "l", main = "AXP-BA Conditional Correlation\nRolling Forecast",
 			ylab = "cov", xlab = "Time")
 	lines(filtCor[2,3,], col = 2, lty = 2)
 	legend("topleft", legend =c("Simulated", "Filtered"), col = 1:2, lty = 1:2)
 	dev.off()
-	
-	
+
+
 	# n-ahead forecast exercise
-	# when m.sim == 1, no need to supply any pre-data since the startMethod 
+	# when m.sim == 1, no need to supply any pre-data since the startMethod
 	# indicates that we extract the last values from the fit object
-	
+
 	sim4 = cgarchsim(fit3, n.sim = 2000, n.start = 500, m.sim = 200, startMethod = "sample", cluster = cluster)
-	
+
 	mR = matrix(0, nrow = 200, ncol = 3)
 	for(i in 1:200){
 		rc = rcor(sim4, sim = i)
@@ -1446,25 +1446,25 @@ rmgarch.test3g = function(cluster = NULL)
 	}
 	UQ = fit3@mfit$Qbar*(1-sum(coef(fit3, "dcc")[1:2])) - fit3@mfit$Nbar*coef(fit3, "dcc")[3]
 	UR = UQ/(sqrt(diag(UQ)) %*% t(sqrt(diag(UQ)) ))
-	
+
 	postscript("test3g6.eps", width = 10, height = 8)
 	par(mfrow = c(2,2))
 	hist(mR[,1], main = "AA-AXP Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,2], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,2], main = "AA-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[1,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
-	
+
 	hist(mR[,3], main = "AXP-BA Simulated \nUnconditional Correlation", xlab = "cor", cex.main=0.8)
 	abline(v = UR[2,3], col = "orange", lwd = 2)
-	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n", 
+	legend("topright", "Unconditional \n(Analytical)", col = "orange", lwd=2, bty = "n",
 			cex = 0.7)
 	dev.off()
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
@@ -1473,11 +1473,11 @@ rmgarch.test3g = function(cluster = NULL)
 rmgarch.test3h = function(cluster = NULL){
 	# DCC Test
 	tic = Sys.time()
-	
+
 	data(dji30retw)
-	test = DCCtest(Data = dji30retw, garchOrder = c(1,1), n.lags = 1, solver = "solnp", 
+	test = DCCtest(Data = dji30retw, garchOrder = c(1,1), n.lags = 1, solver = "solnp",
 			solver.control = list(), cluster = cluster, Z = NULL)
-	
+
 	options(width = 120)
 	zz <- file("test3h1.txt", open="wt")
 	sink(zz)
@@ -1485,16 +1485,16 @@ rmgarch.test3h = function(cluster = NULL){
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	# Independent Sample (reject correlation)
 	spec = ugarchspec(mean.model = list(armaOrder=c(0,0), include.mean=FALSE))
 	setfixed(spec)<-list(omega=6e-06, alpha1 = 0.04, beta1 = 0.9)
 	sim = ugarchpath(spec, m.sim = 10, n.sim = 1000)
 	X = fitted(sim)
 	rownames(X)<-NULL
-	test = DCCtest(Data = as.matrix(X), garchOrder = c(1,1), n.lags = 1, solver = "solnp", 
+	test = DCCtest(Data = as.matrix(X), garchOrder = c(1,1), n.lags = 1, solver = "solnp",
 			solver.control = list(), cluster = cluster, Z = NULL)
-	
+
 	options(width = 120)
 	zz <- file("test3h2.txt", open="wt")
 	sink(zz)
@@ -1502,7 +1502,7 @@ rmgarch.test3h = function(cluster = NULL){
 	sink(type="message")
 	sink()
 	close(zz)
-	
+
 	toc = Sys.time()-tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
