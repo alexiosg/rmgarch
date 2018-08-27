@@ -16,12 +16,12 @@
 #################################################################################
 #---------------------------------------------------------------------------------
 # Locally imported copy of "klin.eval" from the klin package
-incseq = function (a, b) 
+incseq = function (a, b)
 {
 	seq(a, b, length = max(0, b - a + 1))
 }
 
-.klin.eval = function (A, x, transpose = FALSE) 
+.klin.eval = function (A, x, transpose = FALSE)
 {
 	m <- sapply(A, nrow)
 	n <- sapply(A, ncol)
@@ -44,12 +44,12 @@ incseq = function (a, b)
 fast_kron_M = function(rhs, lhs, n, p=3)
 {
 	Y = lapply(1:n, function(i){.klin.eval(rhs, lhs[i,], transpose = TRUE)})
-	M = matrix(unlist(Y), nrow = n, ncol = n^p, byrow=TRUE)	
+	M = matrix(unlist(Y), nrow = n, ncol = n^p, byrow=TRUE)
 	return(M)
 }
 
 .kappaGH <-function(x, lambda = 1)
-{    
+{
 	stopifnot(x >= 0)
 	stopifnot(length(lambda) == 1)
 	if (lambda == -0.5) {
@@ -79,13 +79,13 @@ fast_kron_M = function(rhs, lhs, n, p=3)
 	# A function implemented by Diethelm Wuertz
 	#   Change parameterizations to alpha(zeta, rho, lambda)
 	Rho2 = 1 - rho^2
-	alpha = zeta^2 * .kappaGH(zeta, lambda) / Rho2 
+	alpha = zeta^2 * .kappaGH(zeta, lambda) / Rho2
 	alpha = alpha * ( 1 + rho^2 * zeta^2 * .deltaKappaGH(zeta, lambda) / Rho2)
-	alpha = sqrt(alpha)  
+	alpha = sqrt(alpha)
 	beta = alpha * rho
 	delta = zeta / ( alpha * sqrt(Rho2) )
-	mu = -beta * delta^2 * .kappaGH(zeta, lambda)	
-	c(alpha = alpha, beta = beta, delta = delta, mu = mu)  
+	mu = -beta * delta^2 * .kappaGH(zeta, lambda)
+	c(alpha = alpha, beta = beta, delta = delta, mu = mu)
 }
 .nigtransform = function(zeta, rho)
 {
@@ -159,7 +159,45 @@ fast_kron_M = function(rhs, lhs, n, p=3)
 	xdensity[,2] = sigma
 	xdensity[,3] = 0
 	xdensity[,4] = 0
-	
+
 	colnames(xdensity) = c("mu", "sigma", "skew", "shape")
 	return(xdensity)
+}
+
+# ------------------------------------------------------------------------------
+# New functions to convert rcor and rvov into matrices
+sm2vec<-function(m, diag = FALSE)
+{
+  return(as.vector(m[lower.tri(m, diag)]))
+}
+make.cov.names = function(xnames)
+{
+  n = length(xnames)
+  x = matrix(NA, n,n)
+  diag(x)=xnames
+  colnames(x)=xnames
+  rownames(x)=xnames
+  for(i in 1:n){
+    for(j in 1:n){
+      if(i==j) next()
+      x[i,j] = paste0(xnames[i],":",xnames[j])
+    }
+  }
+  return(x)
+}
+array2matrix = function(x, date=NULL, var.names=NULL, diag=FALSE)
+{
+  R = do.call(rbind, lapply(1:dim(x)[3], function(i){
+    sm2vec(x[,,i], diag = diag )
+  }),quote=TRUE)
+  if(!is.null(date) & is(date[1],"Date")){
+    R = xts(R, as.Date(date))
+  } else if(!is.null(date) & is.character(date[1])){
+    rownames(R) = as.character(date)
+  }
+  if(!is.null(var.names)){
+    vech.names=sm2vec(make.cov.names(var.names), diag = diag)
+    colnames(R) = vech.names
+  }
+  return(R)
 }

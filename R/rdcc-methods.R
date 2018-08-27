@@ -18,41 +18,41 @@
 #----------------------------------------------------------------------------------
 # spec method
 #----------------------------------------------------------------------------------
-dccspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
-				lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL, 
-				robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-		dccOrder = c(1,1), model = c("DCC", "aDCC", "FDCC"), groups = rep(1, length(uspec@spec)), 
+dccspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
+				lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
+				robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+		dccOrder = c(1,1), model = c("DCC", "aDCC", "FDCC"), groups = rep(1, length(uspec@spec)),
 		distribution = c("mvnorm", "mvt", "mvlaplace"), start.pars = list(), fixed.pars = list())
 {
 	UseMethod("dccspec")
 }
 
-.xdccspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
-		lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL, 
-		robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-		dccOrder = c(1,1), model = c("DCC", "aDCC", "FDCC"), groups = rep(1, length(uspec@spec)), 
-		distribution = c("mvnorm", "mvt", "mvlaplace"), 
+.xdccspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
+		lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
+		robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+		dccOrder = c(1,1), model = c("DCC", "aDCC", "FDCC"), groups = rep(1, length(uspec@spec)),
+		distribution = c("mvnorm", "mvt", "mvlaplace"),
 		start.pars = list(), fixed.pars = list())
 {
 	if(tolower(model[1]) == "fdcc"){
-		spec = .fdccspec(uspec = uspec, VAR = VAR, robust = robust, lag = lag, 
-				lag.max = lag.max, lag.criterion = lag.criterion[1], 
-				external.regressors = external.regressors, 
-				robust.control = robust.control, fdccOrder = dccOrder, 
-				fdccindex = groups, distribution = distribution[1], 
+		spec = .fdccspec(uspec = uspec, VAR = VAR, robust = robust, lag = lag,
+				lag.max = lag.max, lag.criterion = lag.criterion[1],
+				external.regressors = external.regressors,
+				robust.control = robust.control, fdccOrder = dccOrder,
+				fdccindex = groups, distribution = distribution[1],
 				start.pars = start.pars, fixed.pars = fixed.pars)
 	} else{
 		if(tolower(model[1]) == "adcc") asymmetric = TRUE else asymmetric = FALSE
-		spec = .dccspec(uspec = uspec, VAR = VAR, robust = robust, lag = lag, 
-				lag.max = lag.max, lag.criterion = lag.criterion[1], 
-				external.regressors = external.regressors, 
-				robust.control = robust.control, dccOrder = dccOrder, 
-				asymmetric = asymmetric, distribution = distribution[1], 
+		spec = .dccspec(uspec = uspec, VAR = VAR, robust = robust, lag = lag,
+				lag.max = lag.max, lag.criterion = lag.criterion[1],
+				external.regressors = external.regressors,
+				robust.control = robust.control, dccOrder = dccOrder,
+				asymmetric = asymmetric, distribution = distribution[1],
 				start.pars = start.pars, fixed.pars = fixed.pars)
 	}
 	return(spec)
 }
-	
+
 setMethod(f = "dccspec", signature(uspec = "uGARCHmultispec"), definition = .xdccspec)
 
 .setfixeddcc = function(object, value){
@@ -73,28 +73,28 @@ setMethod(f = "dccspec", signature(uspec = "uGARCHmultispec"), definition = .xdc
 	}
 	fixed.pars = pars[inc]
 	names(fixed.pars) = tolower(names(pars[inc]))
-	
-	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			umodel$fixed.pars, umodel$vt)
 	# set parameter values
 	if(object@model$DCC == "FDCC"){
-		tmp = dccspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion, 
-				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(), 
+		tmp = dccspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion,
+				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(),
 				dccOrder = model$modelinc[4:5], model="FDCC",  groups = model$fdccindex,
-				distribution = model$modeldesc$distribution, 
+				distribution = model$modeldesc$distribution,
 				start.pars = if(is.null(model$start.pars)) model$start.pars else NULL, fixed.pars = as.list(fixed.pars))
 	} else{
-		tmp = dccspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion, 
-				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(), 
-				dccOrder = model$modelinc[3:4], model = ifelse(model$modelinc[5]>0, "aDCC", "DCC"), 
-				distribution = model$modeldesc$distribution, 
+		tmp = dccspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion,
+				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(),
+				dccOrder = model$modelinc[3:4], model = ifelse(model$modelinc[5]>0, "aDCC", "DCC"),
+				distribution = model$modeldesc$distribution,
 				start.pars = if(is.null(model$start.pars)) model$start.pars else NULL, fixed.pars = as.list(fixed.pars))
 	}
 	return(tmp)
@@ -121,29 +121,29 @@ setReplaceMethod(f="setfixed", signature= c(object = "DCCspec", value = "vector"
 	}
 	start.pars = pars[inc]
 	names(start.pars) = tolower(names(pars[inc]))
-	
-	uspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+
+	uspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			umodel$fixed.pars, umodel$vt)
-	
+
 	# set parameter values
 	if(object@model$DCC == "FDCC"){
-		tmp =  dccspec(uspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion, 
-				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(), 
+		tmp =  dccspec(uspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion,
+				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(),
 				dccOrder = model$modelinc[4:5], model="FDCC",  groups = model$fdccindex,
-				distribution = model$modeldesc$distribution, 
+				distribution = model$modeldesc$distribution,
 				start.pars = as.list(start.pars),  fixed.pars =  model$fixed.pars)
 	} else{
-		tmp =  dccspec(uspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion, 
-				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(), 
-				dccOrder = model$modelinc[3:4], model = ifelse(model$modelinc[5]>0, "aDCC", "DCC"), 
-				distribution = model$modeldesc$distribution, 
+		tmp =  dccspec(uspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+				robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+				lag = model$modelinc[1], lag.max = model$varmodel$lag.max, lag.criterion = model$varmodel$lag.criterion,
+				external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+				robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else list(),
+				dccOrder = model$modelinc[3:4], model = ifelse(model$modelinc[5]>0, "aDCC", "DCC"),
+				distribution = model$modeldesc$distribution,
 				start.pars = as.list(start.pars),  fixed.pars =  model$fixed.pars)
 	}
 	return(tmp)
@@ -154,26 +154,26 @@ setReplaceMethod(f="setstart", signature= c(object = "DCCspec", value = "vector"
 # fit method
 #----------------------------------------------------------------------------------
 
-dccfit = function(spec, data, out.sample = 0, solver = "solnp", solver.control = list(), 
-		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
+dccfit = function(spec, data, out.sample = 0, solver = "solnp", solver.control = list(),
+		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE),
 		cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("dccfit")
 }
 
-.xdccfit = function(spec, data, out.sample = 0, solver = "solnp", solver.control = list(), 
-		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
+.xdccfit = function(spec, data, out.sample = 0, solver = "solnp", solver.control = list(),
+		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE),
 		cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL, ...)
 {
 	if(spec@model$DCC == "FDCC"){
-		ans = .fdccfit(spec = spec, data = data, out.sample = out.sample, 
-				solver = solver, solver.control = solver.control, 
-				fit.control = fit.control, cluster = cluster, fit = fit, 
+		ans = .fdccfit(spec = spec, data = data, out.sample = out.sample,
+				solver = solver, solver.control = solver.control,
+				fit.control = fit.control, cluster = cluster, fit = fit,
 				VAR.fit = VAR.fit, realizedVol = realizedVol, ...)
 	} else{
-		ans = .dccfit(spec = spec, data = data, out.sample = out.sample, 
-				solver = solver, solver.control = solver.control, 
-				fit.control = fit.control, cluster = cluster, fit = fit, 
+		ans = .dccfit(spec = spec, data = data, out.sample = out.sample,
+				solver = solver, solver.control = solver.control,
+				fit.control = fit.control, cluster = cluster, fit = fit,
 				VAR.fit = VAR.fit, realizedVol = realizedVol, ...)
 	}
 	return(ans)
@@ -183,22 +183,22 @@ setMethod("dccfit", signature(spec = "DCCspec"), .xdccfit)
 #----------------------------------------------------------------------------------
 # filter method
 #----------------------------------------------------------------------------------
-dccfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+dccfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL),
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("dccfilter")
 }
 
-.xdccfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
+.xdccfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL),
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
 	if(spec@model$DCC == "FDCC"){
-		ans = .fdccfilter(spec = spec, data = data, out.sample = out.sample, 
-				filter.control = filter.control, cluster = cluster, varcoef = varcoef, 
+		ans = .fdccfilter(spec = spec, data = data, out.sample = out.sample,
+				filter.control = filter.control, cluster = cluster, varcoef = varcoef,
 				realizedVol = realizedVol,...)
 	} else{
-		ans = .dccfilter(spec = spec, data = data, out.sample = out.sample, 
-				filter.control = filter.control, cluster = cluster, varcoef = varcoef, 
+		ans = .dccfilter(spec = spec, data = data, out.sample = out.sample,
+				filter.control = filter.control, cluster = cluster, varcoef = varcoef,
 				realizedVol = realizedVol,...)
 	}
 	return(ans)
@@ -209,20 +209,20 @@ setMethod("dccfilter", signature(spec = "DCCspec"), .xdccfilter)
 #----------------------------------------------------------------------------------
 # forecast method
 #----------------------------------------------------------------------------------
-dccforecast = function(fit, n.ahead = 1, n.roll = 0, 
+dccforecast = function(fit, n.ahead = 1, n.roll = 0,
 		external.forecasts = list(mregfor = NULL, vregfor = NULL), cluster = NULL, ...)
 {
 	UseMethod("dccforecast")
 }
 
-.xdccforecast = function(fit, n.ahead = 1, n.roll = 0, 
+.xdccforecast = function(fit, n.ahead = 1, n.roll = 0,
 		external.forecasts = list(mregfor = NULL, vregfor = NULL), cluster = NULL, ...)
 {
 	if(fit@model$DCC == "FDCC"){
-		ans = .fdccforecast(fit, n.ahead = n.ahead, n.roll = n.roll, 
+		ans = .fdccforecast(fit, n.ahead = n.ahead, n.roll = n.roll,
 				external.forecasts = external.forecasts, cluster = cluster, ...)
 	} else{
-		ans = .dccforecast(fit, n.ahead = n.ahead, n.roll = n.roll, 
+		ans = .dccforecast(fit, n.ahead = n.ahead, n.roll = n.roll,
 				external.forecasts = external.forecasts, cluster = cluster, ...)
 	}
 	return(ans)
@@ -233,41 +233,41 @@ setMethod("dccforecast", signature(fit = "DCCfit"), .xdccforecast)
 # roll method
 #----------------------------------------------------------------------------------
 
-dccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
-		n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
-		solver = "solnp", solver.control = list(), 
-		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-		cluster = NULL, save.fit = FALSE, save.wdir = NULL, 
+dccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25,
+		n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL,
+		solver = "solnp", solver.control = list(),
+		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE),
+		cluster = NULL, save.fit = FALSE, save.wdir = NULL,
 		realizedVol = NULL, clusterOnAssets=FALSE, ...)
 {
 	UseMethod("dccroll")
 }
-.xdccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25, 
-                     n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL, 
-                     solver = "solnp", solver.control = list(), 
-                     fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-                     cluster = NULL, save.fit = FALSE, save.wdir = NULL, 
+.xdccroll = function(spec, data, n.ahead = 1, forecast.length = 50, refit.every = 25,
+                     n.start = NULL, refit.window = c("recursive", "moving"), window.size = NULL,
+                     solver = "solnp", solver.control = list(),
+                     fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE),
+                     cluster = NULL, save.fit = FALSE, save.wdir = NULL,
                      realizedVol = NULL, clusterOnAssets=FALSE, ...)
 {
   if(!is.null(cluster)){
     if(clusterOnAssets){
-      out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
-                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
-                          window.size = window.size, solver = solver, solver.control = solver.control, 
-                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+      out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length,
+                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1],
+                          window.size = window.size, solver = solver, solver.control = solver.control,
+                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir,
                           realizedVol = realizedVol,...)
     } else{
-      out=.rolldcc.windows(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
-                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
-                          window.size = window.size, solver = solver, solver.control = solver.control, 
-                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+      out=.rolldcc.windows(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length,
+                          refit.every = refit.every, n.start = n.start, refit.window = refit.window[1],
+                          window.size = window.size, solver = solver, solver.control = solver.control,
+                          fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir,
                           realizedVol = realizedVol,...)
     }
   } else{
-    out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length, 
-                        refit.every = refit.every, n.start = n.start, refit.window = refit.window[1], 
-                        window.size = window.size, solver = solver, solver.control = solver.control, 
-                        fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir, 
+    out=.rolldcc.assets(spec=spec, data=data, n.ahead = n.ahead, forecast.length = forecast.length,
+                        refit.every = refit.every, n.start = n.start, refit.window = refit.window[1],
+                        window.size = window.size, solver = solver, solver.control = solver.control,
+                        fit.control = fit.control, cluster = cluster, save.fit = save.fit, save.wdir = save.wdir,
                         realizedVol = realizedVol,...)
   }
   return(out)
@@ -280,60 +280,60 @@ setMethod("dccroll", signature(spec = "DCCspec"), .xdccroll)
 # simulation method
 #----------------------------------------------------------------------------------
 
-dccsim = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1, 
-		startMethod = c("unconditional", "sample"), presigma = NULL, 
-		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL, 
-		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL, 
-		vexsimdata = NULL, cluster = NULL, VAR.fit = NULL, 
+dccsim = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1,
+		startMethod = c("unconditional", "sample"), presigma = NULL,
+		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL,
+		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL,
+		vexsimdata = NULL, cluster = NULL, VAR.fit = NULL,
 		prerealized = NULL, ...)
 {
 	UseMethod("dccsim")
 }
 
-.xdccsim.fit = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1, 
-		startMethod = c("unconditional", "sample"), presigma = NULL, 
-		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL, 
-		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL, 
+.xdccsim.fit = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1,
+		startMethod = c("unconditional", "sample"), presigma = NULL,
+		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL,
+		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL,
 		vexsimdata = NULL, cluster = NULL, VAR.fit = NULL, prerealized = NULL, ...)
 {
 	if(fitORspec@model$DCC == "FDCC"){
-		ans = .fdccsim.fit(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start, 
-				m.sim = m.sim, startMethod = startMethod, presigma = presigma, 
-				preresiduals = preresiduals, prereturns = prereturns, 
-				preQ = preQ, preZ = preZ, Qbar = Qbar, rseed = rseed, 
-				mexsimdata = mexsimdata, vexsimdata = vexsimdata, 
+		ans = .fdccsim.fit(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start,
+				m.sim = m.sim, startMethod = startMethod, presigma = presigma,
+				preresiduals = preresiduals, prereturns = prereturns,
+				preQ = preQ, preZ = preZ, Qbar = Qbar, rseed = rseed,
+				mexsimdata = mexsimdata, vexsimdata = vexsimdata,
 				cluster = cluster, prerealized = prerealized, ...)
 	} else{
-		ans = .dccsim.fit(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start, 
-				m.sim = m.sim, startMethod = startMethod, presigma = presigma, 
-				preresiduals = preresiduals, prereturns = prereturns, 
-				preQ = preQ, preZ = preZ, Qbar = Qbar, Nbar = Nbar, 
-				rseed = rseed, mexsimdata = mexsimdata, vexsimdata = vexsimdata, 
+		ans = .dccsim.fit(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start,
+				m.sim = m.sim, startMethod = startMethod, presigma = presigma,
+				preresiduals = preresiduals, prereturns = prereturns,
+				preQ = preQ, preZ = preZ, Qbar = Qbar, Nbar = Nbar,
+				rseed = rseed, mexsimdata = mexsimdata, vexsimdata = vexsimdata,
 				cluster = cluster, prerealized = prerealized, ...)
 	}
 	return(ans)
 }
 
-.xdccsim.spec = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1, 
-		startMethod = c("unconditional", "sample"), presigma = NULL, 
-		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL, 
-		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL, 
-		vexsimdata = NULL, cluster = NULL, VAR.fit = NULL, 
+.xdccsim.spec = function(fitORspec, n.sim = 1000, n.start = 0, m.sim = 1,
+		startMethod = c("unconditional", "sample"), presigma = NULL,
+		preresiduals = NULL, prereturns = NULL, preQ = NULL, preZ = NULL,
+		Qbar = NULL, Nbar = NULL, rseed = NULL, mexsimdata = NULL,
+		vexsimdata = NULL, cluster = NULL, VAR.fit = NULL,
 		prerealized = NULL, ...)
 {
 	if(fitORspec@model$DCC == "FDCC"){
-		ans = .fdccsim.spec(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start, 
-				m.sim = m.sim, startMethod = startMethod, presigma = presigma, 
-				preresiduals = preresiduals, prereturns = prereturns, 
-				preQ = preQ, preZ = preZ, Qbar = Qbar, rseed = rseed, 
-				mexsimdata = mexsimdata, vexsimdata = vexsimdata, 
+		ans = .fdccsim.spec(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start,
+				m.sim = m.sim, startMethod = startMethod, presigma = presigma,
+				preresiduals = preresiduals, prereturns = prereturns,
+				preQ = preQ, preZ = preZ, Qbar = Qbar, rseed = rseed,
+				mexsimdata = mexsimdata, vexsimdata = vexsimdata,
 				cluster = cluster, VAR.fit = VAR.fit, prerealized = prerealized, ...)
 	} else{
-		ans = .dccsim.spec(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start, 
-				m.sim = m.sim, startMethod = startMethod, presigma = presigma, 
-				preresiduals = preresiduals, prereturns = prereturns, 
-				preQ = preQ, preZ = preZ, Qbar = Qbar, Nbar = Nbar, 
-				rseed = rseed, mexsimdata = mexsimdata, vexsimdata = vexsimdata, 
+		ans = .dccsim.spec(fitORspec = fitORspec, n.sim = n.sim, n.start = n.start,
+				m.sim = m.sim, startMethod = startMethod, presigma = presigma,
+				preresiduals = preresiduals, prereturns = prereturns,
+				preQ = preQ, preZ = preZ, Qbar = Qbar, Nbar = Nbar,
+				rseed = rseed, mexsimdata = mexsimdata, vexsimdata = vexsimdata,
 				cluster = cluster, VAR.fit = VAR.fit, prerealized = prerealized, ...)
 	}
 	return(ans)
@@ -363,7 +363,7 @@ setMethod("fitted", signature(object = "DCCfilter"), .fitted.dccfit)
 	n.roll = object@model$n.roll
 	n.ahead = object@model$n.ahead
 	T0 = object@model$modeldata$index[T:(T+n.roll)]
-	ans = array(object@mforecast$mu, dim = c(n.ahead, m, n.roll+1), 
+	ans = array(object@mforecast$mu, dim = c(n.ahead, m, n.roll+1),
 			dimnames = list(paste("T+", 1:n.ahead,sep=""), object@model$modeldata$asset.names, as.character(T0)))
 	return( ans )
 }
@@ -415,7 +415,7 @@ setMethod("residuals", signature(object = "DCCfilter"), .residuals.dccfit)
 #----------------------------------------------------------------------------------
 # rcor
 #----------------------------------------------------------------------------------
-.rcor.dccfit = function(object, type = "R")
+.rcor.dccfit = function(object, type = "R", output=c("array","matrix"))
 {
 	T = object@model$modeldata$T
 	D = object@model$modeldata$index
@@ -426,6 +426,9 @@ setMethod("residuals", signature(object = "DCCfilter"), .residuals.dccfit)
 		R = array(NA, dim = c(m, m, T))
 		R[1:m,1:m, ] = sapply(tmp[1:T], FUN = function(x) x)
 		dimnames(R)<-list(nam, nam, as.character(D[1:T]))
+		if(output[1]=="matrix"){
+		  R = array2matrix(R, date=as.Date(D[1:T]), var.names=nam, diag=FALSE)
+		}
 		return( R )
 	} else{
 		if(class(object)[1]=="DCCfit") tmp = object@mfit$Q else tmp = object@mfilter$Q
@@ -433,6 +436,9 @@ setMethod("residuals", signature(object = "DCCfilter"), .residuals.dccfit)
 		Q = array(NA, dim = c(m, m, T))
 		Q[1:m,1:m, ] = sapply(tmp[1:T], FUN = function(x) x)
 		dimnames(Q)<-list(nam, nam, as.character(D[1:T]))
+		if(output[1]=="matrix"){
+		  Q = array2matrix(Q, date=as.Date(D[1:T]), var.names=nam, diag=FALSE)
+		}
 		return( Q )
 	}
 }
@@ -440,7 +446,7 @@ setMethod("residuals", signature(object = "DCCfilter"), .residuals.dccfit)
 setMethod("rcor", signature(object = "DCCfit"), .rcor.dccfit)
 setMethod("rcor", signature(object = "DCCfilter"), .rcor.dccfit)
 
-.rcor.dccforecast = function(object, type = "R")
+.rcor.dccforecast = function(object, type = "R", output=c("array","matrix"))
 {
 	n.roll = object@model$n.roll
 	n.ahead = object@model$n.ahead
@@ -455,12 +461,15 @@ setMethod("rcor", signature(object = "DCCfilter"), .rcor.dccfit)
 	for(i in 1:(n.roll+1)){ dimnames(tmp[[i]]) = list(nam, nam, paste("T+",1:n.ahead,sep="")) }
 	names(tmp) = D
 	# attr(tmp, "T0") = D
+	if(output[1]=="matrix"){
+	  for(i in 1:(n.roll+1)) tmp[[i]] = array2matrix(tmp[[i]], date=paste("T+",1:n.ahead,sep=""), var.names=nam, diag=FALSE)
+	}
 	return( tmp )
 }
 
 setMethod("rcor", signature(object = "DCCforecast"), .rcor.dccforecast)
 
-.rcor.dccsim = function(object, type = "R", sim = 1)
+.rcor.dccsim = function(object, type = "R", sim = 1, output=c("array","matrix"))
 {
 	n = object@model$m.sim
 	m.sim = as.integer(sim)
@@ -473,14 +482,17 @@ setMethod("rcor", signature(object = "DCCforecast"), .rcor.dccforecast)
 		tmp = object@msim$simQ[[m.sim]]
 	}
 	dimnames(tmp) = list(nam, nam, 1:n.sim)
+	if(output[1]=="matrix"){
+	  tmp = array2matrix(tmp, date=as.character(1:n.sim), var.names=nam, diag=FALSE)
+	}
 	return( tmp )
-	
+
 }
 
 setMethod("rcor", signature(object = "DCCsim"), .rcor.dccsim)
 
 
-.rcor.dccroll = function(object, type = "R")
+.rcor.dccroll = function(object, type = "R", output=c("array","matrix"))
 {
 	n = length(object@mforecast)
 	index = object@model$index
@@ -490,6 +502,9 @@ setMethod("rcor", signature(object = "DCCsim"), .rcor.dccsim)
 	D = index[(object@model$n.start+1):(object@model$n.start+fl)]
 	Cf = array(unlist(sapply(object@mforecast, function(x) unlist(rcor(x, type=type)))), dim=c(m,m,fl),
 			dimnames = list(nam, nam, as.character(D)))
+	if(output[1]=="matrix"){
+	  Cf = array2matrix(Cf, date=as.Date(D), var.names=nam, diag=FALSE)
+	}
 	return( Cf )
 }
 
@@ -497,13 +512,16 @@ setMethod("rcor", signature(object = "DCCroll"), .rcor.dccroll)
 #----------------------------------------------------------------------------------
 # rcov
 #----------------------------------------------------------------------------------
-.rcov.dccfit = function(object)
+.rcov.dccfit = function(object, output=c("array","matrix"))
 {
 	T = object@model$modeldata$T
 	D = object@model$modeldata$index
 	nam = object@model$modeldata$asset.names
 	if(class(object)[1]=="DCCfit") H = object@mfit$H[,,1:T] else H = object@mfilter$H[,,1:T]
-	dimnames(H)<-list(nam, nam, as.character(D[1:T]))	
+	dimnames(H)<-list(nam, nam, as.character(D[1:T]))
+	if(output[1]=="matrix"){
+	  H = array2matrix(H, date=as.Date(D[1:T]), var.names=nam, diag=TRUE)
+	}
 	return( H )
 }
 
@@ -511,7 +529,7 @@ setMethod("rcov", signature(object = "DCCfit"), .rcov.dccfit)
 setMethod("rcov", signature(object = "DCCfilter"), .rcov.dccfit)
 
 
-.rcov.dccforecast = function(object)
+.rcov.dccforecast = function(object, output=c("array","matrix"))
 {
 	n.roll = object@model$n.roll
 	n.ahead = object@model$n.ahead
@@ -521,14 +539,17 @@ setMethod("rcov", signature(object = "DCCfilter"), .rcov.dccfit)
 	H = object@mforecast$H
 	for(i in 1:(n.roll+1)){ dimnames(H[[i]]) = list(nam, nam, paste("T+",1:n.ahead,sep="")) }
 	names(H) = D
-	#attr(H, "T0") = D	
+	#attr(H, "T0") = D
+	if(output[1]=="matrix"){
+	  for(i in 1:(n.roll+1)) H[[i]] = array2matrix(H[[i]], date=paste("T+",1:n.ahead,sep=""), var.names=nam, diag=TRUE)
+	}
 	return( H )
 }
 
 setMethod("rcov", signature(object = "DCCforecast"), .rcov.dccforecast)
 
 
-.rcov.dccsim = function(object, sim = 1)
+.rcov.dccsim = function(object, sim = 1, output=c("array","matrix"))
 {
 	n = object@model$m.sim
 	nam = object@model$modeldata$asset.names
@@ -537,12 +558,15 @@ setMethod("rcov", signature(object = "DCCforecast"), .rcov.dccforecast)
 	if( m.sim > n | m.sim < 1 ) stop("\rmgarch-->error: rcov sim index out of bounds!")
 	tmp = object@msim$simH[[m.sim]]
 	dimnames(tmp) = list(nam, nam, 1:n.sim)
+	if(output[1]=="matrix"){
+	  tmp = array2matrix(tmp, date=as.character(1:n.sim), var.names=nam, diag=TRUE)
+	}
 	return( tmp )
 }
 
 setMethod("rcov", signature(object = "DCCsim"), .rcov.dccsim)
 
-.rcov.dccroll = function(object)
+.rcov.dccroll = function(object, output=c("array","matrix"))
 {
 	n = length(object@mforecast)
 	index = object@model$index
@@ -552,6 +576,9 @@ setMethod("rcov", signature(object = "DCCsim"), .rcov.dccsim)
 	D = index[(object@model$n.start+1):(object@model$n.start+fl)]
 	Cf = array(unlist(sapply(object@mforecast, function(x) unlist(rcov(x)))), dim=c(m,m,fl),
 			dimnames = list(nam, nam, as.character(D)))
+	if(output[1]=="matrix"){
+	  Cf = array2matrix(Cf, date=as.character(D), var.names=nam, diag=TRUE)
+	}
 	return( Cf )
 }
 
@@ -571,7 +598,7 @@ setMethod("rcov", signature(object = "DCCroll"), .rcov.dccroll)
 	} else{
 		H = object@mfilter$H[,,1:T,drop=FALSE]
 		m = dim(H)[2]
-		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE="rmgarch"))		
+		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE="rmgarch"))
 	}
 	colnames(sig) = nam
 	sig = xts(sig, D[1:T])
@@ -736,7 +763,7 @@ setMethod("coef", signature(object = "DCCfilter"), .coef.dccfit)
 	m = dim(model$umodel$modelinc)[2]
 	allnames = NULL
 	midx = .fullinc(model$modelinc, model$umodel)
-	
+
 	for(i in 1:m){
 		allnames = c(allnames, paste("[",cnames[i],"].", rownames(midx[midx[,i]==1,i, drop = FALSE]), sep = ""))
 	}
@@ -842,7 +869,7 @@ setMethod("show",
 			cat("\n\n")
 			invisible(object)
 		})
-		
+
 # fit show
 setMethod("show",
 		signature(object = "DCCfit"),
@@ -851,7 +878,7 @@ setMethod("show",
 			T = object@model$modeldata$T
 			cat(paste("\n*---------------------------------*", sep = ""))
 			cat(paste("\n*          DCC GARCH Fit          *", sep = ""))
-			cat(paste("\n*---------------------------------*", sep = ""))	
+			cat(paste("\n*---------------------------------*", sep = ""))
 			cat("\n\nDistribution         : ", object@model$modeldesc$distribution)
 			if(object@model$DCC=="FDCC"){
 				cat("\nModel                : ", paste(object@model$DCC, "(", object@model$modelinc[4], ",", object@model$modelinc[5],")", sep=""))
@@ -865,7 +892,7 @@ setMethod("show",
 			} else{
 				npvar = 0
 			}
-			NP = paste("[",npvar, "+", length(object@mfit$garchnames),"+",length(object@mfit$dccnames), "+",(m^2 - m)/2,"]", sep="") 
+			NP = paste("[",npvar, "+", length(object@mfit$garchnames),"+",length(object@mfit$dccnames), "+",(m^2 - m)/2,"]", sep="")
 			cat("\nNo. Parameters       : ", npvar+NROW(object@mfit$matcoef) + ( (m^2 - m)/2 ))
 			cat("\n[VAR GARCH DCC UncQ] :", NP)
 			cat("\nNo. Series           : ", m)
@@ -890,7 +917,7 @@ setMethod("show",
 			cat("\nElapsed time :", object@mfit$timer,"\n\n")
 			invisible(object)
 		})
-		
+
 # filter show
 setMethod("show",
 		signature(object = "DCCfilter"),
@@ -899,7 +926,7 @@ setMethod("show",
 			T = object@model$modeldata$T
 			cat(paste("\n*------------------------------------*", sep = ""))
 			cat(paste("\n*          DCC GARCH Filter          *", sep = ""))
-			cat(paste("\n*------------------------------------*", sep = ""))	
+			cat(paste("\n*------------------------------------*", sep = ""))
 			cat("\n\nDistribution         : ", object@model$modeldesc$distribution)
 			if(object@model$DCC=="FDCC"){
 				cat("\nModel                : ", paste(object@model$DCC, "(", object@model$modelinc[4], ",", object@model$modelinc[5],")", sep=""))
@@ -913,7 +940,7 @@ setMethod("show",
 			} else{
 				npvar = 0
 			}
-			NP = paste("[",npvar, "+", length(object@mfilter$garchnames),"+",length(object@mfilter$dccnames), "+",(m^2 - m)/2,"]", sep="") 			
+			NP = paste("[",npvar, "+", length(object@mfilter$garchnames),"+",length(object@mfilter$dccnames), "+",(m^2 - m)/2,"]", sep="")
 			cat("\nNo. of Parameters    : ", length(object@mfilter$matcoef[,1]) + ( (m^2 - m)/2 ))
 			cat("\n[VAR GARCH DCC UncQ] :", NP)
 			cat("\nNo. of Series        : ", m)
@@ -1121,14 +1148,14 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 					z = ni,  col = x1, theta = 45, phi = 25, expand = 0.5,
 					ltheta = 120, shade = 0.75, ticktype = "detailed", xlab = "shock[z_1]",
 					ylab = "shock[z_2]", zlab = "cor",
-					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Correlation Surface\n", 
+					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Correlation Surface\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		} else{
 			tcol <- terrain.colors(12)
 			contour(x = zseq,
 					y = zseq,
 					z = ni,  col = tcol[2], lty = "solid", cex.axis = 0.7,  cex.main = 0.8,
-					main = paste("DCC News Impact Correlation Contour\n", 
+					main = paste("DCC News Impact Correlation Contour\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		}
 	}
@@ -1138,17 +1165,17 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 
 .newsimpact.dcc.cov = function(object, pair = c(1,2), plot = TRUE, type = c("surface", "contour")){
 	# for covariance we need the unconditional variances of the univariate model
-	
+
 	umodel = object@model$umodel
 	m = dim(umodel$modelinc)[2]
 	fpars = lapply(1:m, FUN = function(i) object@model$mpars[object@model$midx[,i]==1,i])
-	
-	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			fpars, NULL)
 	D = rep(0, m)
 	for(i in 1:m) D[i] = sqrt( as.numeric( uncvariance(mspec@spec[[i]])))
-	
+
 
 	if(is(object, "DCCfilter")){
 		Z = object@mfilter$stdresid
@@ -1162,7 +1189,7 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 		dccb = object@model$pars[idx["dccb",1], 1]
 		U = object@mfilter$Qbar*(1 - dcca - dccb) - dccg*object@mfilter$Nbar
 		Qbar = object@mfilter$Qbar
-		
+
 	} else{
 		Z = object@mfit$stdresid
 		cnames = object@model$modeldata$asset.names
@@ -1199,14 +1226,14 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 					z = ni,  col = x1, theta = 45, phi = 25, expand = 0.5,
 					ltheta = 120, shade = 0.75, ticktype = "detailed", xlab = "shock[z_1]",
 					ylab = "shock[z_2]", zlab = "cov",
-					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Covariance Surface\n", 
+					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Covariance Surface\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		} else{
 			tcol <- terrain.colors(12)
 			contour(x = zseq,
 					y = zseq,
 					z = ni,  col = tcol[2], lty = "solid", cex.axis = 0.7,  cex.main = 0.8,
-					main = paste("DCC News Impact Covariance Contour\n", 
+					main = paste("DCC News Impact Covariance Contour\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		}
 	}
@@ -1238,7 +1265,7 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 		Qbar = object@mfit$Qbar
 	}
 	U = (fC %*% t(fC)) * Qbar
-	
+
 	ni = matrix(0, 100, 100)
 	for(i in 1:100){
 		for(j in 1:100){
@@ -1259,14 +1286,14 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 					z = ni,  col = x1, theta = 45, phi = 25, expand = 0.5,
 					ltheta = 120, shade = 0.75, ticktype = "detailed", xlab = "shock[z_1]",
 					ylab = "shock[z_2]", zlab = "cor",
-					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Correlation Surface\n", 
+					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Correlation Surface\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		} else{
 			tcol <- terrain.colors(12)
 			contour(x = zseq,
 					y = zseq,
 					z = ni,  col = tcol[2], lty = "solid", cex.axis = 0.7,  cex.main = 0.8,
-					main = paste("DCC News Impact Correlation Contour\n", 
+					main = paste("DCC News Impact Correlation Contour\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		}
 	}
@@ -1275,16 +1302,16 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 
 .newsimpact.fdcc.cov = function(object, pair = c(1,2), plot = TRUE, type = c("surface", "contour")){
 	# for covariance we need the unconditional variances of the univariate model
-	
+
 	umodel = object@model$umodel
 	m = dim(umodel$modelinc)[2]
 	fpars = lapply(1:m, FUN = function(i) object@model$mpars[object@model$midx[,i]==1,i])
-	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			fpars, NULL)
 	D = rep(0, m)
 	for(i in 1:m) D[i] = sqrt( as.numeric( uncvariance(mspec@spec[[i]])))
-	
+
 	tmp = getfdccpars(object@model$pars, object@model)
 	fC = tmp$C
 	fA = tmp$A
@@ -1296,7 +1323,7 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 		minz = round(min(apply(object@mfilter$stdresid, 1, "min")) - 1, 0)
 		zseq = seq(minz, maxz, length.out = 100)
 		Qbar = object@mfilter$Qbar
-		
+
 	} else{
 		Z = object@mfit$stdresid
 		cnames = object@model$modeldata$asset.names
@@ -1306,7 +1333,7 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 		Qbar = object@mfit$Qbar
 	}
 	U = (fC %*% t(fC)) * Qbar
-	
+
 	ni = matrix(0, 100, 100)
 	for(i in 1:100){
 		for(j in 1:100){
@@ -1328,14 +1355,14 @@ setMethod("nisurface", signature(object = "DCCfilter"), .newsimpact.dcc)
 					z = ni,  col = x1, theta = 45, phi = 25, expand = 0.5,
 					ltheta = 120, shade = 0.75, ticktype = "detailed", xlab = "shock[z_1]",
 					ylab = "shock[z_2]", zlab = "cov",
-					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Covariance Surface\n", 
+					cex.axis = 0.7,  cex.main = 0.8, main = paste("DCC News Impact Covariance Surface\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		} else{
 			tcol <- terrain.colors(12)
 			contour(x = zseq,
 					y = zseq,
 					z = ni,  col = tcol[2], lty = "solid", cex.axis = 0.7,  cex.main = 0.8,
-					main = paste("DCC News Impact Covariance Contour\n", 
+					main = paste("DCC News Impact Covariance Contour\n",
 							cnames[pair[1]], "-", cnames[pair[2]], sep = ""))
 		}
 	}

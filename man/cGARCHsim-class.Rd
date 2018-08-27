@@ -23,31 +23,35 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
 }
 \section{Methods}{
   \describe{
-    \item{fitted}{\code{signature(object = "cGARCHsim")}: 
-    The simulated conditional returns matrix given. Takes optional argument 
-    \dQuote{sim} indicating the simulation run to return (from the m.sim option 
+    \item{fitted}{\code{signature(object = "cGARCHsim")}:
+    The simulated conditional returns matrix given. Takes optional argument
+    \dQuote{sim} indicating the simulation run to return (from the m.sim option
     of the \code{\link{cgarchsim}} method.}
-    \item{sigma}{\code{signature(object = "cGARCHfit")}: 
-    The simulated conditional sigma matrix given. Takes optional argument 
-    \dQuote{sim} indicating the simulation run to return (from the m.sim option 
+    \item{sigma}{\code{signature(object = "cGARCHfit")}:
+    The simulated conditional sigma matrix given. Takes optional argument
+    \dQuote{sim} indicating the simulation run to return (from the m.sim option
     of the \code{\link{cgarchsim}} method.}
-    \item{rcor}{\code{signature(object = "cGARCHsim")}: 
-    The simulated conditional correlation array (for DCC type). Takes optional 
-    argument \dQuote{sim} indicating the simulation run to return (from the 
-    m.sim option of the \code{\link{cgarchsim}} method}
-    \item{rcov}{\code{signature(object = "cGARCHsim")}: 
-    The simulated conditional covariance array. Takes optional argument 
-    \dQuote{sim} indicating the simulation run to return (from the m.sim option 
-    of the \code{\link{cgarchsim}} method.}
-    \item{show}{\code{signature(object = "cGARCHsim")}: 
+    \item{rcor}{\code{signature(object = "cGARCHsim")}:
+    The simulated conditional correlation array (for DCC type). Takes optional
+    argument \dQuote{sim} indicating the simulation run to return (from the
+    m.sim option of the \code{\link{cgarchsim}} method. A further argument
+    \sQuote{output} allows to switch between \dQuote{array}
+    and \dQuote{matrix} returned object.}
+    \item{rcov}{\code{signature(object = "cGARCHsim")}:
+    The simulated conditional covariance array. Takes optional argument
+    \dQuote{sim} indicating the simulation run to return
+    (from the m.sim option of the \code{\link{cgarchsim}} method.
+    A further argument \sQuote{output} allows to switch between \dQuote{array}
+    and \dQuote{matrix} returned object.}
+    \item{show}{\code{signature(object = "cGARCHsim")}:
     Summary. }
 	}
 }
 \references{
-Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997, 
+Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997,
 Chapman \& Hall, London.\cr
-Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation 
-procedure of dependence parameters in multivariate families of distributions}, 
+Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
+procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr
 }
 \author{Alexios Ghalanos}

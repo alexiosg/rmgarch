@@ -159,7 +159,7 @@
 	tic = Sys.time()
 	#-----------------------------------------------------------------------------------
 	# Data Extraction
-	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:m, sep = "") else cnames = colnames(data)
+	if( is.null( colnames(data) ) ) cnames = paste("Asset_", 1:NCOL(data), sep = "") else cnames = colnames(data)
 	xdata = .extractmdata(data)
 	if(!is.numeric(out.sample))
 		stop("\ngogarchfit-->error: out.sample must be numeric\n")

@@ -615,7 +615,7 @@ rcov = function(object, ...)
 	UseMethod("rcov")
 }
 
-.rcovgarch = function(object, type = 1)
+.rcovgarch = function(object, type = 1, output=c("array","matrix"))
 {
 	A = as.matrix(object, which = "A")
 	sig = as.matrix(sigma(object))^2
@@ -645,13 +645,16 @@ rcov = function(object, ...)
 		}
 		dimnames(V) = list(nam, nam, D)
 	}
+	if(output[1]=="matrix"){
+	  V = array2matrix(V, date=as.Date(D), var.names=nam, diag=TRUE)
+	}
 	return( V )
 }
 
 setMethod("rcov", signature(object = "goGARCHfit"), .rcovgarch)
 setMethod("rcov", signature(object = "goGARCHfilter"), .rcovgarch)
 
-.rcovgarchf = function(object, type = 1)
+.rcovgarchf = function(object, type = 1, output=c("array","matrix"))
 {
 	A = as.matrix(object, which = "A")
 	sig = sigma(object)^2
@@ -680,12 +683,15 @@ setMethod("rcov", signature(object = "goGARCHfilter"), .rcovgarch)
 			dimnames(H[[i]]) = list(nam, nam, paste("T+",1:n.ahead,sep=""))
 		}
 	}
+	if(output[1]=="matrix"){
+	  for(i in 1:(n.roll+1)) H[[i]] = array2matrix(H[[i]], date=paste("T+",1:n.ahead,sep=""), var.names=nam, diag=TRUE)
+	}
 	#attr(H, "T0") = D
 	return( H )
 }
 setMethod("rcov", signature(object = "goGARCHforecast"), .rcovgarchf)
 
-.rcovgarchsim = function(object, type = 1, sim = 1)
+.rcovgarchsim = function(object, type = 1, sim = 1, output=c("array","matrix"))
 {
 	m.sim = object@msim$m.sim
 	if(sim > m.sim) stop("\nsim > m.sim!", call. = FALSE)
@@ -708,13 +714,16 @@ setMethod("rcov", signature(object = "goGARCHforecast"), .rcovgarchf)
 		}
 		dimnames(V) = list(nam, nam, 1:n)
 	}
+	if(output[1]=="matrix"){
+	  V = array2matrix(V, date=as.character(1:n), var.names=nam, diag=TRUE)
+	}
 	return( V )
 }
 
 setMethod("rcov", signature(object = "goGARCHsim"), .rcovgarchsim)
 
 
-.rcovroll = function(object, type = 1)
+.rcovroll = function(object, type = 1, output=c("array","matrix"))
 {
 	rind = object@model$rollind
 	index = object@model$index
@@ -736,6 +745,9 @@ setMethod("rcov", signature(object = "goGARCHsim"), .rcovgarchsim)
 		}
 	}
 	dimnames(X) = list(nam, nam, D)
+	if(output[1]=="matrix"){
+	  X = array2matrix(X, date=as.Date(D), var.names=nam, diag=TRUE)
+	}
 	return(X)
 }
 
@@ -750,7 +762,7 @@ rcor = function(object, ...)
 	UseMethod("rcor")
 }
 
-.rcorgarch = function(object)
+.rcorgarch = function(object, output=c("array","matrix"))
 {
 	A = as.matrix(object, which = "A")
 	sig = as.matrix(sigma(object))^2
@@ -762,13 +774,16 @@ rcor = function(object, ...)
 	nam = object@model$modeldata$asset.names
 	R = try(.Call("gogarchCor", S = sig, A = A, PACKAGE = "rmgarch"), silent=TRUE)
 	dimnames(R) = list(nam, nam, D)
+	if(output[1]=="matrix"){
+	  R = array2matrix(R, date=as.Date(D), var.names=nam, diag=FALSE)
+	}
 	return( R )
 }
 
 setMethod("rcor", signature(object = "goGARCHfit"), .rcorgarch)
 setMethod("rcor", signature(object = "goGARCHfilter"), .rcorgarch)
 
-.rcorgarchf = function(object)
+.rcorgarchf = function(object, output=c("array","matrix"))
 {
 	A = as.matrix(object, which = "A")
 	sig = sigma(object)^2
@@ -785,12 +800,15 @@ setMethod("rcor", signature(object = "goGARCHfilter"), .rcorgarch)
 	}
 	# attr(R, "T0") = D
 	names(R) = D
+	if(output[1]=="matrix"){
+	  for(i in 1:(n.roll+1)) R[[i]] = array2matrix(R[[i]], date=paste("T+",1:n.ahead,sep=""), var.names=nam, diag=FALSE)
+	}
 	return( R )
 }
 setMethod("rcor", signature(object = "goGARCHforecast"), .rcorgarchf)
 
 
-.rcorgarchsim = function(object, sim = 1)
+.rcorgarchsim = function(object, sim = 1, output=c("array","matrix"))
 {
 	m.sim = object@msim$m.sim
 	if(sim > m.sim) stop("\nsim > m.sim!", call. = FALSE)
@@ -802,12 +820,15 @@ setMethod("rcor", signature(object = "goGARCHforecast"), .rcorgarchf)
 	nam = object@model$modeldata$asset.names
 	R = try(.Call("gogarchCor", S = sig, A = A, PACKAGE = "rmgarch"), silent=TRUE)
 	dimnames(R) = list(nam, nam, 1:n)
+	if(output[1]=="matrix"){
+	  R = array2matrix(R, date=as.character(1:n), var.names=nam, diag=FALSE)
+	}
 	return( R )
 }
 
 setMethod("rcor", signature(object = "goGARCHsim"), .rcorgarchsim)
 
-.rcorroll = function(object)
+.rcorroll = function(object, output=c("array","matrix"))
 {
 	rind = object@model$rollind
 	index = object@model$index
@@ -829,6 +850,9 @@ setMethod("rcor", signature(object = "goGARCHsim"), .rcorgarchsim)
 		}
 	}
 	dimnames(X) = list(nam, nam, D)
+	if(output[1]=="matrix"){
+	  X = array2matrix(X, date=as.Date(D), var.names=nam, diag=FALSE)
+	}
 	return(X)
 }
 

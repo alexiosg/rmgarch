@@ -28,39 +28,43 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
 }
 \section{Methods}{
   \describe{
-    \item{coef}{\code{signature(object = "cGARCHfit")}: 
+    \item{coef}{\code{signature(object = "cGARCHfit")}:
     The coefficient vector (see note). }
-    \item{fitted}{\code{signature(object = "cGARCHfit")}: 
+    \item{fitted}{\code{signature(object = "cGARCHfit")}:
     The conditional mean fitted data (xts object). }
-    \item{likelihood}{\code{signature(object = "cGARCHfit")}: 
+    \item{likelihood}{\code{signature(object = "cGARCHfit")}:
     The joint likelihood. }
-    \item{rcor}{\code{signature(object = "cGARCHfit")}: 
-    The conditional correlation array with third dimension labels the time index.}
-    \item{rcov}{\code{signature(object = "cGARCHfit")}: 
-    The conditional covariance array with third dimension labels the time index.}
-    \item{rshape}{\code{signature(object = "cGARCHfit")}: 
+    \item{rcor}{\code{signature(object = "cGARCHfit")}:
+    The conditional correlation array with third dimension labels the time index.
+    A further argument \sQuote{output} allows to switch between \dQuote{array}
+    and \dQuote{matrix} returned object.}
+    \item{rcov}{\code{signature(object = "cGARCHfit")}:
+    The conditional covariance array with third dimension labels the time index.
+    A further argument \sQuote{output} allows to switch between \dQuote{array}
+    and \dQuote{matrix} returned object.}
+    \item{rshape}{\code{signature(object = "cGARCHfit")}:
     The multivariate distribution shape parameter(s).}
-    \item{rskew}{\code{signature(object = "cGARCHfit")}: 
+    \item{rskew}{\code{signature(object = "cGARCHfit")}:
     The multivariate distribution skew parameter(s). }
-    \item{residuals}{\code{signature(object = "cGARCHfit")}: 
+    \item{residuals}{\code{signature(object = "cGARCHfit")}:
     The model residuals (xts object).}
-    \item{show}{\code{signature(object = "cGARCHfit")}: 
+    \item{show}{\code{signature(object = "cGARCHfit")}:
     Summary.}
-    \item{sigma}{\code{signature(object = "cGARCHfit")}: 
+    \item{sigma}{\code{signature(object = "cGARCHfit")}:
     The model conditional sigma (xts object). }
     }
 }
 \references{
-Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997, 
+Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997,
 Chapman \& Hall, London.\cr
-Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation 
-procedure of dependence parameters in multivariate families of distributions}, 
+Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
+procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr
 }
 \author{Alexios Ghalanos}
 \note{
-The \sQuote{coef} method takes additional argument \sQuote{type} with valid 
-values \sQuote{garch} for the garch parameters, \sQuote{dcc} for the second 
+The \sQuote{coef} method takes additional argument \sQuote{type} with valid
+values \sQuote{garch} for the garch parameters, \sQuote{dcc} for the second
 stage parameters and by default returns all the parameters in a named vector.
 }
 \keyword{classes}

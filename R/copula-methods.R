@@ -14,15 +14,15 @@
 ##   GNU General Public License for more details.
 ##
 #################################################################################
-cgarchspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL, 
+cgarchspec = function(uspec, VAR = FALSE, robust = FALSE, lag = 1, lag.max = NULL,
 		lag.criterion = c("AIC", "HQ", "SC", "FPE"), external.regressors = NULL,
-		robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500), 
-		dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt"), 
-				method = c("Kendall", "ML"), time.varying = FALSE, 
+		robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500),
+		dccOrder = c(1,1), asymmetric = FALSE, distribution.model = list(copula = c("mvnorm", "mvt"),
+				method = c("Kendall", "ML"), time.varying = FALSE,
 				transformation = c("parametric", "empirical", "spd")),
 		start.pars = list(), fixed.pars = list())
 {
-	UseMethod("cgarchspec")	
+	UseMethod("cgarchspec")
 }
 
 setMethod("cgarchspec", signature(uspec = "uGARCHmultispec"), .cgarchspec)
@@ -45,24 +45,24 @@ setMethod("cgarchspec", signature(uspec = "uGARCHmultispec"), .cgarchspec)
 	}
 	fixed.pars = pars[inc]
 	names(fixed.pars) = names(pars[inc])
-	
-	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			umodel$fixed.pars, umodel$vt)
 	# set parameter values
-	tmp = cgarchspec(uspec = mspec, 
-			VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-			robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-			lag = model$modelinc[1], lag.max = model$varmodel$lag.max, 
-			lag.criterion = model$varmodel$lag.criterion, 
-			external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-			robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else NULL, 
-			dccOrder = model$modelinc[4:5], asymmetric = ifelse(model$modelinc[6]>0, TRUE, FALSE), 
-			distribution.model = list(copula = model$modeldesc$distribution, 
-					method = model$modeldesc$cor.method, 
-					time.varying = model$modeldesc$timecopula, 
-					transformation = model$modeldesc$transformation), 
-			start.pars = if(is.null(model$start.pars)) model$start.pars else list(), 
+	tmp = cgarchspec(uspec = mspec,
+			VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+			robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+			lag = model$modelinc[1], lag.max = model$varmodel$lag.max,
+			lag.criterion = model$varmodel$lag.criterion,
+			external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+			robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else NULL,
+			dccOrder = model$modelinc[4:5], asymmetric = ifelse(model$modelinc[6]>0, TRUE, FALSE),
+			distribution.model = list(copula = model$modeldesc$distribution,
+					method = model$modeldesc$cor.method,
+					time.varying = model$modeldesc$timecopula,
+					transformation = model$modeldesc$transformation),
+			start.pars = if(is.null(model$start.pars)) model$start.pars else list(),
 			fixed.pars = as.list(fixed.pars))
 	return(tmp)
 }
@@ -88,23 +88,23 @@ setReplaceMethod(f="setfixed", signature= c(object = "cGARCHspec", value = "vect
 	}
 	start.pars = pars[inc]
 	names(start.pars) = names(pars[inc])
-	
-	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel, 
-			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars, 
+
+	mspec = .makemultispec(umodel$modelinc, umodel$modeldesc$vmodel, umodel$modeldesc$vsubmodel,
+			umodel$modeldata$mexdata, umodel$modeldata$vexdata, umodel$start.pars,
 			umodel$fixed.pars, umodel$vt)
-	
+
 	# set parameter values
-	tmp = cgarchspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE), 
-			robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE), 
-			lag = model$modelinc[1], lag.max = model$varmodel$lag.max, 
-			lag.criterion = model$varmodel$lag.criterion, 
-			external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL, 
-			robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else NULL, 
-			dccOrder = model$modelinc[4:5], asymmetric = ifelse(model$modelinc[6]>0, TRUE, FALSE), 
-			distribution.model = list(copula = model$modeldesc$distribution, 
-					method = model$modeldesc$cor.method, 
-					time.varying = model$modeldesc$timecopula, 
-					transformation = model$modeldesc$transformation), 
+	tmp = cgarchspec(uspec = mspec, VAR = ifelse(model$modelinc[1]>0, TRUE, FALSE),
+			robust = ifelse(!is.null(model$varmodel$robust), model$varmodel$robust, FALSE),
+			lag = model$modelinc[1], lag.max = model$varmodel$lag.max,
+			lag.criterion = model$varmodel$lag.criterion,
+			external.regressors = if(model$modelinc[2]>0) model$modeldata$mexdata else NULL,
+			robust.control = if(!is.null(model$varmodel$robust.control)) model$varmodel$robust.control else NULL,
+			dccOrder = model$modelinc[4:5], asymmetric = ifelse(model$modelinc[6]>0, TRUE, FALSE),
+			distribution.model = list(copula = model$modeldesc$distribution,
+					method = model$modeldesc$cor.method,
+					time.varying = model$modeldesc$timecopula,
+					transformation = model$modeldesc$transformation),
 			start.pars = as.list(start.pars),  fixed.pars =  model$fixed.pars)
 	return(tmp)
 }
@@ -112,10 +112,10 @@ setReplaceMethod(f="setfixed", signature= c(object = "cGARCHspec", value = "vect
 setReplaceMethod(f="setstart", signature= c(object = "cGARCHspec", value = "vector"), definition = .setstartcg)
 
 
-cgarchfit = function(spec, data, spd.control = list(lower = 0.1, upper = 0.9, 
-				type = "pwm", kernel = "epanech"), 
-		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE), 
-		solver = "solnp", solver.control = list(), out.sample = 0, cluster = NULL, 
+cgarchfit = function(spec, data, spd.control = list(lower = 0.1, upper = 0.9,
+				type = "pwm", kernel = "epanech"),
+		fit.control = list(eval.se = TRUE, stationarity = TRUE, scale = FALSE),
+		solver = "solnp", solver.control = list(), out.sample = 0, cluster = NULL,
 		fit = NULL, VAR.fit = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("cgarchfit")
@@ -124,8 +124,8 @@ cgarchfit = function(spec, data, spd.control = list(lower = 0.1, upper = 0.9,
 setMethod("cgarchfit", signature(spec = "cGARCHspec"), .cgarchfit)
 
 
-cgarchfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL), 
-		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"), 
+cgarchfilter = function(spec, data, out.sample = 0, filter.control = list(n.old = NULL),
+		spd.control = list(lower = 0.1, upper = 0.9, type = "pwm", kernel = "epanech"),
 		cluster = NULL, varcoef = NULL, realizedVol = NULL, ...)
 {
 	UseMethod("cgarchfilter")
@@ -133,10 +133,10 @@ cgarchfilter = function(spec, data, out.sample = 0, filter.control = list(n.old 
 
 setMethod("cgarchfilter", signature(spec = "cGARCHspec"), .cgarchfilter)
 
-cgarchsim = function(fit, n.sim = 1000, n.start = 0, m.sim = 1, 
-		startMethod = c("unconditional", "sample"), presigma = NULL, 
+cgarchsim = function(fit, n.sim = 1000, n.start = 0, m.sim = 1,
+		startMethod = c("unconditional", "sample"), presigma = NULL,
 		preresiduals = NULL, prereturns = NULL, preR = NULL, preQ = NULL,
-		preZ = NULL, rseed = NULL, mexsimdata = NULL, vexsimdata = NULL, 
+		preZ = NULL, rseed = NULL, mexsimdata = NULL, vexsimdata = NULL,
 		cluster = NULL, only.density= FALSE, prerealized = NULL, ...)
 {
 	UseMethod("cgarchsim")
@@ -186,7 +186,7 @@ setMethod("show",
 			m = dim(object@model$umodel$modelinc)[2]
 			cat(paste("\n*-------------------------------------------------*", sep = ""))
 			cat(paste("\n*                  Copula GARCH Fit               *", sep = ""))
-			cat(paste("\n*-------------------------------------------------*", sep = ""))	
+			cat(paste("\n*-------------------------------------------------*", sep = ""))
 			cat("\n\nDistribution\t\t: ", object@model$modeldesc$distribution)
 			if(object@model$modelinc[1]>0){
 				npvar = dim(object@model$varcoef)[1] * dim(object@model$varcoef)[2]
@@ -203,7 +203,7 @@ setMethod("show",
 				NP = paste("[",npvar, "+", length(object@mfit$garchnames),"+",length(object@mfit$dccnames),"]", sep="")
 				cat("\nNo. of Parameters\t: ", npvar+length(object@mfit$garchnames) + length(object@mfit$dccnames))
 				cat("\n[VAR GARCH CC]\t\t:", NP)
-			}			
+			}
 			cat("\nNo. of Series\t\t: ", m)
 			cat("\nNo. of Observations\t: ", object@model$modeldata$T)
 			cat("\nLog-Likelihood\t\t: ", object@mfit$llh)
@@ -233,7 +233,7 @@ setMethod("show",
 			m = dim(object@model$umodel$modelinc)[2]
 			cat(paste("\n*-------------------------------------------------*", sep = ""))
 			cat(paste("\n*               Copula GARCH Filter               *", sep = ""))
-			cat(paste("\n*-------------------------------------------------*", sep = ""))	
+			cat(paste("\n*-------------------------------------------------*", sep = ""))
 			cat("\n\nDistribution\t\t: ", object@model$modeldesc$distribution)
 			if(object@model$modelinc[1]>0){
 				npvar = dim(object@model$varcoef)[1] * dim(object@model$varcoef)[2]
@@ -250,7 +250,7 @@ setMethod("show",
 				NP = paste("[",npvar, "+", length(object@mfilter$garchnames),"+",length(object@mfilter$dccnames),"]", sep="")
 				cat("\nNo. of Parameters\t: ", npvar+length(object@mfilter$garchnames) + length(object@mfilter$dccnames))
 				cat("\n[VAR GARCH CC]\t\t:", NP)
-			}			
+			}
 			cat("\nNo. of Series\t\t: ", m)
 			cat("\nNo. of Observations\t: ", object@model$modeldata$T)
 			cat("\nLog-Likelihood\t\t: ", object@mfilter$llh)
@@ -368,7 +368,7 @@ setMethod("sigma", signature(object = "cGARCHsim"), .sigma.cgarchsim)
 #----------------------------------------------------------------------------------
 # rcov
 #----------------------------------------------------------------------------------
-.rcov.cgarchfit = function(object)
+.rcov.cgarchfit = function(object, output=c("array","matrix"))
 {
 	ans = switch(class(object)[1],
 			cGARCHfit = object@mfit$H,
@@ -376,6 +376,9 @@ setMethod("sigma", signature(object = "cGARCHsim"), .sigma.cgarchsim)
 	nam = object@model$modeldata$asset.names
 	D = as.character(object@model$modeldata$index[1:object@model$modeldata$T])
 	dimnames(ans)<-list(nam, nam, D)
+	if(output[1]=="matrix"){
+	  ans = array2matrix(ans, date=as.Date(D), var.names=nam, diag=TRUE)
+	}
 	return(ans)
 }
 
@@ -383,20 +386,23 @@ setMethod("rcov", signature(object = "cGARCHfit"), .rcov.cgarchfit)
 setMethod("rcov", signature(object = "cGARCHfilter"), .rcov.cgarchfit)
 
 
-.rcov.cgarchsim = function(object, sim = 1)
+.rcov.cgarchsim = function(object, sim = 1, output=c("array","matrix"))
 {
 	n = object@model$m.sim
 	m.sim = as.integer(sim)
-	if( m.sim > n | m.sim < 1 ) stop("\rmgarch-->error: rcor sim index out of bounds!")	
+	if( m.sim > n | m.sim < 1 ) stop("\rmgarch-->error: rcor sim index out of bounds!")
 	ans = object@msim$simH[[sim]]
 	nam = object@model$modeldata$asset.names
 	dimnames(ans) = list(nam, nam, 1:dim(ans)[3])
+	if(output[1]=="matrix"){
+	  ans = array2matrix(ans, date=as.character(1:dim(ans)[3]), var.names=nam, diag=TRUE)
+	}
 	return( ans )
 }
 
 setMethod("rcov", signature(object = "cGARCHsim"), .rcov.cgarchsim)
 
-.rcor.cgarchfit = function(object)
+.rcor.cgarchfit = function(object, output=c("array","matrix"))
 {
 	if(object@model$modeldesc$timecopula){
 		if(class(object)[1]=="cGARCHfit") R = object@mfit$Rt else R = object@mfilter$Rt
@@ -407,6 +413,9 @@ setMethod("rcov", signature(object = "cGARCHsim"), .rcov.cgarchsim)
 		nam = object@model$modeldata$asset.names
 		D = as.character(object@model$modeldata$index[1:object@model$modeldata$T])
 		dimnames(ans)<-list(nam, nam, D)
+		if(output[1]=="matrix"){
+		  ans = array2matrix(ans, date=as.Date(D), var.names=nam, diag=FALSE)
+		}
 	} else{
 		if(class(object)[1]=="cGARCHfit") ans = object@mfit$Rt else ans = object@mfilter$Rt
 		nam = object@model$modeldata$asset.names
@@ -420,16 +429,19 @@ setMethod("rcor", signature(object = "cGARCHfilter"), .rcor.cgarchfit)
 #----------------------------------------------------------------------------------
 # rcor
 #----------------------------------------------------------------------------------
-.rcor.cgarchsim = function(object, sim = 1)
+.rcor.cgarchsim = function(object, sim = 1, output=c("array","matrix"))
 {
 	n = length(object@msim$simH)
 	m.sim = as.integer(sim)
 	if( m.sim > n | m.sim < 1 ) stop("\rmgarch-->error: rcor sim index out of bounds!")
-	
+
 	if(object@model$modeldesc$timecopula){
 		ans = object@msim$simR[[sim]]
 		nam = object@model$modeldata$asset.names
 		dimnames(ans) = list(nam, nam, 1:dim(ans)[3])
+		if(output[1]=="matrix"){
+		  ans = array2matrix(ans, date=as.character(1:dim(ans)[3]), var.names=nam, diag=FALSE)
+		}
 	} else{
 		# fixed (no uncertainty)
 		ans = cov2cor(object@msim$simH[[m.sim]][,,1])
