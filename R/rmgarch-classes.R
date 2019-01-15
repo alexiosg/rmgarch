@@ -29,38 +29,38 @@ setClass("mGARCHroll", contains = c("GARCHroll"))
 #----------------------------------------------------------------------------------
 
 fScenario.default = function(){
-	xmodel = list(asset.names = "", 
-			assets = 0, 
-			model = "dcc", 
-			sim = 1, 
-			roll = 0, 
-			save.output = TRUE, 
+	xmodel = list(asset.names = "",
+			assets = 0,
+			model = "dcc",
+			sim = 1,
+			roll = 0,
+			save.output = TRUE,
 			save.dir = "",
 			save.name = "")
 	return(list(scenario = list(), model = xmodel))
 }
 
 fMoments.default = function(){
-	xmodel = list(asset.names = "", 
-			assets = 0, 
-			model = "dcc", 
-			n.ahead = 1, 
-			roll = 0, 
-			save.output = TRUE, 
+	xmodel = list(asset.names = "",
+			assets = 0,
+			model = "dcc",
+			n.ahead = 1,
+			roll = 0,
+			save.output = TRUE,
 			save.dir = "",
 			save.name = "")
-	return(list(scenario = list(), model = xmodel))
+	return(list(moments = list(), model = xmodel))
 }
 
 
-setClass("fScenario", 
+setClass("fScenario",
 		representation(
-				scenario = "vector", 
+				scenario = "vector",
 				model = "vector"),
 		prototype = fScenario.default())
 
-setClass("fMoments", 
+setClass("fMoments",
 		representation(
-				moments = "vector", 
+				moments = "vector",
 				model = "vector"),
 		prototype = fMoments.default())

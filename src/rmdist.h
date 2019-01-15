@@ -19,6 +19,7 @@
 #undef trunc
 #undef ftrunc
 #define R_NO_REMAP
+#define STRICT_R_HEADERS
 #include <R.h>
 #include <RcppArmadillo.h>
 arma::rowvec rmvnormx(arma::mat , arma::rowvec );

@@ -34,8 +34,8 @@ multivariate GARCH models are documented in the class of the returned objects.\c
  \preformatted{@Manual{Ghalanos_2014,
  author       = {Alexios Ghalanos},
  title        = {{rmgarch}: Multivariate GARCH models.},
- year         = {2014},
- note 	      = {R package version 1.3-4.}}}
+ year         = {2019},
+ note 	      = {R package version 1.3-6.}}}
 }
 \section{License}{
   The releases of this package is licensed under GPL version 3.

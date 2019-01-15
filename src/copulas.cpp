@@ -151,7 +151,7 @@ SEXP copulaStudentC1(SEXP pars, SEXP idx, SEXP Rbar, SEXP Z, SEXP dtZ)
 		double *Rpars = REAL(pars);
 		int *Ridx = INTEGER(idx);
 		double llhtemp = 0.0, llh = 0.0, temp1 = 0.0, temp2 = 0.0, temp4 = 0.0;
-		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[4]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[4]]) - 0.5 * m * log(PI*(Rpars[Ridx[4]] - 2));
+		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[4]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[4]]) - 0.5 * m * log(M_PI*(Rpars[Ridx[4]] - 2));
 		arma::mat AtempR(m, m);
 		AtempR = arma::inv(AR);
 		temp1 = log(arma::det(AR));
@@ -200,7 +200,7 @@ SEXP copulaStudentC2(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP
 		int *Ridx = INTEGER(idx);
 		int mo = (int) Repars[2];
 		double llhtemp = 0.0, llh = 0.0, temp2 = 0.0, temp4 = 0.0;
-		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[4]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[4]]) - 0.5 * m * log(PI*(Rpars[Ridx[4]] - 2));
+		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[4]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[4]]) - 0.5 * m * log(M_PI*(Rpars[Ridx[4]] - 2));
 		// empty matrices
 		arma::mat AQt(m, m);
 		arma::mat ARt(m, m);

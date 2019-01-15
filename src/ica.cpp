@@ -35,7 +35,7 @@ SEXP radicalrot(SEXP X, SEXP idx)
 		arma::rowvec margtheta(2);
 		arma::rowvec tmp;
 		for(i=0;i<k;i++){
-			theta = ( (double) i/((double) k-1)*(0.5*PI)-(0.25*PI));
+			theta = ( (double) i/((double) k-1)*(0.5*M_PI)-(0.25*M_PI));
 			rot.zeros();
 			rotp.zeros();
 			rot(0,0) = cos(theta);

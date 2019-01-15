@@ -129,7 +129,7 @@ SEXP dccnormC2(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP H, SE
 		arma::mat ARt(m, m);
 		arma::mat AUQ(m, m);
 		arma::mat temp1(m, m);
-		double lcons = m*log(2.0*PI);
+		double lcons = m*log(2.0*M_PI);
 		// Unconditiona/intercept
 		AUQ = AQbar * (1.0 - Repars[0]) - Repars[1] * ANbar;
 		for(j=0; j<mo; j++)
@@ -209,7 +209,7 @@ SEXP dccstudentC1(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP Z,
 		int *Ridx = INTEGER(idx);
 		int mo = (int) Repars[2];
 		double llhtemp = 0.0, llh = 0.0, temp2 = 0.0;
-		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[3]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[3]]) - 0.5 * m * log(PI*(Rpars[Ridx[3]] - 2));
+		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[3]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[3]]) - 0.5 * m * log(M_PI*(Rpars[Ridx[3]] - 2));
 		// empty matrices
 		arma::mat AQt(m, m);
 		arma::mat ARt(m, m);
@@ -293,7 +293,7 @@ SEXP dccstudentC2(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP H,
 		int *Ridx = INTEGER(idx);
 		int mo = (int) Repars[2];
 		double llhtemp = 0.0, llh = 0.0, temp2 = 0.0, temp3 = 0.0;
-		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[3]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[3]]) - 0.5 * m * log(PI*(Rpars[Ridx[3]] - 2));
+		double lcons = Rf_lgammafn(0.5 * (Rpars[Ridx[3]] + m)) - Rf_lgammafn(0.5 * Rpars[Ridx[3]]) - 0.5 * m * log(M_PI*(Rpars[Ridx[3]] - 2));
 		// empty matrices
 		arma::mat AQt(m, m);
 		arma::mat ARt(m, m);
@@ -378,7 +378,7 @@ SEXP dcclaplaceC1(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP Z,
 		int *Ridx = INTEGER(idx);
 		int mo = (int) Repars[2];
 		double v = 0.5 * (2 - m);
-		double lcons = log(2.0) - 0.5 * m * log(2 * PI);
+		double lcons = log(2.0) - 0.5 * m * log(2 * M_PI);
 		double llhtemp = 0.0, llh = 0.0, temp2 = 0.0;
 		// empty matrices
 		arma::mat AQt(m, m);
@@ -465,7 +465,7 @@ SEXP dcclaplaceC2(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP H,
 		int mo = (int) Repars[2];
 		double llhtemp = 0.0, llh = 0.0, temp2 = 0.0, temp3 = 0.0;
 		double v = 0.5 * (2 - m);
-		double lcons = log(2.0) - 0.5 * m * log(2 * PI);
+		double lcons = log(2.0) - 0.5 * m * log(2 * M_PI);
 		// empty matrices
 		arma::mat AQt(m, m);
 		arma::mat ARt(m, m);
@@ -983,7 +983,7 @@ SEXP fdccnormC2(SEXP model, SEXP A, SEXP B, SEXP C, SEXP Qbar, SEXP H, SEXP Z)
 		arma::mat Qtemp(m,m);
 		// Intercept
 		arma::mat Q = AC%AQ;
-		double lcons = m*log(2.0*PI);
+		double lcons = m*log(2.0*M_PI);
 		for(j=0; j<s; j++)
 		{
 			QtOut[j] = AQ;

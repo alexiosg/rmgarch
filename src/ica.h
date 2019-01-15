@@ -16,6 +16,7 @@
 #################################################################################*/
 #ifndef _ica_H
 #define _ica_H
+#define STRICT_R_HEADERS
 #include <RcppArmadillo.h>
 RcppExport SEXP radicalrot(SEXP , SEXP);
 arma::mat fs10(arma::mat X, arma::mat B, const double nsamples);
