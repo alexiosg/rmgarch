@@ -995,7 +995,7 @@ setMethod("rcoskew", signature(object = "goGARCHroll"), .rcoskewroll)
 	m.sim = object@msim$m.sim
 	if(sim > m.sim) stop("\nsim > m.sim!", call. = FALSE)
 	n = length(seq(from, to, by = 1))
-	if( n>100 ) stop("\nMaximum from/to is 100 points due to size restrictions\n", .call = FALSE)
+	if( n>100 ) warning("\nMaximum from/to exceeds 100 points...memory issues may occur.\n")
 	A = object@msim$A
 	m = NROW(A)
 	xs = array(NA, dim = c(m , m^2, n))
@@ -1099,7 +1099,7 @@ rcokurt = function(object, ...)
 			stop("\nNo co-kurtosis for mvnorm distribution\n", call. = FALSE)
 		}
 		n = length(seq(from, to, by = 1))
-		if( n>100 ) stop("\nMaximum from/to is 100 points due to size restrictions\n", .call = FALSE)
+		if( n>100 ) warning("\nMaximum from/to exceeds 100 points...memory issues may occur.\n")
 
 		xs = array(NA, dim = c(m , m^3, n))
 		skew = coef(object)["skew",]
@@ -1169,7 +1169,7 @@ setMethod("rcokurt", signature(object = "goGARCHroll"), .rcokurtroll)
 	m.sim = object@msim$m.sim
 	if(sim > m.sim) stop("\nsim > m.sim!", call. = FALSE)
 	n = length(seq(from, to, by = 1))
-	if( n>100 ) stop("\nMaximum from/to is 100 points due to size restrictions\n", .call = FALSE)
+	if( n>100 ) warning("\nMaximum from/to exceeds 100 points...memory issues may occur.\n")
 	A = object@msim$A
 	m = NROW(A)
 	xs = array(NA, dim = c(m , m^3, n))
