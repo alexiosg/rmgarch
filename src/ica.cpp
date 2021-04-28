@@ -44,11 +44,11 @@ SEXP radicalrot(SEXP X, SEXP idx)
 			rot(1,1) = cos(theta);
 			rotp = rot * AX;
 			vals = rotp.row(0);
-			vals = arma::sort(vals, 0);
+			vals = arma::sort(vals);
 			tmp = arma::log(vals.cols(m,mx-1) - vals.cols(0,mx-m-1));
 			margtheta(0) = arma::as_scalar(arma::accu(tmp));
 			vals = rotp.row(1);
-			vals = arma::sort(vals, 0);
+			vals = arma::sort(vals);
 			tmp = arma::log(vals.cols(m,mx-1) - vals.cols(0,mx-m-1));
 			margtheta(1) = arma::as_scalar(arma::accu(tmp));
 			ent(i) = arma::as_scalar(arma::accu(margtheta));

@@ -82,7 +82,7 @@ SEXP dccnormC1(SEXP model, SEXP pars, SEXP idx, SEXP Qbar, SEXP Nbar, SEXP Z, SE
 			QtOut[j] = AQt;
 			temp1 = arma::sqrt(AQt.diag()) * arma::trans(arma::sqrt(AQt.diag()));
 			ARt = AQt/temp1;
-			temp2 = arma::as_scalar( AZ.row(j) * ( arma::inv(ARt, true) * arma::trans(AZ.row(j))) );
+			temp2 = arma::as_scalar( AZ.row(j) * ( arma::inv(ARt) * arma::trans(AZ.row(j))) );
 			llhtemp = log(arma::det(ARt)) + temp2;
 			llh+= llhtemp;
 			Rllh[j] = 0.5 * llhtemp;
@@ -935,7 +935,7 @@ SEXP fdccnormC1(SEXP model, SEXP A, SEXP B, SEXP C, SEXP Qbar, SEXP Z)
 				QtOut[j] = AQt;
 				temp1 = arma::sqrt(AQt.diag()) * arma::trans(arma::sqrt(AQt.diag()));
 				ARt = AQt/temp1;
-				temp2 = arma::as_scalar( AZ.row(j) * ( arma::inv(ARt, true) * arma::trans(AZ.row(j))) );
+				temp2 = arma::as_scalar( AZ.row(j) * ( arma::inv(ARt) * arma::trans(AZ.row(j))) );
 				llhtemp = log(arma::det(ARt)) + temp2;
 				llh+= llhtemp;
 				Rllh[j] = 0.5 * llhtemp;

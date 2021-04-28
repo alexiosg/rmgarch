@@ -430,7 +430,7 @@ rmgarch.test1e = function(cluster = NULL)
 	cf = convolution(fit, weights = rep(1/3,3), fft.step = 0.001, fft.by = 0.0001, fft.support = c(-1, 1),
 		use.ff = TRUE, trace = 0, support.method = c("user", "adaptive")[2], cluster = cluster)
 	# semi-analytic (FFT based)
-	np = nportmoments(cf, trace=1)
+	np = nportmoments(cf, trace = 0)
 	postscript("test1e1.eps", width = 8, height = 12)
 	par(mfrow = c(2,2))
 	plot(gp[1:1000,1], type = "p", main = "Portfolio Mean", minor.ticks=FALSE, auto.grid=FALSE)
