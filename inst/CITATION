@@ -8,11 +8,11 @@ note <- sprintf("R package version %s.", meta$Version)
 
 citEntry(entry="Manual",
          title = "rmgarch: Multivariate GARCH models.",
-         author = personList(as.person("Alexios Ghalanos")),
+         author = personList(as.person("Alexios Galanos")),
          year         = year,
          note         = note,
          textVersion = 
-         paste("Alexios Ghalanos",
+         paste("Alexios Galanos",
                sprintf("(%s).", year),
                "rmgarch: Multivariate GARCH models.",
 	       note),

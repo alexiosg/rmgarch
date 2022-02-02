@@ -54,5 +54,5 @@ Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
 procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

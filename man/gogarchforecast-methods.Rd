@@ -31,7 +31,7 @@ estimation (remember to stop the cluster on completion).}
 A \code{\linkS4class{goGARCHforecast}} object containing details of the GO-GARCH 
 forecast.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \examples{
 \dontrun{
 data(dji30ret)

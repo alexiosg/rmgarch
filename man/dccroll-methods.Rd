@@ -56,5 +56,5 @@ clusterOnAssets=FALSE, ...)
 A \code{\linkS4class{DCCroll}} object containing details of the DCC-GARCH 
 rolling forecast.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

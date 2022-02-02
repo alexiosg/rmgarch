@@ -131,7 +131,7 @@ Lutkepohl, H. 2005, New introduction to multiple time series analysis,
 Croux, C. and Joossens, K. 2008, Robust estimation of the vector autoregressive 
 model by a least trimmed squares procedure, \emph{COMPSTAT}, 489--501.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 Part of the varxfit functionality and structure is inspired from the 'vars' 
 package, but the estimation method is implemented in a very quick way without 

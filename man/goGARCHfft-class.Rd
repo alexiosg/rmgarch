@@ -67,5 +67,5 @@ n.ahead=1 and n.roll = 1 (remember that n.roll is zero based), the index is
 meant to indicate the first (of two, since rolls = 0:1) rolling forecast 
 density.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

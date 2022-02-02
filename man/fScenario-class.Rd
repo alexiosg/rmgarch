@@ -34,5 +34,5 @@ Objects can be created by calls of the form \code{new("fScenario", ...)}.
     is generated using the \code{generatefwd} function in the rugarch package.}
     }
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -801,7 +801,7 @@ rob.cov = function(X, method = c("mve", "mcd", "mvt"), demean = TRUE){
 bs.cov = function(X)
 {
 	# Bayes Stein estimator
-	# Alexios Ghalanos 2008
+	# Alexios Galanos 2008
 	# This function encapsulates an example of shrinking the returns 
 	#   and covariance using Bayes-Stein shrinkage as described in 
 	#   Jorion, 1986

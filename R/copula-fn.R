@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -164,7 +164,7 @@
 .tcopulafn = function(pars, data, Rbar, type = "LLH")
 {
 	nu = pars[1]
-	Qdata = apply(data, 2, FUN = function(x) rugarch:::qstd(p = x ,shape = nu))
+	Qdata = apply(data, 2, FUN = function(x) qdist(distribution = "std", p = x ,shape = nu))
 	#ans = try(.Call("staticCopulaStudent", U = Qdata, Rbar = Rbar, tnu = nu), silent = TRUE)
 	ans = dcopula.student(U = Qdata, Corr = Rbar, df = nu, logvalue = TRUE)
 		

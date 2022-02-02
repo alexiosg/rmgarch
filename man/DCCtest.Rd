@@ -45,7 +45,7 @@ using a static GARCH copula (Normal) model.
 A list with the proposed Null hypothesis (H0), the test statistic and its 
 p-value.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \references{
 Bollerslev, T. 1990, Modelling the coherence in short-run nominal exchange 
 rates: a multivariate generalized ARCH model, \emph{The Review of Economics and 

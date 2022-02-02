@@ -34,5 +34,5 @@ The goload function then takes this object, reads the location and name and
 loads the scenario (or moments) into its slot in the object and returns 
 this to the user's workspace.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

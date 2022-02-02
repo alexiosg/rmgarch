@@ -32,7 +32,7 @@ multivariate GARCH models are documented in the class of the returned objects.\c
 \section{How to cite this package}{
   Whenever using this package, please cite as\cr
  \preformatted{@Manual{Ghalanos_2014,
- author       = {Alexios Ghalanos},
+ author       = {Alexios Galanos},
  title        = {{rmgarch}: Multivariate GARCH models.},
  year         = {2019},
  note 	      = {R package version 1.3-6.}}}
@@ -40,7 +40,7 @@ multivariate GARCH models are documented in the class of the returned objects.\c
 \section{License}{
   The releases of this package is licensed under GPL version 3.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \references{
 Bollerslev, T. 1990, Modelling the coherence in short-run nominal exchange
 rates: a multivariate generalized ARCH model, \emph{The Review of Economics and

@@ -102,5 +102,5 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHroll", distance 3.
     \item{show}{\code{signature(object = "goGARCHroll")}: Summary. }
    }
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

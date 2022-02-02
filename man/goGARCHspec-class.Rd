@@ -33,7 +33,7 @@ Portfolio Risk Calculation, \emph{Journal of Financial Econometrics}, 412--436.\
 Ghalanos, A. and Rossi, E. and Urga, G. 2011, Independent Factor Autoregressive 
 Conditional Density Model, \emph{Pending--submitted}.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 The mixing matrix in the GO-GARCH model implemented in the rmgarch package is 
 based on non-parametric independent component analysis (ICA) methodology. 

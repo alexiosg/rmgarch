@@ -46,5 +46,5 @@ estimation (remember to stop the cluster on completion).}
 A \code{\linkS4class{goGARCHsim}} object containing details of the GO-GARCH
 simulation.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

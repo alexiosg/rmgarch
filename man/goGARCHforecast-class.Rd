@@ -168,7 +168,7 @@ Autoregressive Conditional Density Model}, \bold{forthcoming}.\cr
 Paolella, M.S. 2007, Intermediate Probability - A Computational Approach,
 \emph{Wiley-Interscience}.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 The reference by Chen et al (2010) and Paolella (2007) contains more details on
 the algorithm for the characteristic function inversion via FFT. The de Athayde

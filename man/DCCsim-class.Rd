@@ -53,5 +53,5 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
 Engle, R.F. and Sheppard, K. 2001, Theoretical and empirical properties of
 dynamic conditional correlation multivariate GARCH, \emph{NBER Working Paper}.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

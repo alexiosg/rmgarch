@@ -43,7 +43,7 @@ cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL, ...)
 \value{
 A \code{\linkS4class{DCCfit}} object containing details of the DCC-GARCH fit.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \details{
 The 2-step DCC estimation fits a GARCH-Normal model to the univariate data and 
 then proceeds to estimate the second step based on the chosen multivariate 

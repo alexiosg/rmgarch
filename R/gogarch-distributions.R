@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -407,7 +407,7 @@ ghypmvcf = function(z, lambda, alpha, beta, delta, mu)
 
 .cokurt.pairs = function(n)
 {
-	# Author: Alexios Ghalanos 
+	# Author: Alexios Galanos 
 	# Copyright (C) 2013 (part of the rmgarch package)
 	# Finds the locations of each i=j, k=l pair in an N x N^3 matrix representing 
 	# the collapsed co-kurtosis tensor

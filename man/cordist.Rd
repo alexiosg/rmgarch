@@ -51,4 +51,4 @@ Herdin, M., Czink, N., Ozcelik, H., & Bonek, E. (2005). Correlation matrix
 distance, a meaningful measure for evaluation of non-stationary MIMO channels. 
 \emph{Vehicular Technology Conference, 2005, IEEE 61st}, \bold{1}, 136--140.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}

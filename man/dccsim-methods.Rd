@@ -79,5 +79,5 @@ that it contains the appropriate \sQuote{fixed.pars} in both the multivariate
 DCC part of the specification as well as the multiple univariate specification 
 part, for which the method \code{\link{setfixed<-}} should be used.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

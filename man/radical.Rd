@@ -78,7 +78,7 @@ Entropy, \emph{Journal of Machine Learning Research}, \bold{4}, 1271-1295.
 }
 \author{
 Erik G. Learned-Miller for the Radical algorithm and Matlab package.\cr
-Alexios Ghalanos for this R-port.
+Alexios Galanos for this R-port.
 }
 \examples{
 \dontrun{

@@ -44,5 +44,5 @@ dynamic conditional correlation multivariate GARCH, \emph{NBER Working Paper}.\c
 The \sQuote{umodel} list is absorbed into the \sQuote{model} list in all other
 DCC classes.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

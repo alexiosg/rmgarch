@@ -85,7 +85,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
 Engle, R.F. and Sheppard, K. 2001, Theoretical and empirical properties of
 dynamic conditional correlation multivariate GARCH, \emph{NBER Working Paper}.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 The \sQuote{coef} method takes additional argument \sQuote{type} with valid
 values \sQuote{garch} for the univariate garch parameters,  \sQuote{dcc} for the

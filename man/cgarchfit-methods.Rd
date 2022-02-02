@@ -46,7 +46,7 @@ cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL,...)
 A \code{\linkS4class{cGARCHfit}} Object containing details of the Copula-GARCH 
 fit.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \details{
 The Copula-GARCH models implemented can either be time-varying of DCC variety 
 else static. The multivariate Normal and Student distributions are used in the

@@ -60,7 +60,7 @@ Though the classical VAR estimation is very fast and may not require this extra
 step, the robust method is slow and therefore benefits from calculating this 
 only once.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \examples{
 \dontrun{
 data(dji30ret)

@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008, 2009, 2010, 2011
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008, 2009, 2010, 2011
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify

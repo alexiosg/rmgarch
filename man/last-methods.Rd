@@ -27,5 +27,5 @@ first(x, index = 1, ...)
 \item{\code{signature(x = "ANY")}}{}
 \item{\code{signature(x = "array")}}{}
 }}
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

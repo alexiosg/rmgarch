@@ -41,4 +41,4 @@ the three elliptical distributions given a set of weights.
 A matrix with each row representing the conditional weighted marginal density 
 with corresponding parameters.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}

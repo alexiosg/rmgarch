@@ -61,7 +61,7 @@ Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
 procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 The \sQuote{coef} method takes additional argument \sQuote{type} with valid
 values \sQuote{garch} for the garch parameters, \sQuote{dcc} for the second

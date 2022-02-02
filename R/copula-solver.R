@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -194,7 +194,7 @@ copula.adcccon = function(pars, arglist){
 	udata = arglist$ures
 	m = arglist$m
 	Z = switch(arglist$model$modeldesc$distribution,
-			"mvt" = matrix(rugarch:::qstd(udata, shape = ipars[idx["mshape",1], 1]), ncol=m),
+			"mvt" = matrix(qdist(distribution = "std", p = udata, shape = ipars[idx["mshape",1], 1]), ncol = m),
 			"mvnorm" = qnorm(udata))
 	Qbar = cov(Z)
 	# Take care of the Asymmetry Matrices

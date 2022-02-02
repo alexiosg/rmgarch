@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -55,6 +55,20 @@
 	cols = if (ascending) 1:k else k:1
 	return(matrix(data[s + rep(cols, rep(lens, k)) - 1], lens))
 }
+
+.embed_safe <- function(data, k, by = 1, ascending = FALSE) 
+{
+    if (is.null(dim(data)[1])) 
+        n <- length(data)
+    else n <- dim(data)[1]
+    s <- seq(1, n - k + 1, by)
+    lens <- length(s)
+    cols <- if (ascending) 
+        1:k
+    else k:1
+    return(matrix(data[s + rep(cols, rep(lens, k)) - 1], lens))
+}
+
 
 .lagx = function(data, n.lag = 1, removeNA = FALSE, pad = NA)
 {

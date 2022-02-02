@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -815,7 +815,7 @@ setMethod("likelihood", signature(object = "DCCroll"), .likelihood.dccfit)
 	# VAR + GARCH + DCC + Qbar
 	estpars = NROW(object@mfit$matcoef)
 	np = npvar + estpars + ( (m^2 - m)/2 )
-	itest = rugarch:::.information.test(likelihood(object), nObs = n, nPars = np)
+	itest = .information.test(likelihood(object), nObs = n, nPars = np)
 	itestm = matrix(0, ncol = 1, nrow = 4)
 	itestm[1,1] = itest$AIC
 	itestm[2,1] = itest$BIC
@@ -902,7 +902,7 @@ setMethod("show",
 			cat("\nOptimal Parameters")
 			cat(paste("\n-----------------------------------\n", sep = ""))
 			print(round(object@mfit$matcoef,6), digits = 5)
-			itest = rugarch:::.information.test(object@mfit$llh, nObs = T, nPars =  npvar + (m^2 - m)/2 + length(object@mfit$matcoef[,1]))
+			itest = .information.test(object@mfit$llh, nObs = T, nPars =  npvar + (m^2 - m)/2 + length(object@mfit$matcoef[,1]))
 			itestm = matrix(0, ncol = 1, nrow = 4)
 			itestm[1,1] = itest$AIC
 			itestm[2,1] = itest$BIC

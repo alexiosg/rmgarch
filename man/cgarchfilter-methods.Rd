@@ -52,5 +52,5 @@ replicating the original conditions making filtering appropriate for rolling
 1-ahead forecasting.\cr
 For extensive examples look in the \sQuote{rmgarch.tests} folder.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

@@ -101,5 +101,5 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
 	the de-whitening matrix.}
 	}
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -63,15 +63,15 @@ rmgarch.test2a = function(cluster = NULL)
 			length(fit4@mfit$matcoef[,1]),
 			length(fit5@mfit$matcoef[,1])) +  (3^2 - 3)/2
 	aicmod = c(
-			rugarch:::.information.test(fit1@mfit$llh, nObs = fit1@model$modeldata$T, 
+			.information.test(fit1@mfit$llh, nObs = fit1@model$modeldata$T, 
 					nPars = np[1])[[1]],
-			rugarch:::.information.test(fit2@mfit$llh, nObs = fit2@model$modeldata$T, 
+			.information.test(fit2@mfit$llh, nObs = fit2@model$modeldata$T, 
 					nPars = np[2])[[1]],
-			rugarch:::.information.test(fit3@mfit$llh, nObs = fit3@model$modeldata$T, 
+			.information.test(fit3@mfit$llh, nObs = fit3@model$modeldata$T, 
 					nPars = np[3])[[1]],
-			rugarch:::.information.test(fit4@mfit$llh, nObs = fit4@model$modeldata$T, 
+			.information.test(fit4@mfit$llh, nObs = fit4@model$modeldata$T, 
 					nPars = np[4])[[1]],
-			rugarch:::.information.test(fit5@mfit$llh, nObs = fit5@model$modeldata$T, 
+			.information.test(fit5@mfit$llh, nObs = fit5@model$modeldata$T, 
 					nPars = np[5])[[1]])
 	tmp = data.frame(n.pars = np, AIC = aicmod)
 	rownames(tmp) = paste("Model", 1:5, sep = "")

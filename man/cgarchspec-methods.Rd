@@ -66,5 +66,5 @@ The \code{robust} option allows for a robust version of VAR based on the
 multivariate Least Trimmed Squares Estimator described in Croux and Joossens 
 (2008).
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

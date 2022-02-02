@@ -84,5 +84,5 @@ scenario but with a model details list and the seed values. This can then be
 passed on to the \code{goload} function which can read from the directory and 
 return a complete object with the scenario.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

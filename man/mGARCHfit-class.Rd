@@ -12,5 +12,5 @@ Class \code{"\linkS4class{rGARCH}"}, by class "GARCHfit", distance 2.
 \section{Methods}{
 No methods defined with class "mGARCHfit" in the signature.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

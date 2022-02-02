@@ -108,7 +108,7 @@ selection of \code{firstEig} and \code{lastEig} which overwrites the choice of
 \author{
 Hugo Gaevert, Jarmo Hurri, Jaakko Saerelae, and Aapo Hyvaerinen for the original 
 FastICA package for matlab.\cr 
-Alexios Ghalanos for this R-port.
+Alexios Galanos for this R-port.
 }
 \examples{
 \dontrun{

@@ -166,7 +166,7 @@ Schmidt, R., Hrycej, T. and Stutzle 2006, Multivariate distribution models with
 generalized hyperbolic margins, \emph{Computational Statistics \& Data Analysis}
 \bold{50(8)}, 2065-2096.\cr
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \note{
 The reference by Paolella (2007) contains more details on the algorithm for the
 characteristic function inversion via FFT. The application of this method in a

@@ -62,5 +62,5 @@ If \dQuote{save.fit} is true, the directory in which to save the
 \value{
 An object of class \code{\linkS4class{goGARCHroll}}.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

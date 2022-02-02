@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -1858,11 +1858,11 @@ setMethod("convolution", signature(object = "goGARCHroll"), .convolution.gogarch
 			clusterExport(cluster, c("fft.step", "fft.by", "wpars","cfinv","nigmvcf"), envir = environment())
 			xsol = parLapply(cluster, as.list(1:n), fun = function(i){
 						xmin = min(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i]), 1,
-										FUN = function(x) rugarch:::qnig(0.0000001,
+										FUN = function(x) qnig(0.0000001,
 													alpha = x[1], beta = x[2],
 													delta = x[3], mu = x[4])))
 						xmax = max(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i]), 1,
-										FUN = function(x) rugarch:::qnig(1-0.0000001,
+										FUN = function(x) qnig(1-0.0000001,
 													alpha = x[1], beta = x[2],
 													delta = x[3], mu = x[4])))
 						zz = seq(xmin, xmax, by = fft.by)
@@ -1880,10 +1880,10 @@ setMethod("convolution", signature(object = "goGARCHroll"), .convolution.gogarch
 		} else{
 			for(i in 1:n){
 				xmin = min(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i]), 1,
-								FUN = function(x) rugarch:::qnig(0.0000001, alpha = x[1],
+								FUN = function(x) qnig(0.0000001, alpha = x[1],
 											beta = x[2], delta = x[3], mu = x[4])))
 				xmax = max(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i]), 1,
-								FUN = function(x) rugarch:::qnig(1-0.0000001, alpha = x[1],
+								FUN = function(x) qnig(1-0.0000001, alpha = x[1],
 											beta = x[2], delta = x[3], mu = x[4])))
 				zz = seq(xmin, xmax, by = fft.by)
 				nigpdf[[i]] = cfinv(z = zz, f = nigmvcf, step = fft.step,
@@ -1948,8 +1948,6 @@ setMethod("convolution", signature(object = "goGARCHroll"), .convolution.gogarch
 				cbind(matrix(0, ncol = 3, nrow = n), M1[,j] * weights[,j], rep(0, n))
 		wpars[j,,] = as.array(t(tmp), dim = c(1, 5, n))
 	}
-
-
 	if( support.method == "user" ){
 		support.user = NULL
 		zz = seq(fft.support[1], fft.support[2], by = fft.by)
@@ -1987,12 +1985,12 @@ setMethod("convolution", signature(object = "goGARCHroll"), .convolution.gogarch
 							"wpars","cfinv","ghypmvcf"), envir = environment())
 			xsol = parLapply(cluster, as.list(1:n), fun = function(i){
 						xmin = min(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i], wpars[,5,i]), 1,
-										FUN = function(x) rugarch:::qgh(0.0000001,
+										FUN = function(x) qgh(0.0000001,
 													alpha = x[1], beta = x[2],
 													delta = x[3], mu = x[4],
 													lambda = x[5])))
 						xmax = max(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i], wpars[,5,i]), 1,
-										FUN = function(x) rugarch:::qgh(1-0.0000001,
+										FUN = function(x) qgh(1-0.0000001,
 													alpha = x[1], beta = x[2],
 													delta = x[3], mu = x[4],
 													lambda = x[5])))
@@ -2011,11 +2009,11 @@ setMethod("convolution", signature(object = "goGARCHroll"), .convolution.gogarch
 		} else{
 			for(i in 1:n){
 				xmin = min(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i], wpars[,5,i]), 1,
-								FUN = function(x) rugarch:::qgh(0.0000001,
+								FUN = function(x) qgh(0.0000001,
 											alpha = x[1], beta = x[2], delta = x[3],
 											mu = x[4], lambda = x[5])))
 				xmax = max(apply(cbind(wpars[,1,i], wpars[,2,i], wpars[,3,i], wpars[,4,i], wpars[,5,i]), 1,
-								FUN = function(x) rugarch:::qgh(1-0.0000001,
+								FUN = function(x) qgh(1-0.0000001,
 											alpha = x[1], beta = x[2], delta = x[3],
 											mu = x[4], lambda = x[5])))
 				zz = seq(xmin, xmax, by = fft.by)
@@ -2592,4 +2590,27 @@ setMethod("betacokurt", signature(object = "goGARCHforecast"), .betacokurt.forec
 	nw[, , 1:n1] = x[, , 1:n1]
 	nw[, , (n1 + 1):(n1 + n2)] = y[, , 1:n2]
 	return(nw)
+}
+
+.abind_safe <- function (x, y) 
+{
+    m = dim(x)[1]
+    if (is.matrix(x)) {
+        n1 = 1
+        x = array(x, dim = c(m, m, 1))
+    }
+    else {
+        n1 = dim(x)[3]
+    }
+    if (is.matrix(y)) {
+        n2 = 1
+        y = array(y, dim = c(m, m, 1))
+    }
+    else {
+        n2 = dim(y)[3]
+    }
+    nw = array(NA, dim = c(m, m, n1 + n2))
+    nw[, , 1:n1] = x[, , 1:n1]
+    nw[, , (n1 + 1):(n1 + n2)] = y[, , 1:n2]
+    nw
 }

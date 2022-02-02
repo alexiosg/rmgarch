@@ -82,5 +82,5 @@ values \sQuote{garch} for the univariate garch parameters,  \sQuote{dcc} for the
 second stage dcc parameters and by default returns all the parameters in a named
 vector.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{classes}

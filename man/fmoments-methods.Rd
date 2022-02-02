@@ -47,5 +47,5 @@ The function allows to generate forecast covariance matrices for use in the
 QP based EV model, and also for the \dQuote{gogarch} model higher co-moment 
 matrices for use in the Utility maximization model implemented separately.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}

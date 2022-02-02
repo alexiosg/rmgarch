@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -211,7 +211,7 @@ setMethod("show",
 			cat("\nOptimal Parameters")
 			cat(paste("\n---------------------------------------------------\n", sep = ""))
 			print(round(object@mfit$matcoef,6), digits = 5)
-			itest = rugarch:::.information.test(object@mfit$llh, nObs = object@model$modeldata$T, nPars = length(object@mfit$matcoef[,1]))
+			itest = .information.test(object@mfit$llh, nObs = object@model$modeldata$T, nPars = length(object@mfit$matcoef[,1]))
 			itestm = matrix(0, ncol = 1, nrow = 4)
 			itestm[1,1] = itest$AIC
 			itestm[2,1] = itest$BIC
@@ -260,7 +260,7 @@ setMethod("show",
 			cf = data.frame(object@mfilter$coef, row.names = names(object@mfilter$coef))
 			colnames(cf) = "Value"
 			print(round(cf, 4), digits = 5)
-			itest = rugarch:::.information.test(object@mfilter$llh, nObs = object@model$modeldata$T, nPars = length(object@mfilter$coef))
+			itest = .information.test(object@mfilter$llh, nObs = object@model$modeldata$T, nPars = length(object@mfilter$coef))
 			itestm = matrix(0, ncol = 1, nrow = 4)
 			itestm[1,1] = itest$AIC
 			itestm[2,1] = itest$BIC

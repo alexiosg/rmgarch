@@ -1,14 +1,16 @@
+2022-02-05 Alexios Galanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.3-9.
+	* Fixes to CRAN note warnings on rugarch exports
+	
 2021-03-30 Alexios Galanos <alexios@4dscape.com>
-	* DESCRIPTION (Version): New version is 1.3-7.
-	* Fixes to armadillo code as there have been some changes 
-	since the package was last updated.
+	* DESCRIPTION (Version): New version is 1.3-8.
 	* Check that the package builds with new Matrix package.
 	
-2019-01-14 Alexios Ghalanos <alexios@4dscape.com>
+2019-01-14 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-6.
 	* Fix to fMoments class which had the wrong slot (scenario instead of moments).
 
-2018-08-25 Alexios Ghalanos <alexios@4dscape.com>
+2018-08-25 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-5.
 	* Clean up of xts plotting which was broken due to xts maintainer
 	breaking backward compatibility. Switched to zoo.
@@ -18,42 +20,42 @@
 	diagonal.
 	* Added STRICT_R_HEADERS per Dirk's email (change related to PI only).
 
-2018-02-12 Alexios Ghalanos <alexios@4dscape.com>
+2018-02-12 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-4.
 	* Cleanup and routine registration
 	* Small fix .pca in rmgarch-ica.R file for not dropping dimension
 	when n=2 (thanks to Johannes Scheuplein for fix).
 
-2017-06-01 Alexios Ghalanos <alexios@4dscape.com>
+2017-06-01 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-3.
 	* Added option to use cluster on the window dimension rather than assets
 	in dccroll.
 	* Numerous minor changes to underlying functionality.
 
-2016-09-20 Alexios Ghalanos <alexios@4dscape.com>
+2016-09-20 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-2.
   * gogarchsim now takes either a goGARCHfit or goGARCHfilter object. First argument
   to gogarchsim (fit) replaced by 'object'. This allows better handling of the simulated
   forecast density by first filtering for new data from a filtered object
   and then simulating the n-ahead density.
 
-2016-02-20 Alexios Ghalanos <alexios@4dscape.com>
+2016-02-20 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-1.
 	* Fix to fscenario function (would not run when using dcc or cgarch).
 
-2015-12-27 Alexios Ghalanos <alexios@4dscape.com>
+2015-12-27 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.3-0.
 	* Fix to dccsim when using startMethod sample. The
 	wrong standardized residuals were being passed
 	to the simulation routine.
 	* Some fixes to some wrongly exported methods from other packages.
 
-2015-07-02 Alexios Ghalanos <alexios@4dscape.com>
+2015-07-02 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-9.
 	* Fixes to pass new CRAN checks which only attaches base now.
 	* Fixed bug in fscenario for gogarch model with dimensionality reduction.
 
-2014-06-11 Alexios Ghalanos <alexios@4dscape.com>
+2014-06-11 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-8.
 	* Removed fftw dependency
 	* Fix to Copula-Student Simulation.
@@ -61,20 +63,20 @@
 	in varxfit function and updated related functions (filter,
 	forecast and sim) to take this into account [user request].
 
-2014-03-07 Alexios Ghalanos <alexios@4dscape.com>
+2014-03-07 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-7.
 	* Fix to multivariate Student and Laplace random number generation for
 	DCC simulation methods.
 
-2014-01-26 Alexios Ghalanos <alexios@4dscape.com>
+2014-01-26 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-6.
 	* Fix for solaris build [thanks to BDR].
 
-2014-01-25 Alexios Ghalanos <alexios@4dscape.com>
+2014-01-25 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-5.
 	* Patched to work with recent changes to Rcpp.
 
-2014-01-05 Alexios Ghalanos <alexios@4dscape.com>
+2014-01-05 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-4.
 	* Implemented very fast flattened tensor indexing for
 	the gogarch higher co-moment matrices using analytic
@@ -91,7 +93,7 @@
 	* Enanced DCC based models to accept the newly released realGARCH model
 	from rugarch (additional argument realizedVol required).
 
-2013-09-02 Alexios Ghalanos <alexios@4dscape.com>
+2013-09-02 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-3.
 	* replaced estimation of Kendall's tau with cor.fk function of pcaPP
 	package which is very fast (affects static mvt copula).
@@ -101,14 +103,14 @@
 	* Fix to cgarchspec and dccspec in the presence of external regressors (had
 	previously saved the wrong dimension).
 
-2013-05-26 Alexios Ghalanos <alexios@4dscape.com>
+2013-05-26 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-2.
 	* Fix to cgarchsim in presence of variance targeting in the univariate
 	models (exited with failure code).
 	* Fixes to some methods to comply with rugarch 1.2-5 (now required as minimum
 	version)
 
-2013-04-25 Alexios Ghalanos <alexios@4dscape.com>
+2013-04-25 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-1.
 	* cordist function added to visualize dynamic correlation distances.
 	* Fixed problem of using variance targeting in the multivariate models.
@@ -119,7 +121,7 @@
 	* Some more functions in gogarch ported to Rcpp for speed and memory management
 	(related to large dimensional tensors and kronecker product).
 
-2013-04-10  Alexios Ghalanos <alexios@4dscape.com>
+2013-04-10  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.2-0.
 	* Version bump and update for use with rugarch 1.2-2 and R 3.0.0
 	* Some fixes to methods rcoskew and rcokurt for goGARCHroll class
@@ -129,17 +131,17 @@
 	(consistent with changes in rugarch).
 	* Updated rmgarch.tests.
 
-2013-02-20  Alexios Ghalanos <alexios@4dscape.com>
+2013-02-20  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.00-4.
 
-2013-02-09  Alexios Ghalanos <alexios@4dscape.com>
+2013-02-09  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.00-3.
 	* fscenario and fmoments re-worked. Now have fitted, rcov, rcoskew and
 	rcokurt methods for extracting the scenario and moments.
 	* Some fixes to rocokurt and rcoskew with switch roll="all".
 	* Updated examples in rmgarch.tests folder.
 
-2013-02-02  Alexios Ghalanos <alexios@4dscape.com>
+2013-02-02  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.00-2.
 	* As in the rugarch package, xts now exclusively used. The extract methods
 	sigma, fitted and residuals return an xts object, whilst the extractors
@@ -163,7 +165,7 @@
 	diag(time varying cov)) moved to C++ (RcppArmadillo) for more than 10x
 	speed increase.
 
-2012-12-25  Alexios Ghalanos <alexios@4dscape.com>
+2012-12-25  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.00.
 	* Changes to comply with new rugarch package, particularly with regards
 	to parallel functionality (exclusive use of parallel package), and enhancements
@@ -172,24 +174,24 @@
 	* Added FDCC model (v. 1.00-1) and rmgarch.test5 examples.
 	* Started on ICA to C++ translation.
 
-2012-11-10  Alexios Ghalanos <alexios@4dscape.com>
+2012-11-10  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.99.
 	* Some minor corrections to vignette.
 	* Fix to static t-copula using Kendall's tau (bug in combn in .Kendall).
 
-2012-10-17  Alexios Ghalanos <alexios@4dscape.com>
+2012-10-17  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.98.
 	* Fix to dccfit and dccfilter when using fGARCH models in first stage.
 	* Added some details in the vignette on the multi-step ahead forecast
 	algorithm used for the DCC model.
 
-2012-10-03  Alexios Ghalanos <alexios@4dscape.com>
+2012-10-03  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.97.
 	* Added a Vignette with the background/details on the models implemented.
 	* Added some examples online (r-forge project website).
 	* Small bug fix to nisurface in GO-GARCH model arising from high precision.
 
-2012-09-31  Alexios Ghalanos <alexios@4dscape.com>
+2012-09-31  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.96.
 	* varxfit parallel functionality implemented for expensive robust calculation
 	method.
@@ -206,7 +208,7 @@
 	* Some corrections to gogarchsim.
 	* Removed some dependencies no longer needed.
 
-2012-05-31  Alexios Ghalanos <alexios@4dscape.com>
+2012-05-31  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.95.
 	* Export and fix of wmargin function.
 	* Changes to gogarchsim to include ability to do rolling simulation
@@ -220,11 +222,11 @@
 	Engle and Sheppard (2001) using a static GARCH Copula (Normal).
 	* Reduced verbosity in estimation (mostly related to VAR).
 
-2012-03-16  Alexios Ghalanos <alexios@4dscape.com>
+2012-03-16  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.94.
 	* Fix to case when using static copula.
 
-2012-01-03  Alexios Ghalanos <alexios@4dscape.com>
+2012-01-03  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.93.
 	* Co-Kurtosis Tensor for GO-GARCH now correct (updated rmgarch.test1-i
 	with small example of weighted kurtosis).
@@ -233,16 +235,16 @@
 	product for gogarch model.
 	* GARCH Scaling in DCC turned off by default.
 
-2011-12-06  Alexios Ghalanos <alexios@4dscape.com>
+2011-12-06  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.92.
 	* Some fixes to build and load on newer version of R.
 
-2011-10-09  Alexios Ghalanos <alexios@4dscape.com>
+2011-10-09  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.91.
 	* Fixed coefficient extractor method (coef) for goGARCHfit and
 	goGARCHfilter classes.
 
-2011-09-20  Alexios Ghalanos <alexios@4dscape.com>
+2011-09-20  Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 0.9.
 	* Multivariate GARCH models split from rgarch package into rmgarch.
 	* Substantial re-write of multivariate code.

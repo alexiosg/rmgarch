@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -974,9 +974,9 @@
 		Qtfor[[i]] = ans$Qtfor
 		Htfor[[i]] = ans$Htfor
 		Rbar[[i]] = ans$Rbar
-		Qstart = last( rugarch:::.abind(Qstart, ans$Qtfor[, , 1]), mo )
-		Rstart = last( rugarch:::.abind(Rstart, ans$Rtfor[, , 1]), mo )
-		Hstart = last( rugarch:::.abind(Hstart, ans$Htfor[, , 1]), mo )
+		Qstart = last( .abind_safe(Qstart, ans$Qtfor[, , 1]), mo )
+		Rstart = last( .abind_safe(Rstart, ans$Rtfor[, , 1]), mo )
+		Hstart = last( .abind_safe(Hstart, ans$Htfor[, , 1]), mo )
 	}
 
 	forc = list( H = Htfor, R = Rtfor, Q = Qtfor, Rbar = Rbar, mu = mu )
@@ -1195,27 +1195,27 @@
 	} else if(fit@model$modeldesc$distribution == "mvlaplace"){
 		if(length(rseed) == 1){
 			set.seed( rseed )
-			tmp = matrix(rugarch:::rged(m * (n.sim + n.start) * m.sim, 0, 1, shape = 1), ncol = m, nrow = n.sim+n.start)
+			tmp = matrix(rdist(distribution = "ged", n = m * (n.sim + n.start) * m.sim, 0, 1, shape = 1), ncol = m, nrow = n.sim+n.start)
 			z = array(NA,  dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim) z[,,i] = rbind(preZ, tmp)
 		} else{
 			z = array(NA, dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim){
 				set.seed( rseed[i] )
-				z[,,i] = rbind(preZ, matrix(rugarch:::rged(m * (n.sim + n.start), 0, 1, shape = 1), nrow = n.sim + n.start, ncol = m))
+				z[,,i] = rbind(preZ, matrix(rdist(distribution = "ged", n = m * (n.sim + n.start), 0, 1, shape = 1), nrow = n.sim + n.start, ncol = m))
 			}
 		}
 	} else{
 		if(length(rseed) == 1){
 			set.seed( rseed )
-			tmp = matrix(rugarch:::rstd(m * (n.sim + n.start) * m.sim, 0, 1, shape = rshape(fit)), ncol = m, nrow = n.sim+n.start)
+			tmp = matrix(rdist(distribution = "std", n = m * (n.sim + n.start) * m.sim, 0, 1, shape = rshape(fit)), ncol = m, nrow = n.sim+n.start)
 			z = array(NA,  dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim) z[,,i] = rbind(preZ, tmp)
 		} else{
 			z = array(NA, dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim){
 				set.seed( rseed[i] )
-				z[,,i] = rbind(preZ, matrix(rugarch:::rstd(m * (n.sim + n.start), 0, 1, shape = rshape(fit)), nrow = n.sim + n.start, ncol = m))
+				z[,,i] = rbind(preZ, matrix(rdist(distribution = "std", n = m * (n.sim + n.start), 0, 1, shape = rshape(fit)), nrow = n.sim + n.start, ncol = m))
 			}
 		}
 	}
@@ -1463,27 +1463,27 @@
 	} else if(model$modeldesc$distribution == "mvlaplace"){
 		if(length(rseed) == 1){
 			set.seed( rseed )
-			tmp = matrix(rugarch:::rged(m * (n.sim + n.start) * m.sim, 0, 1, shape = 1), , ncol = m, nrow = n.sim+n.start)
+			tmp = matrix(rdist(distribution = "ged", n = m * (n.sim + n.start) * m.sim, 0, 1, shape = 1), , ncol = m, nrow = n.sim+n.start)
 			z = array(NA,  dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim) z[,,i] = rbind(preZ, tmp)
 		} else{
 			z = array(NA, dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim){
 				set.seed( rseed[i] )
-				z[,,i] = rbind(preZ, matrix(rugarch:::rged(m * (n.sim + n.start), 0, 1, shape = 1), nrow = n.sim + n.start, ncol = m))
+				z[,,i] = rbind(preZ, matrix(rdist(distribution = "ged", n = m * (n.sim + n.start), 0, 1, shape = 1), nrow = n.sim + n.start, ncol = m))
 			}
 		}
 	} else{
 		if(length(rseed) == 1){
 			set.seed( rseed )
-			tmp = matrix(rugarch:::rstd(m * (n.sim + n.start) * m.sim, 0, 1, shape = model$pars["mshape",1]), ncol = m, nrow = n.sim+n.start)
+			tmp = matrix(rdist(distribution = "std", n = m * (n.sim + n.start) * m.sim, 0, 1, shape = model$pars["mshape",1]), ncol = m, nrow = n.sim+n.start)
 			z = array(NA,  dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim) z[,,i] = rbind(preZ, tmp)
 		} else{
 			z = array(NA, dim = c(n.sim + n.start + mo, m, m.sim))
 			for(i in 1:m.sim){
 				set.seed( rseed[i] )
-				z[,,i] = rbind(preZ, matrix(rugarch:::rstd(m * (n.sim + n.start), 0, 1, shape = model$pars["mshape",1]), nrow = n.sim + n.start, ncol = m))
+				z[,,i] = rbind(preZ, matrix(rdist(distribution = "std", n = m * (n.sim + n.start), 0, 1, shape = model$pars["mshape",1]), nrow = n.sim + n.start, ncol = m))
 			}
 		}
 	}

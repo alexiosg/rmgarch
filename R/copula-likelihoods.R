@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -521,7 +521,7 @@ copula.tvstudentLLH1 = function(pars, arglist)
 	sumdccg = sum(ipars[idx["dccg",1]:idx["dccg",2],1])
 	udata = arglist$ures
 	T = dim(udata)[1]
-	Z = matrix(rugarch:::qstd(udata, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	Z = matrix(qdist(distribution = "std", p = udata, shape = ipars[idx["mshape",1], 1]), ncol = m)
 	Qbar = cov(Z)
 	# Take care of the Asymmetry Matrices
 	if(modelinc[6]>0){
@@ -534,7 +534,7 @@ copula.tvstudentLLH1 = function(pars, arglist)
 		aZ = Ibar*Z*0
 		Nbar = matrix(0, m, m)
 	}
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
+	dtZ = log(matrix(ddist(distribution = "std", y = Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
 	dtZ = rbind( matrix(0, nrow = mx, ncol = m), dtZ )
 	Z = rbind( matrix(0, nrow = mx, ncol = m), Z )
 	aZ = rbind( matrix(0, nrow = mx, ncol = m), aZ )
@@ -635,7 +635,7 @@ copula.tvstudentLLH2 = function(pars, arglist)
 		xn = which(ures < (1.5*.eps))
 		ures[xn] = .eps
 	}	
-	Z = matrix(rugarch:::qstd(ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	Z = matrix(qdist(distribution = "std", p = ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
 	Qbar = cov(Z)
 	# Take care of the Asymmetry Matrices
 	if(modelinc[6]>0){
@@ -648,7 +648,7 @@ copula.tvstudentLLH2 = function(pars, arglist)
 		aZ = Ibar*Z*0
 		Nbar = matrix(0, m, m)
 	}
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
+	dtZ = log(matrix(ddist(distribution = "std", Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
 	dtZ = rbind( matrix(0, nrow = mx, ncol = m), dtZ )
 	Z = rbind( matrix(0, nrow = mx, ncol = m), Z )
 	aZ = rbind( matrix(0, nrow = mx, ncol = m), aZ )
@@ -729,8 +729,8 @@ copula.tvstudentLLH3 = function(arglist)
 		xn = which(ures < (1.5*.eps))
 		ures[xn] = .eps
 	}
-	Z = matrix(rugarch:::qstd(ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))	
+	Z = matrix(qdist(distribution = "std", p = ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	dtZ = log(matrix(ddist(distribution = "std", Z, shape = ipars[idx["mshape",1], 1]), ncol = m))	
 	Qbar = cov(Z[1:dcc.old, , drop = FALSE])
 	# Take care of the Asymmetry Matrices
 	if(modelinc[6]>0){
@@ -784,10 +784,10 @@ copula.studentLLH1 = function(pars, arglist)
 	fit.control = arglist$fit.control
 	udata = arglist$ures
 	T = dim(udata)[1]
-	Z = matrix(rugarch:::qstd(udata, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	Z = matrix(qdist(distribution = "std", p = udata, shape = ipars[idx["mshape",1], 1]), ncol = m)
 	# Z = qt(udata, df = ipars[idx["mshape",1], 1])
 	# dtZ = dt(Z, df = ipars[idx["mshape",1], 1], log = TRUE)
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
+	dtZ = log(matrix(ddist(distribution = "std", Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
 	if(modelinc[3]>0){
 		Rbar = .Pconstruct(ipars[idx["C", 1]:idx["C", 2],1])
 	} else{
@@ -884,8 +884,8 @@ copula.studentLLH2 = function(pars, arglist)
 	
 	# Z = qt(ures, df = ipars[idx["mshape",1], 1])
 	# dtZ = dt(Z, df = ipars[idx["mshape",1], 1], log = TRUE)
-	Z = matrix(rugarch:::qstd(ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
+	Z = matrix(qdist(distribution = "std", p = ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	dtZ = log(matrix(ddist(distribution = "std", Z, shape = ipars[idx["mshape",1], 1]), ncol = m))
 	
 	
 	if(modelinc[3]>0){
@@ -975,8 +975,8 @@ copula.studentLLH3 = function(arglist)
 	
 	#Z = qt(ures, df = ipars[idx["mshape",1], 1])
 	#dtZ = dt(Z, df = ipars[idx["mshape",1], 1], log = TRUE)
-	Z = matrix(rugarch:::qstd(ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
-	dtZ = log(matrix(rugarch:::dstd(Z, shape = ipars[idx["mshape",1], 1]), ncol = m))	
+	Z = matrix(qdist(distribution = "std", p = ures, shape = ipars[idx["mshape",1], 1]), ncol = m)
+	dtZ = log(matrix(ddist(distribution = "std", Z, shape = ipars[idx["mshape",1], 1]), ncol = m))	
 	
 	if(modelinc[3]>0){
 		Rbar = .Pconstruct(ipars[idx["C", 1]:idx["C", 2],1])

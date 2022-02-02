@@ -34,7 +34,7 @@ Objects can be created by calls of the form \code{new("fMoments", ...)}.
     co-moment array. }
     }
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \examples{
 showClass("fMoments")
 }

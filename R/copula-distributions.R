@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -102,9 +102,9 @@ rcopula.gauss = function(n, U, Sigma, ...)
 dcopula.student = function(U, Corr, df, logvalue = FALSE)
 {
 	m = dim(Corr)[2]
-	Z = apply(U, 2, FUN = function(x) rugarch:::qstd(p = x , shape = df))
+	Z = apply(U, 2, FUN = function(x) qdist(distribution = "std", p = x , shape = df))
 	mu = rep(0, m)
-	ans = .dmvt(Z, delta = mu, sigma = Corr, df = df, log = TRUE) - apply(Z, 1, FUN = function(x) sum(rugarch:::dstd(x, shape = df, log = TRUE)))
+	ans = .dmvt(Z, delta = mu, sigma = Corr, df = df, log = TRUE) - apply(Z, 1, FUN = function(x) sum(log(ddist(distribution = "std", y = x, shape = df))))
 	# .Call("dcopulaStudent", Z = Z, m = matrix(0, nrow = 1, ncol = m), sigma = Corr, df = df, dtZ = dt(Z, df = df, log = TRUE), 
 	# PACKAGE = "rmgarch")
 	if( !logvalue ) ans = exp(ans)
@@ -126,7 +126,7 @@ rcopula.student = function(n, U, Corr, df)
 {
 	m = dim(Corr)[2]
 	mu = rep(0, m)
-	ans = rugarch:::pstd(.rmvt(n, mu = mu, R = Corr, df = df), mu=0, sigma=1, shape = df)
+	ans = pdist(distribution = "std", q = .rmvt(n, mu = mu, R = Corr, df = df), mu = 0, sigma = 1, shape = df)
 	return ( ans )
 }
 
@@ -190,7 +190,7 @@ rcopula.student = function(n, U, Corr, df)
 	Ures = vector(mode = "list", length = m)
 	Usim = array(NA, dim = c(n.sim+n.start, m, m.sim))
 	if(model$modeldesc$distribution  == "mvt"){
-		for(i in 1:m) Ures[[i]] = matrix(rugarch:::pstd(sapply(mtmp, FUN = function(x) x$Z[,i]), mu=0, sigma=1, shape = cf["mshape"]), ncol = m.sim)
+		for(i in 1:m) Ures[[i]] = matrix(pdist(distribution = "std", q = sapply(mtmp, FUN = function(x) x$Z[,i]), mu = 0, sigma = 1, shape = cf["mshape"]), ncol = m.sim)
 		for(i in 1:m.sim) Usim[,,i] = matrix(sapply(Ures, FUN = function(x) x[-(1:mo),i]), ncol = m)
 	} else{
 		for(i in 1:m) Ures[[i]] = pnorm(matrix(sapply(mtmp, FUN = function(x) x$Z[,i]), ncol = m.sim))
@@ -213,7 +213,7 @@ rcopula.student = function(n, U, Corr, df)
 		for(i in 1:m.sim){
 			set.seed(rseed[i])
 			tmp = .rmvt(n = nsim, R = Rbar, df = shape, mu = rep(0, m))
-			sim[,,i] = matrix(rugarch:::pstd(tmp, mu=0, sigma=1, shape = shape), nrow = nsim, ncol = m)
+			sim[,,i] = matrix(pdist(distribution = "std", q = tmp, mu = 0, sigma = 1, shape = shape), nrow = nsim, ncol = m)
 		}
 	} else{
 		for(i in 1:m.sim){

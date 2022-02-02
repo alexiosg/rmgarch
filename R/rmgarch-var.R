@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -682,7 +682,7 @@ robustvar = function(data, exogen = NULL, constant = TRUE, lags = 2, alpha = 0.0
 		muEX = NULL
 		muC  = Bcoef[, p * m + 1]
 	}
-	idx = t(rugarch:::.embed(1:(m*p), k=m, by=m, ascending = TRUE))
+	idx = t(.embed_safe(1:(m*p), k=m, by=m, ascending = TRUE))
 	for(i in 1:p) Id = Id - C[,idx[,i]]
 	muC %*% t(solve(Id - C))
 }

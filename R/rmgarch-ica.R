@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Ghalanos Copyright (C) 2008-2013.
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022.
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -143,7 +143,7 @@
 # Copyright (c) Hugo Gavert, Jarmo Hurri, Jaakko Sarela, and Aapo Hyvarinen.
 # A translation of the matlab function from the FastICA toolbox
 # http://www.cis.hut.fi/projects/ica/fastica/
-# R translation: 2009 Alexios Ghalanos
+# R translation: 2009 Alexios Galanos
 # 			   : 2012 Extra Methods for pca.cov
 #############################################################################
 
@@ -1062,7 +1062,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 #
 #    Version 1.0. First release.
 #
-# R translation-Alexios Ghalanos and code
+# R translation-Alexios Galanos and code
 
 radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 		pca.cov = c("ML", "LW", "ROB", "EWMA"), k = 150,
@@ -1306,7 +1306,7 @@ radical = function(X, n.comp = dim(X)[2], demean = TRUE,
 # *****************************************************************
 # Copyright (c) Erik G. Learned-Miller, 2003.
 # *****************************************************************
-# R/C translation Alexios Ghalanos 2012
+# R/C translation Alexios Galanos 2012
 
 # C++ Version
 .radicalOptThetaC = function(X, sd, m, replications, K, range, rseed, trace)

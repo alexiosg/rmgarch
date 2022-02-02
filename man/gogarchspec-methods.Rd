@@ -58,5 +58,5 @@ you wish to use the same independent factors.
 A \code{\linkS4class{goGARCHspec}} object containing details of the GO-GARCH 
 specification.
 }
-\author{Alexios Ghalanos}
+\author{Alexios Galanos}
 \keyword{methods}
