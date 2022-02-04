@@ -2,14 +2,14 @@ Package: rmgarch
 Type: Package
 Title: Multivariate GARCH Models
 Version: 1.3-9
-Date: 2022-02-05
+Date: 2022-02-03
 Author: Alexios Galanos <alexios@4dscape.com>
 Maintainer: Alexios Galanos <alexios@4dscape.com>
-Depends: R (>= 3.0.2), methods, rugarch, parallel
+Depends: R (>= 3.0.2), methods, rugarch (>=  1.4-7), parallel
 LinkingTo: Rcpp (>= 0.10.6), RcppArmadillo (>= 0.2.34)
 Imports: Rsolnp, MASS, Matrix, zoo, xts, Bessel, ff, shape, pcaPP, spd, Rcpp, utils, graphics, stats, grDevices, corpcor
 Description: Feasible multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
 Collate: rmgarch-extrafun.R rmgarch-var.R rmgarch-functions.R rmgarch-classes.R rmgarch-ica.R rmgarch-series.R rmgarch-mmean.R gogarch-classes.R gogarch-distributions.R gogarch-main.R gogarch-methods.R rdcc-classes.R rdcc-main.R rdcc-likelihoods.R rdcc-plots.R fdcc-likelihoods.R fdcc-main.R rdcc-methods.R rdcc-mdistributions.R rdcc-postestimation.R rdcc-solver.R copula-classes.R copula-distributions.R copula-likelihoods.R copula-solver.R copula-fn.R copula-transformations.R copula-main.R copula-postestimation.R copula-methods.R rmgarch-tests.R rmgarch-scenario.R zzz.R
 LazyLoad: yes
-URL: http://www.unstarched.net, https://bitbucket.org/alexiosg
+URL: http://www.unstarched.net, https://github.com/alexiosg/rmgarch
 License: GPL-3

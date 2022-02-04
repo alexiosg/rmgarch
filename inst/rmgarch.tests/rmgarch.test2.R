@@ -63,15 +63,15 @@ rmgarch.test2a = function(cluster = NULL)
 			length(fit4@mfit$matcoef[,1]),
 			length(fit5@mfit$matcoef[,1])) +  (3^2 - 3)/2
 	aicmod = c(
-			.information.test(fit1@mfit$llh, nObs = fit1@model$modeldata$T, 
+			rmgarch:::.information.test(fit1@mfit$llh, nObs = fit1@model$modeldata$T, 
 					nPars = np[1])[[1]],
-			.information.test(fit2@mfit$llh, nObs = fit2@model$modeldata$T, 
+			rmgarch:::.information.test(fit2@mfit$llh, nObs = fit2@model$modeldata$T, 
 					nPars = np[2])[[1]],
-			.information.test(fit3@mfit$llh, nObs = fit3@model$modeldata$T, 
+			rmgarch:::.information.test(fit3@mfit$llh, nObs = fit3@model$modeldata$T, 
 					nPars = np[3])[[1]],
-			.information.test(fit4@mfit$llh, nObs = fit4@model$modeldata$T, 
+			rmgarch:::.information.test(fit4@mfit$llh, nObs = fit4@model$modeldata$T, 
 					nPars = np[4])[[1]],
-			.information.test(fit5@mfit$llh, nObs = fit5@model$modeldata$T, 
+			rmgarch:::.information.test(fit5@mfit$llh, nObs = fit5@model$modeldata$T, 
 					nPars = np[5])[[1]])
 	tmp = data.frame(n.pars = np, AIC = aicmod)
 	rownames(tmp) = paste("Model", 1:5, sep = "")
@@ -221,7 +221,7 @@ rmgarch.test2b = function(cluster = NULL)
 	rc3a = rcor(fit3a)
 	
 	postscript("test2b1.eps", width = 10, height = 8)
-	par(mfrow = c(2,1))
+	par(mfrow = c(2,1), mar = c(3,3,3,3))
 	plot(rc1[1,2, ], type = "l", main = "DCC")
 	lines(rc2[1,2, ], col = 3)
 	lines(rc3[1,2, ], col = 4)
@@ -251,8 +251,8 @@ rmgarch.test2b = function(cluster = NULL)
 	
 	postscript("test2b2.eps", width = 10, height = 8)
 	VaRplot(0.01, xts::as.xts(actual), xts::xts(qport1, as.POSIXct(rownames(Dat))))
-	lines(xts::xts(qport3, as.POSIXct(rownames(Dat))), col = 3)
-	lines(xts::xts(qport2, as.POSIXct(rownames(Dat))), col = 4)
+	lines(zoo::zoo(qport3, as.POSIXct(rownames(Dat))), col = 3)
+	lines(zoo::zoo(qport2, as.POSIXct(rownames(Dat))), col = 4)
 	legend("topright", legend = c("MVNORM", "MVLAPLACE", "MVT[5]"), bty="n", col= c(1,3,4), fill = c(1,3,4))
 	dev.off()
 	
@@ -854,7 +854,7 @@ rmgarch.test2e = function(cluster = NULL)
 	}
 	
 	postscript("test2e1.eps", width = 16, height = 14)
-	par(mfrow = c(2,2))
+	par(mfrow = c(2,2), mar = c(3,3,3,3))
 	plot(rcovfilt[1,2,], type = "l", main = paste(cnames[1], "-", cnames[2], sep = ""),
 			ylab = "covariance", xlab = "periods [out of sample]")
 	lines(rcovsim[1,2,], col = 2, lty = 2)
@@ -1297,7 +1297,7 @@ rmgarch.test2h = function(cluster = NULL)
 	}
 	
 	postscript("test2h1.eps", width = 16, height = 14)
-	par(mfrow = c(2,3))
+	par(mfrow = c(2,3), mar = c(3,3,3,3))
 	for(i in 1:5){
 		plot(mvnH[[i]], xlim = c(minX[i], maxX[i]), ylim = c(0, maxY[i]), border = "steelblue", xlab = "", main = cnames[i])
 		plot(mvlH[[i]], border = "tomato", add = TRUE)
@@ -1354,7 +1354,7 @@ rmgarch.test2h = function(cluster = NULL)
 	}
 	
 	postscript("test2h2.eps", width = 16, height = 14)
-	par(mfrow = c(2,3))
+	par(mfrow = c(2,3), mar = c(3,3,3,3))
 	for(i in 1:5){
 		plot(mvtH[[i]], xlim = c(minX[i], maxX[i]), ylim = c(0, maxY[i]), border = "steelblue", xlab = "", main = cnames[i])
 		plot(mvnH[[i]], border = "tomato", add = TRUE)

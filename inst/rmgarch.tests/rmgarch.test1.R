@@ -1,6 +1,6 @@
 #################################################################################
 ##
-##   R package rmgarch by Alexios Galanos Copyright (C) 2009, 2010, 2011
+##   R package rmgarch by Alexios Galanos Copyright (C) 2008-2022
 ##   This file is part of the R package rmgarch.
 ##
 ##   The R package rmgarch is free software: you can redistribute it and/or modify
@@ -93,7 +93,7 @@ rmgarch.test1a = function(cluster = NULL)
 	D = as.POSIXct(dimnames(rc)[[3]])
 	plot(xts::xts(rc[1,2,], D), ylim = c(-0.4, 1),
 			main = "GOGARCH Correlation [AA-AXP] under\ndifferent mean models",
-			lty = 2, ylab = "Correlation", xlab = "Time", minor.ticks=FALSE,
+			lty = 2, ylab = "Correlation", xlab = "Time", minor.ticks = FALSE,
 			auto.grid=FALSE)
 	rc = rcor(fit.2)
 	lines(xts::xts(rc[1,2,], D), col = 2, lty = 2)
@@ -113,34 +113,34 @@ rmgarch.test1a = function(cluster = NULL)
 	postscript("test1a3.eps", width = 12, height = 20)
 	T = fit.1@model$modeldata$T
 	D = fit.1@model$modeldata$index[1:T]
-	par(mfrow = c(3,1))
-	plot(xts::xts(fit.1@model$modeldata$data[1:T,1], D),
+	par(mfrow = c(3,1), mar = c(3,3,3,3))
+	plot(zoo::zoo(fit.1@model$modeldata$data[1:T,1], D),
 			main = "AA Returns vs Fit under \ndifferent mean models",
-			xlab = "Time", ylab = "R_t", minor.ticks = FALSE, auto.grid=FALSE)
+			xlab = "Time", ylab = "R_t")
 	# fitted method returns xts for fit/filter objects
-	lines(fitted(fit.6)[,1], lty = 2, col = 3, lwd = 0.5)
-	lines(fitted(fit.2)[,1], lty = 2, col = 2)
+	lines(zoo::as.zoo(fitted(fit.6)[,1]), lty = 2, col = 3, lwd = 0.5)
+	lines(zoo::as.zoo(fitted(fit.2)[,1]), lty = 2, col = 2)
 	legend("topleft", legend = c("Actual", "robVARX(2)", "AR(2)"),
-			col = c(1,3,2), lty = c(1,2,2), bty ="n")
+			col = c(1,3,2), lty = c(1,2,2), bty = "n")
 
-	plot(xts::xts(fit.1@model$modeldata$data[1:T,2], D),
+	plot(zoo::zoo(fit.1@model$modeldata$data[1:T,2], D),
 			main = "AXP Returns vs Fit under \ndifferent mean models",
-			xlab = "Time", ylab = "R_t", minor.ticks = FALSE, auto.grid=FALSE)
-	lines(fitted(fit.6)[,2], lty = 2, col = 3, lwd = 0.5)
-	lines(fitted(fit.2)[,2], lty = 2, col = 2)
+			xlab = "Time", ylab = "R_t")
+	lines(zoo::as.zoo(fitted(fit.6)[,2]), lty = 2, col = 3, lwd = 0.5)
+	lines(zoo::as.zoo(fitted(fit.2)[,2]), lty = 2, col = 2)
 	legend("topleft", legend = c("Actual", "robVARX(2)", "AR(2)"),
-			col = c(1,3,2), lty = c(1,2,2), bty ="n")
+			col = c(1,3,2), lty = c(1,2,2), bty = "n")
 
-	plot(xts::xts(fit.1@model$modeldata$data[1:T,3], D), type = "l",
+	plot(zoo::zoo(fit.1@model$modeldata$data[1:T,3], D), type = "l",
 			main = "BA Returns vs Fit under \ndifferent mean models",
-			xlab = "Time", ylab = "R_t", minor.ticks = FALSE, auto.grid=FALSE)
-	lines(fitted(fit.6)[,3], lty = 2, col = 3, lwd = 0.5)
-	lines(fitted(fit.2)[,3], lty = 2, col = 2)
+			xlab = "Time", ylab = "R_t")
+	lines(zoo::as.zoo(fitted(fit.6)[,3]), lty = 2, col = 3, lwd = 0.5)
+	lines(zoo::as.zoo(fitted(fit.2)[,3]), lty = 2, col = 2)
 	legend("topleft", legend = c("Actual", "robVARX(2)", "AR(2)"),
-			col = c(1,3,2), lty = c(1,2,2), bty ="n")
+			col = c(1,3,2), lty = c(1,2,2), bty = "n")
 	dev.off()
 
-	toc = Sys.time()-tic
+	toc = Sys.time() - tic
 	cat("Elapsed:", toc, "\n")
 	return(toc)
 }
@@ -432,28 +432,28 @@ rmgarch.test1e = function(cluster = NULL)
 	# semi-analytic (FFT based)
 	np = nportmoments(cf, trace = 0)
 	postscript("test1e1.eps", width = 8, height = 12)
-	par(mfrow = c(2,2))
-	plot(gp[1:1000,1], type = "p", main = "Portfolio Mean", minor.ticks=FALSE, auto.grid=FALSE)
-	points(np[1:1000,1], col = 2, pch = 4)
-	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, pch = c(1,4), bty="n")
+	par(mfrow = c(2,2), mar = c(3,3,3,3))
+	plot(as.zoo(gp[1:1000,1]), type = "p", main = "Portfolio Mean")
+	points(as.zoo(np[1:1000,1]), col = 2, pch = 4)
+	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, pch = c(1,4), bty = "n")
 
-	plot(gp[1:1000,2], type = "o", main = "Portfolio Sigma", minor.ticks=FALSE, auto.grid=FALSE)
-	lines(np[1:1000,2], col = 2)
+	plot(as.zoo(gp[1:1000,2]), type = "o", main = "Portfolio Sigma")
+	lines(as.zoo(np[1:1000,2]), col = 2)
 	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, fill=1:2, bty="n")
 	# simply decrease the fft.step to obtain more accurate results (at the expense of memory)
-	plot(gp[1:1000,3], type = "o", main = "Portfolio Skewness", minor.ticks=FALSE, auto.grid=FALSE)
-	lines(np[1:1000,3], col = 2)
-	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, fill=1:2, bty="n")
+	plot(as.zoo(gp[1:1000,3]), type = "o", main = "Portfolio Skewness")
+	lines(as.zoo(np[1:1000,3]), col = 2)
+	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, fill=1:2, bty = "n")
 
-	plot(gp[1:1000,4], type = "o", main = "Portfolio Kurtosis", minor.ticks=FALSE, auto.grid=FALSE)
-	lines(np[1:1000,4], col = 2)
+	plot(as.zoo(gp[1:1000,4]), type = "o", main = "Portfolio Kurtosis")
+	lines(as.zoo(np[1:1000,4]), col = 2)
 	legend("topleft", legend = c("Geometric", "Semi-Analytic (FFT)"), col = 1:2, fill=1:2, bty="n")
 
 	dev.off()
 
 	# make a quantile graph of the weighted returns
 	postscript("test1e2.eps", width = 8, height = 12)
-	par(mfrow = c(2,2))
+	par(mfrow = c(2,2), mar = c(3,3,3,3))
 	qf = qfft(cf, index = 5521)
 	plot(seq(0.01, 0.99, by = 0.005), qf(seq(0.01, 0.99, by = 0.005)), type = "l", main = "Portfolio Quantile\nObs=5521",
 			xlab = "Value", ylab = "Probability")
