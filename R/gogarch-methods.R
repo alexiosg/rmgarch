@@ -67,6 +67,7 @@
 	names(modelinc) = c("constant", "ar", "var", "mvmxreg", "aux", "aux", "aux")
 
 	modelinc[7] = which(valid.distributions == distribution)
+	mmodel$model <- mmodel$model[1]
 	if(mmodel$model == "VAR"){
 		if(is.null(mmodel$lag)) modelinc[3] = 1 else modelinc[3] = as.integer( mmodel$lag )
 	}
@@ -870,7 +871,7 @@ rcoskew = function(object, ...)
 {
 	A = as.matrix(object, which = "A")
 	m = NROW(A)
-	if(is.character(roll) && roll=="all" && class(object) == "goGARCHforecast"){
+	if(is.character(roll) && roll == "all" && inherits(object, "goGARCHforecast")){
 		from = 1
 		to = 1
 		roll = 1:(object@model$n.roll+1)
@@ -906,7 +907,7 @@ rcoskew = function(object, ...)
 		}
 		dimnames(xs) = list(NULL, NULL, D3)
 	} else{
-		if(class(object)=="goGARCHforecast"){
+		if(inherits(object ,"goGARCHforecast")) {
 			n.roll = object@model$n.roll
 			n.ahead = object@model$n.ahead
 			roll = as.integer(roll[1])
@@ -952,7 +953,7 @@ rcoskew = function(object, ...)
 			}
 		}
 		dimnames(xs) = list(NULL, NULL, D1)
-		if(class(object)=="goGARCHforecast"){
+		if(inherits(object,"goGARCHforecast")){
 			attr(xs, "T+0") = D3
 		}
 	}
@@ -1041,7 +1042,7 @@ rcokurt = function(object, ...)
 {
 	A = as.matrix(object, which = "A")
 	m = NROW(A)
-	if(is.character(roll) && roll=="all" && class(object) == "goGARCHforecast"){
+	if(is.character(roll) && roll=="all" && inherits(object, "goGARCHforecast")){
 		from = 1
 		to = 1
 		roll = 1:(object@model$n.roll+1)
@@ -1077,7 +1078,7 @@ rcokurt = function(object, ...)
 		}
 		dimnames(xs) = list(NULL, NULL, D3)
 	} else{
-		if(class(object)=="goGARCHforecast"){
+		if(inherits(object, "goGARCHforecast")){
 			n.roll = object@model$n.roll
 			n.ahead = object@model$n.ahead
 			roll = as.integer(roll[1])
@@ -1126,7 +1127,7 @@ rcokurt = function(object, ...)
 			}
 		}
 		dimnames(xs) = list(NULL, NULL, D1)
-		if(class(object)=="goGARCHforecast"){
+		if(inherits(object,"goGARCHforecast")){
 			attr(xs, "T+0") = D3
 		}
 	}

@@ -405,7 +405,7 @@ setMethod("rcov", signature(object = "cGARCHsim"), .rcov.cgarchsim)
 .rcor.cgarchfit = function(object, output=c("array","matrix"))
 {
 	if(object@model$modeldesc$timecopula){
-		if(class(object)[1]=="cGARCHfit") R = object@mfit$Rt else R = object@mfilter$Rt
+		if(inherits(object,"cGARCHfit")) R = object@mfit$Rt else R = object@mfilter$Rt
 		n = length(R)
 		m = dim(R[[1]])[1]
 		ans = array(NA, dim = c(m,m,n))
@@ -417,7 +417,7 @@ setMethod("rcov", signature(object = "cGARCHsim"), .rcov.cgarchsim)
 		  ans = array2matrix(ans, date=as.Date(D), var.names=nam, diag=FALSE)
 		}
 	} else{
-		if(class(object)[1]=="cGARCHfit") ans = object@mfit$Rt else ans = object@mfilter$Rt
+		if(inherits(object,"cGARCHfit")) ans = object@mfit$Rt else ans = object@mfilter$Rt
 		nam = object@model$modeldata$asset.names
 		colnames(ans) = rownames(ans) = nam
 	}

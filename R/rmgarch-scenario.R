@@ -26,12 +26,13 @@
 		cluster = NULL, save.output = FALSE, save.dir = getwd(), 
 		save.name = paste("M", sample(1:1000, 1), sep= ""), ...)
 {
-	if(class(spec)[1]!= "goGARCHspec" & class(spec)[1]!="DCCspec") stop("\nonly gogarch and dcc models supported.")
+    dc <- class(spec)[1]
+	if(dc != "goGARCHspec" & dc != "DCCspec") stop("\nonly gogarch and dcc models supported.")
 	if(n.ahead>1 && roll>0) stop("\nn.ahead must be equal to 1 when using roll")
 	asset.names = colnames(Data)
 	m = dim(Data)[2]
 	xmodel = list(asset.names = asset.names, assets = m, 
-			model = ifelse(class(spec)[1]=="goGARCHspec", "gogarch", "dcc"), 
+			model = ifelse(inherits(spec,"goGARCHspec"), "gogarch", "dcc"), 
 			n.ahead = n.ahead, roll = roll, save.output = save.output, save.dir = save.dir,
 			save.name = save.name)
 	# ... in mom.dcc are to pass the realizedVol matrix whereas in the GOGARCH model

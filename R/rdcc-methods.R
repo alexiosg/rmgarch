@@ -417,26 +417,26 @@ setMethod("residuals", signature(object = "DCCfilter"), .residuals.dccfit)
 #----------------------------------------------------------------------------------
 .rcor.dccfit = function(object, type = "R", output=c("array","matrix"))
 {
-	T = object@model$modeldata$T
-	D = object@model$modeldata$index
-	nam = object@model$modeldata$asset.names
+	T <- object@model$modeldata$T
+	D <- object@model$modeldata$index
+	nam <- object@model$modeldata$asset.names
 	if( type == "R"){
-		if(class(object)[1]=="DCCfit") tmp = object@mfit$R else tmp = object@mfilter$R
-		m = dim(tmp[[1]])[2]
-		R = array(NA, dim = c(m, m, T))
-		R[1:m,1:m, ] = sapply(tmp[1:T], FUN = function(x) x)
-		dimnames(R)<-list(nam, nam, as.character(D[1:T]))
-		if(output[1]=="matrix"){
-		  R = array2matrix(R, date=as.Date(D[1:T]), var.names=nam, diag=FALSE)
+		if (inherits(object, "DCCfit")) tmp = object@mfit$R else tmp = object@mfilter$R
+		m <- dim(tmp[[1]])[2]
+		R <- array(NA, dim = c(m, m, T))
+		R[1:m,1:m, ] <- sapply(tmp[1:T], FUN = function(x) x)
+		dimnames(R) <- list(nam, nam, as.character(D[1:T]))
+		if(output[1] == "matrix"){
+		  R <- array2matrix(R, date=as.Date(D[1:T]), var.names=nam, diag=FALSE)
 		}
 		return( R )
-	} else{
-		if(class(object)[1]=="DCCfit") tmp = object@mfit$Q else tmp = object@mfilter$Q
+	} else {
+		if(inherits(object, "DCCfit")) tmp = object@mfit$Q else tmp = object@mfilter$Q
 		m = dim(tmp[[1]])[2]
 		Q = array(NA, dim = c(m, m, T))
 		Q[1:m,1:m, ] = sapply(tmp[1:T], FUN = function(x) x)
-		dimnames(Q)<-list(nam, nam, as.character(D[1:T]))
-		if(output[1]=="matrix"){
+		dimnames(Q) <- list(nam, nam, as.character(D[1:T]))
+		if(output[1] == "matrix"){
 		  Q = array2matrix(Q, date=as.Date(D[1:T]), var.names=nam, diag=FALSE)
 		}
 		return( Q )
@@ -461,7 +461,7 @@ setMethod("rcor", signature(object = "DCCfilter"), .rcor.dccfit)
 	for(i in 1:(n.roll+1)){ dimnames(tmp[[i]]) = list(nam, nam, paste("T+",1:n.ahead,sep="")) }
 	names(tmp) = D
 	# attr(tmp, "T0") = D
-	if(output[1]=="matrix"){
+	if(output[1] == "matrix"){
 	  for(i in 1:(n.roll+1)) tmp[[i]] = array2matrix(tmp[[i]], date=paste("T+",1:n.ahead,sep=""), var.names=nam, diag=FALSE)
 	}
 	return( tmp )
@@ -517,9 +517,9 @@ setMethod("rcor", signature(object = "DCCroll"), .rcor.dccroll)
 	T = object@model$modeldata$T
 	D = object@model$modeldata$index
 	nam = object@model$modeldata$asset.names
-	if(class(object)[1]=="DCCfit") H = object@mfit$H[,,1:T] else H = object@mfilter$H[,,1:T]
-	dimnames(H)<-list(nam, nam, as.character(D[1:T]))
-	if(output[1]=="matrix"){
+	if(inherits(object, "DCCfit")) H = object@mfit$H[,,1:T] else H = object@mfilter$H[,,1:T]
+	dimnames(H) <- list(nam, nam, as.character(D[1:T]))
+	if(output[1] == "matrix"){
 	  H = array2matrix(H, date=as.Date(D[1:T]), var.names=nam, diag=TRUE)
 	}
 	return( H )
@@ -591,14 +591,14 @@ setMethod("rcov", signature(object = "DCCroll"), .rcov.dccroll)
 	T = object@model$modeldata$T
 	D = object@model$modeldata$index
 	nam = object@model$modeldata$asset.names
-	if(class(object)[1] == "DCCfit"){
-		H = object@mfit$H[,,1:T,drop=FALSE]
+	if(inherits(object, "DCCfit")){
+		H = object@mfit$H[,,1:T,drop = FALSE]
 		m = dim(H)[2]
-		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE="rmgarch"))
+		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE = "rmgarch"))
 	} else{
 		H = object@mfilter$H[,,1:T,drop=FALSE]
 		m = dim(H)[2]
-		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE="rmgarch"))
+		sig = sqrt(.Call("ArrayDiag", H, c(m,m,T), PACKAGE = "rmgarch"))
 	}
 	colnames(sig) = nam
 	sig = xts(sig, D[1:T])
@@ -734,17 +734,17 @@ setMethod("rshape", signature(object = "DCCroll"), .shape.dccroll)
 	mpars = object@model$mpars
 	m = dim(mpars)[2]-1
 	if( type == "all" ){
-		if(class(object)[1]=="DCCfit") cf = object@mfit$coef else cf = object@mfilter$coef
+		if (inherits(object,"DCCfit")) cf = object@mfit$coef else cf = object@mfilter$coef
 	} else if( type == "dcc"){
 		cf = object@model$mpars[which(object@model$eidx[,m+1]==1), m+1]
-		if(class(object)[1]=="DCCfit"){
+		if(inherits(object,"DCCfit")){
 			names(cf) = object@mfit$dccnames
 		} else{
 			names(cf) = object@mfilter$dccnames
 		}
 	} else{
 		cf = object@model$mpars[which(object@model$eidx[,1:m]==1)]
-		if(class(object)[1]=="DCCfit"){
+		if(inherits(object,"DCCfit")){
 			names(cf) = object@mfit$garchnames
 		} else{
 			names(cf) = object@mfilter$garchnames

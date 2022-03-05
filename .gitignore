@@ -30,3 +30,4 @@ vignettes/.Rhistory
 .Rproj.user
 rmgarch.Rproj
 .Rhistory
+*.o
