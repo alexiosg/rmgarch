@@ -151,7 +151,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		pca.cov = c("ML", "LW", "ROB", "EWMA"), gfun = c("pow3", "tanh", "gauss", "skew"),
 		finetune = c("none", "pow3", "tanh", "gauss", "skew"),
 		tanh.par = 1, gauss.par = 1, step.size = 1, stabilization = FALSE,
-		epsilon = 1e-4, maxiter1 = 1000, maxiter2 = 5, A.init = NULL, pct.sample = 1,
+		epsilon = 1e-4, maxiter1 = 1000, maxiter2 = 100, A.init = NULL, pct.sample = 1,
 		firstEig = NULL, lastEig = NULL, pcaE = NULL, pcaD = NULL,
 		whiteSig = NULL, whiteMat = NULL, dewhiteMat = NULL, rseed = NULL, trace = FALSE, ...)
 {
@@ -597,6 +597,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	# The search for a basis vector is repeated n.comp times.
 	j = 1
 	numFailures = 0
+	set.seed(rseed)
 	while(j <= n.comp){
 		myy = myyOrig
 		usedNlinearity = gOrig
@@ -609,7 +610,6 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 		# Take a random initial vector of lenght 1 and orthogonalize it
 		# with respect to the other vectors.
 		if(is.null(A.init)){
-			set.seed(rseed)
 			w = matrix(rnorm(vectorSize), ncol = 1)
 		} else{
 			w = whiteningMatrix %*% A.init[,j]
@@ -776,7 +776,7 @@ fastica = function(X, approach = c("symmetric", "deflation"), n.comp = dim(X)[2]
 	Y = t(X) %*% B
 	hypTan = tanh(tanh.par * Y)
 	Beta = apply(Y*hypTan, 2, "sum")
-	D = diag(1/(Beta - tanh.par * apply(1 - hypTan^ 2, 2, "sum")))
+	D = diag(1/(Beta - tanh.par * apply(1 - hypTan^2, 2, "sum")))
 	ans = B + myy * B %*% (t(Y) %*% hypTan - diag(Beta)) %*% D
 	ans
 }

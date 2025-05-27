@@ -14,7 +14,7 @@ While there are a number of open source and commercial packages implementing the
 DCC based models, the {\bf rmgarch} package uniquely implements and introduces
 the GO-GARCH model with ICA using the multivariate affine Generalized Hyperbolic
 distribution and the relevant methods for working with this model in an applied setting.\\
-The {\bf rmgarch} package is on CRAN and the development version on 
+The {\bf rmgarch} package is on CRAN and the development version on
 bitbucket (\url{https://bitbucket.org/alexiosg}). Some online examples and demos
 are available on my website (\url{http://www.unstarched.net}).\\
 The package is provided AS IS, without any implied warranty as to its accuracy
@@ -25,10 +25,10 @@ to cite the package and author (type {\bf citation("rmgarch")} for the
 appropriate BibTeX entry) , and if you have used it and found it useful, drop me
 a note and let me know.\\
 \textbf{ IMPORTANT :\\
-The package is still in development and some functions/methods MAY change over time, 
-and bugs are certain to exist. Please report any suspected bugs in the code, mistakes 
-in the models or general questions to the R-SIG-FINANCE mailing list and not directly 
-to my email, unless solicited. I maintain a blog (\url{http://www.unstarched.net}) 
+The package is still in development and some functions/methods MAY change over time,
+and bugs are certain to exist. Please report any suspected bugs in the code, mistakes
+in the models or general questions to the R-SIG-FINANCE mailing list and not directly
+to my email, unless solicited. I maintain a blog (\url{http://www.unstarched.net})
 which contains some examples and posts which I update when time permits.}
 \section{Multivariate GARCH Models}
 The generalization of univariate GARCH models to the multivariate domain is
@@ -237,10 +237,10 @@ a very flexible representation allowing a large range of representations, from a
 driving all dynamics (like the DCC), to each asset having its own group (like the GDCC).
 Unfortunately, without specialized restrictions correlation targeting is lost, but the model
 still remains feasible for a not too large number of groups. In the {\bf rmgarch} package,
-the intercept is estimated \emph{using} correlation targeting with the intercept set to 
-$({\mathbf{11'}} - aa' - bb')\odot \bar \bfQ$ and the restriction that $a_i a_j+b_i b_j<1,\forall i,j$ 
-in order to avoid explosive patterns. Positive definiteness of the matrices is achieved by 
-construction subject to a suitable starting point for $\bfQ_t$. Also note that only the 
+the intercept is estimated \emph{using} correlation targeting with the intercept set to
+$({\mathbf{11'}} - aa' - bb')\odot \bar \bfQ$ and the restriction that $a_i a_j+b_i b_j<1,\forall i,j$
+in order to avoid explosive patterns. Positive definiteness of the matrices is achieved by
+construction subject to a suitable starting point for $\bfQ_t$. Also note that only the
 FDCC(1,1) model is allowed (i.e. P=1, Q=1) because of the large number of pairwise constraints
 needed which make higher order models prohibitively expensive to calculate (and in any case it is
 quite rare to use anything beyond this for DCC type models).\\
@@ -910,8 +910,8 @@ package, there is a much higher cost to the use of a socket (snowfall) rather th
 fork (multicore) based setup, and depending on the number of sockets used, it may be
 the case that the data communication overhead is so high that non-parallel estimation
 is faster.\\
-A comprehensive set of examples is available in the rmgarch.tests folder of the source. 
-There are 5 main files, covering the Copula, DCC, FDCC and GO-GARCH models and the fScenario 
+A comprehensive set of examples is available in the rmgarch.tests folder of the source.
+There are 5 main files, covering the Copula, DCC, FDCC and GO-GARCH models and the fScenario
 and fMoments methods for use in portfolio and risk management applications (see the {\bf parma}
 package).\\
 \clearpage
