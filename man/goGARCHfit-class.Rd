@@ -40,9 +40,9 @@ GO-GARCH model specification.}
 }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfit}"}, directly.
-Class \code{"\linkS4class{GARCHfit}"}, by class "mGARCHfit", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
+Class \code{\linkS4class{mGARCHfit}}, directly.
+Class \code{\link[rugarch:GARCHfit-class]{GARCHfit}}, by class "mGARCHfit", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHfit", distance 3.
 }
 \section{Methods}{
 \describe{
@@ -159,12 +159,12 @@ de Athayde, G.M. and Flores Jr, R.G. 2002, On Certain Geometric Aspects of
 Portfolio Optimisation with Higher Moments, \emph{mimeo}.\cr
 Broda, S.A. and Paolella, M.S. 2009, CHICAGO: A Fast and Accurate Method for
 Portfolio Risk Calculation, \emph{Journal of Financial Econometrics} \bold{7(4)},
-412--436 .\cr
+412--436.\cr
 Paolella, M.S. 2007, Intermediate Probability - A Computational Approach,
 \emph{Wiley-Interscience}.\cr
-Schmidt, R., Hrycej, T. and Stutzle 2006, Multivariate distribution models with
-generalized hyperbolic margins, \emph{Computational Statistics \& Data Analysis}
-\bold{50(8)}, 2065-2096.\cr
+Schmidt, R., Hrycej, T., and Stutzle (2006), Multivariate distribution models with
+generalized hyperbolic margins, \emph{Computational Statistics & Data Analysis}
+\bold{50(8)}, 2065---2096.\cr
 }
 \author{Alexios Galanos}
 \note{

@@ -24,9 +24,9 @@ The class is returned by calling the function \code{\link{cgarchfilter}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfilter}"}, directly.
-Class \code{"\linkS4class{GARCHfilter}"}, by class "mGARCHfilter", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfilter", distance 3.
+Class \code{\linkS4class{mGARCHfilter}}, directly.
+Class \code{\link[rugarch:GARCHfilter-class]{GARCHfilter}}, by class "mGARCHfilter", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHfilter", distance 3.
 }
 \section{Methods}{
   \describe{
@@ -54,7 +54,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfilter", distance 3.
 }
 \references{
 Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997,
-Chapman \\& Hall, London.\cr
+Chapman & Hall, London.\cr
 Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
 procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr

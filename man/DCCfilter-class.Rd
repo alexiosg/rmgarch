@@ -26,9 +26,9 @@ The class is returned by calling the function \code{\link{dccfilter}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfilter}"}, directly.
-Class \code{"\linkS4class{GARCHfilter}"}, by class "mGARCHfilter", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfilter", distance 3.
+Class \code{\link[rugarch:S4classes]{mGARCHfilter}}, directly.\\
+Class \code{\link[rugarch:S4classes]{GARCHfilter}}, by class "mGARCHfilter", distance 2.\\
+Class \code{\link[rugarch:S4classes]{rGARCH}}, by class "mGARCHfilter", distance 3.
 }
 \section{Methods}{
   \describe{

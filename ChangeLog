@@ -1,7 +1,10 @@
 2025-05-27 Alexios Galanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.4-3.
+	* Documentation fixes to pass CRAN checks.
+
+2025-05-27 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.4-2.
 	* Small bug fix in copula simulation (passing of seed to ugarchpath).
-
 
 2024-12-20 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.4-1.

@@ -1,21 +1,26 @@
 citHeader("When using rmgarch in publications, please cite:")
 
-## R >= 2.8.0 passes package metadata to citation().
-if(!exists("meta") || is.null(meta)) meta <- packageDescription("rmgarch")
+## Use package metadata if available (as done by base citation())
+if (!exists("meta") || is.null(meta)) meta <- utils::packageDescription("rmgarch")
 
-year <- sub("-.*", "", meta$Date)
-note <- sprintf("R package version %s.", meta$Version)
+year <- if (!is.null(meta$Date)) sub("-.*", "", meta$Date) else format(Sys.Date(), "%Y")
+note <- if (!is.null(meta$Version)) sprintf("R package version %s.", meta$Version) else NULL
+pkg_url <- if (!is.null(meta$URL)) meta$URL else NULL
 
-citEntry(entry="Manual",
-         title = "rmgarch: Multivariate GARCH models.",
-         author = personList(as.person("Alexios Galanos")),
-         year         = year,
-         note         = note,
-         textVersion = 
-         paste("Alexios Galanos",
-               sprintf("(%s).", year),
-               "rmgarch: Multivariate GARCH models.",
-	       note),
-	 header = "To cite the rmgarch package, please use:"
+bibentry(
+  bibtype = "Manual",
+  title   = "rmgarch: Multivariate GARCH models",
+  author  = c(person(given = "Alexios",
+                     family = "Galanos",
+                     email  = "alexios@4dscape.com",
+                     role   = c("aut", "cre"),
+                     comment = c(ORCID = "0009-0000-9308-0457"))),
+  year    = year,
+  note    = note,
+  url     = pkg_url,
+  textVersion = paste(
+    "Alexios Galanos", sprintf("(%s).", year),
+    "rmgarch: Multivariate GARCH models.",
+    if (!is.null(note)) note else ""
+  )
 )
-

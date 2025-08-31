@@ -24,23 +24,23 @@ The class is returned by calling the function \code{\link{gogarchroll}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHroll}"}, directly.
-Class \code{"\linkS4class{GARCHroll}"}, by class "mGARCHroll", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHroll", distance 3.
+Class \code{\linkS4class{mGARCHroll}}, directly.
+Class \code{\link[rugarch:GARCHroll-class]{GARCHroll}}, by class "mGARCHroll", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHroll", distance 3.
 }
 \section{Methods}{
 \describe{
     \item{coef}{\code{signature(object = "goGARCHroll")}:
-	Extraction of independent factor GARCH model coefficients saved from the
-	goGARCHfit objects(returns a list).}
-	\item{fitted}{\code{signature(object = "goGARCHroll")}:
-	Extracts the conditional fitted forecast values (returns an xts object with
-	index the actual forecast T+1 times).}
-	\item{sigma}{\code{signature(object = "goGARCHroll")}:
-	Extracts the conditional sigma forecast values (returns an xts object with
-	index the actual forecast T+1 times). Takes optional argument \dQuote{factors}
-	(default TRUE) denoting whether to return the factor conditional sigma or
-	the transformed sigma for the assets.}
+    Extraction of independent factor GARCH model coefficients saved from the
+    goGARCHfit objects (returns a list).}
+  	\item{fitted}{\code{signature(object = "goGARCHroll")}:
+  	Extracts the conditional fitted forecast values (returns an xts object with
+  	index the actual forecast T+1 times).}
+  	\item{sigma}{\code{signature(object = "goGARCHroll")}:
+  	Extracts the conditional sigma forecast values (returns an xts object with
+  	index the actual forecast T+1 times). Takes optional argument \dQuote{factors}
+  	(default TRUE) denoting whether to return the factor conditional sigma or
+  	the transformed sigma for the assets.}
     \item{rcov}{\code{signature(object = "goGARCHroll")}:
     Returns the time-varying n.asset x n.asset x (n.roll+1) covariance matrix in
     array format, where the third dimension labels are now the actual rolling
@@ -94,7 +94,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHroll", distance 3.
     given (option \sQuote{user}), else an adaptive method is used based on the
     min and max of the assets at each point in time at the 0.00001 and 1-0.00001
     quantiles. The range is equally spaced subject to the \dQuote{fft.by} value
-    but the returned object no longer makes of the \dQuote{ff} package returning
+    but the returned object no longer makes use of the \dQuote{ff} package returning
     instead a list. The option for parallel computation is available
     via the use of a cluster object as elsewhere in this package. Passing this
     object to the distribution methods (e.g. qfft) follows the same rules as

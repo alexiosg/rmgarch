@@ -17,9 +17,9 @@ The class is returned by calling the function \code{\link{cgarchsim}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHsim}"}, directly.
-Class \code{"\linkS4class{GARCHsim}"}, by class "mGARCHsim", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
+Class \code{\linkS4class{mGARCHsim}}, directly.
+Class \code{\link[rugarch:GARCHsim-class]{GARCHsim}}, by class "mGARCHsim", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHsim", distance 3.
 }
 \section{Methods}{
   \describe{
@@ -27,7 +27,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
     The simulated conditional returns matrix given. Takes optional argument
     \dQuote{sim} indicating the simulation run to return (from the m.sim option
     of the \code{\link{cgarchsim}} method.}
-    \item{sigma}{\code{signature(object = "cGARCHfit")}:
+    \item{sigma}{\code{signature(object = "cGARCHsim")}:
     The simulated conditional sigma matrix given. Takes optional argument
     \dQuote{sim} indicating the simulation run to return (from the m.sim option
     of the \code{\link{cgarchsim}} method.}
@@ -49,7 +49,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
 }
 \references{
 Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997,
-Chapman \& Hall, London.\cr
+Chapman & Hall, London.\cr
 Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
 procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr

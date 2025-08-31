@@ -8,7 +8,7 @@
 \alias{rcokurt,goGARCHsim-method}
 \alias{rcov,goGARCHsim-method}
 \alias{as.matrix,goGARCHsim-method}
-\title{class: GO-GARCH Simultion Class}
+\title{class: GO-GARCH Simulation Class}
 \description{Class for the GO-GARCH Simulation.}
 \section{Objects from the Class}{
 The class is returned by calling the function \code{\link{gogarchsim}}.
@@ -22,9 +22,9 @@ The class is returned by calling the function \code{\link{gogarchsim}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHsim}"}, directly.
-Class \code{"\linkS4class{GARCHsim}"}, by class "mGARCHsim", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHsim", distance 3.
+Class \code{\linkS4class{mGARCHsim}}, directly.
+Class \code{\link[rugarch:GARCHsim-class]{GARCHsim}}, by class "mGARCHsim", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHsim", distance 3.
 }
 \section{Methods}{
 \describe{

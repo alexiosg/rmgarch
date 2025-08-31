@@ -25,9 +25,9 @@ The class is returned by calling the function \code{\link{dccroll}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHroll}"}, directly.
-Class \code{"\linkS4class{GARCHroll}"}, by class "mGARCHroll", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHroll", distance 3.
+Class \code{\linkS4class{mGARCHroll}}, directly.
+Class \code{\link[rugarch:GARCHroll-class]{GARCHroll}}, by class "mGARCHroll", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHroll", distance 3.
 }
 \section{Methods}{
   \describe{
@@ -43,8 +43,8 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHroll", distance 3.
     Plot method, given additional arguments \sQuote{series} and \sQuote{which}.}
     \item{rcor}{\code{signature(object = "DCCroll")}:
     The forecast dynamic conditional correlation array, with the T+i forecast
-    index in the 3rd dimension label. Optional argument \sQuote{type}
-    determines whether to return \dQuote{R} for the correlation else will
+    index in the third dimension label. Optional argument \sQuote{type}
+    determines whether to return \dQuote{R} for the correlation else will return
     the DCC Q matrix. A further argument \sQuote{output} allows to switch
     between \dQuote{array} and \dQuote{matrix} returned object.}
     \item{rcov}{\code{signature(object = "DCCroll")}:

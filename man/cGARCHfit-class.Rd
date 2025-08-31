@@ -22,9 +22,9 @@ The class is returned by calling the function \code{\link{cgarchfit}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfit}"}, directly.
-Class \code{"\linkS4class{GARCHfit}"}, by class "mGARCHfit", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
+Class \code{\linkS4class{mGARCHfit}}, directly.
+Class \code{\link[rugarch:GARCHfit-class]{GARCHfit}}, by class "mGARCHfit", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHfit", distance 3.
 }
 \section{Methods}{
   \describe{
@@ -56,7 +56,7 @@ Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
 }
 \references{
 Joe, H. \emph{Multivariate Models and Dependence Concepts}, 1997,
-Chapman \& Hall, London.\cr
+Chapman & Hall, London.\cr
 Genest, C., Ghoudi, K. and Rivest, L. \emph{A semiparametric estimation
 procedure of dependence parameters in multivariate families of distributions},
 1995, Biometrika, 82, 543-552.\cr

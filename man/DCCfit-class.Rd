@@ -29,13 +29,13 @@ The class is returned by calling the function \code{\link{dccfit}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfit}"}, directly.
-Class \code{"\linkS4class{GARCHfit}"}, by class "mGARCHfit", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfit", distance 3.
+Class \code{\linkS4class{mGARCHfit}}, directly.
+Class \code{\link[rugarch:GARCHfit-class]{GARCHfit}}, by class "mGARCHfit", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHfit", distance 3.
 }
 \section{Methods}{
   \describe{
-   \item{coef}{\code{signature(object = "DCCfit")}
+   \item{coef}{\code{signature(object = "DCCfit")}:
     The coefficient vector (see note). }
     \item{likelihood}{\code{signature(object = "DCCfit")}:
     The joint likelihood. }

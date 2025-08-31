@@ -2,8 +2,8 @@ Package: rmgarch
 Type: Package
 Title: Multivariate GARCH Models
 Version: 1.4-2
-Date: 2025-05-27
-Author: Alexios Galanos <alexios@4dscape.com>
+Date: 2025-08-31
+Authors@R: c(person("Alexios", "Galanos", role = c("aut", "cre","cph"), email = "alexios@4dscape.com", comment = c(ORCID = "0009-0000-9308-0457")))
 Maintainer: Alexios Galanos <alexios@4dscape.com>
 Depends: R (>= 3.0.2), methods, rugarch (>=  1.4-7), parallel
 LinkingTo: Rcpp (>= 0.10.6), RcppArmadillo (>= 0.2.34)
@@ -11,5 +11,5 @@ Imports: Rsolnp, MASS, Matrix, zoo, xts, Bessel, ff, shape, pcaPP, spd, Rcpp, ut
 Description: Feasible multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
 Collate: rmgarch-extrafun.R rmgarch-var.R rmgarch-functions.R rmgarch-classes.R rmgarch-ica.R rmgarch-series.R rmgarch-mmean.R gogarch-classes.R gogarch-distributions.R gogarch-main.R gogarch-methods.R rdcc-classes.R rdcc-main.R rdcc-likelihoods.R rdcc-plots.R fdcc-likelihoods.R fdcc-main.R rdcc-methods.R rdcc-mdistributions.R rdcc-postestimation.R rdcc-solver.R copula-classes.R copula-distributions.R copula-likelihoods.R copula-solver.R copula-fn.R copula-transformations.R copula-main.R copula-postestimation.R copula-methods.R rmgarch-tests.R rmgarch-scenario.R zzz.R
 LazyLoad: yes
-URL: http://www.unstarched.net, https://github.com/alexiosg/rmgarch
+URL: https://github.com/alexiosg/rmgarch
 License: GPL-3

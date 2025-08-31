@@ -28,9 +28,9 @@ The class is returned by calling the function \code{\link{gogarchforecast}}.
   }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHforecast}"}, directly.
-Class \code{"\linkS4class{GARCHforecast}"}, by class "mGARCHforecast", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHforecast", distance 3.
+Class \code{\linkS4class{mGARCHforecast}}, directly.
+Class \code{\link[rugarch:GARCHforecast-class]{GARCHforecast}}, by class "mGARCHforecast", distance 2.
+Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHforecast", distance 3.
 }
 \section{Methods}{
   \describe{
@@ -163,8 +163,8 @@ distributions and independent components, \emph{Journal of Empirical Finance},
 \bold{17(2)}, 255--269.\cr
 de Athayde, G.M. and Flores Jr, R.G. 2002, On Certain Geometric Aspects of
 Portfolio Optimisation with Higher Moments, \emph{mimeo}.\cr
-Ghalanos, A., Rossi, E., and Urga, G. (2013). \emph{Independent Factor
-Autoregressive Conditional Density Model}, \bold{forthcoming}.\cr
+Ghalanos, A., Rossi, E., and Urga, G. 2015, Independent factor autoregressive
+conditional density model, \emph{Econometric Reviews}, \bold{34}(5), 594--616.\cr
 Paolella, M.S. 2007, Intermediate Probability - A Computational Approach,
 \emph{Wiley-Interscience}.\cr
 }

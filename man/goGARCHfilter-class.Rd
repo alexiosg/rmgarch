@@ -32,9 +32,9 @@ the GOGARCH model specification.}
 }
 }
 \section{Extends}{
-Class \code{"\linkS4class{mGARCHfilter}"}, directly.
-Class \code{"\linkS4class{GARCHfilter}"}, by class "mGARCHfilter", distance 2.
-Class \code{"\linkS4class{rGARCH}"}, by class "mGARCHfilter", distance 3.
+Class \code{\link[rugarch:S4classes]{mGARCHfilter}}, directly.\\
+Class \code{\link[rugarch:S4classes]{GARCHfilter}}, by class "mGARCHfilter", distance 2.\\
+Class \code{\link[rugarch:S4classes]{rGARCH}}, by class "mGARCHfilter", distance 3.
 }
 \section{Methods}{
 \describe{
@@ -152,7 +152,7 @@ Portfolio Risk Calculation, \emph{Journal of Financial Econometrics} \bold{7(4)}
 Paolella, M.S. 2007, Intermediate Probability - A Computational Approach,
 \emph{Wiley-Interscience}.\cr
 Schmidt, R., Hrycej, T. and Stutzle 2006, Multivariate distribution models with
-generalized hyperbolic margins, \emph{Computational Statistics \& Data Analysis}
+generalized hyperbolic margins, \emph{Computational Statistics & Data Analysis}
 \bold{50(8)}, 2065-2096.\cr
 }
 \author{Alexios Galanos}
