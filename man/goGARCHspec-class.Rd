@@ -14,9 +14,9 @@ The class is returned by calling the function \code{\link{gogarchspec}}.
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHspec}}, directly.
-Class \code{\link[rugarch:GARCHspec-class]{GARCHspec}}, by class "mGARCHspec", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHspec", distance 3.
+Class \code{mGARCHspec}, directly.\\
+Class \code{GARCHspec} object from the \pkg{rugarch} package, by class \code{mGARCHspec}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHspec}, distance 3.
 }
 \section{Methods}{
 \describe{

@@ -10,16 +10,16 @@ The class is returned by calling the function \code{\link{cgarchspec}}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{model}:}{Object of class \code{"vector"}
+    \item{\code{model}:}{Object of class \code{"vector"}.
     The multivariate model specification.}
-    \item{\code{umodel}:}{Object of class \code{\link[rugarch:uGARCHmultispec-class]{uGARCHmultispec}}
+    \item{\code{umodel}:}{Object of class \code{uGARCHmultispec} from the \pkg{rugarch} package.
     The univariate model specification.}
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHspec}}, directly.
-Class \code{\link[rugarch:GARCHspec-class]{GARCHspec}}, by class "mGARCHspec", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHspec", distance 3.
+Class \code{mGARCHspec}, directly.\\
+Class \code{GARCHspec} object from the \pkg{rugarch} package, by class \code{mGARCHspec}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHspec}, distance 3.
 }
 \section{Methods}{
   \describe{

@@ -17,9 +17,9 @@ The class is returned by calling the function \code{\link{cgarchsim}}.
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHsim}}, directly.
-Class \code{\link[rugarch:GARCHsim-class]{GARCHsim}}, by class "mGARCHsim", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHsim", distance 3.
+Class \code{mGARCHsim}, directly.\\
+Class \code{GARCHsim} object from the \pkg{rugarch} package, by class \code{mGARCHsim}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHsim}, distance 3.
 }
 \section{Methods}{
   \describe{

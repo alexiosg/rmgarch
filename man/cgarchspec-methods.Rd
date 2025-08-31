@@ -19,7 +19,7 @@ start.pars = list(), fixed.pars = list())
 }
 \arguments{
   \item{uspec}{
-  A \code{\link[rugarch:S4classes]{uGARCHmultispec}} object created by calling
+  A \code{uGARCHmultispec} object from the \pkg{rugarch} package, created by calling
   \code{\link[rugarch]{multispec}} on a list of univariate GARCH specifications.}
   \item{VAR}{ Whether to fit a VAR model for the conditional mean.}
   \item{robust}{ Whether to use the robust version of VAR.}

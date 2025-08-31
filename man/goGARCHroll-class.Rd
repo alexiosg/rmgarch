@@ -24,9 +24,9 @@ The class is returned by calling the function \code{\link{gogarchroll}}.
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHroll}}, directly.
-Class \code{\link[rugarch:GARCHroll-class]{GARCHroll}}, by class "mGARCHroll", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHroll", distance 3.
+Class \code{mGARCHroll}, directly.\\
+Class \code{GARCHroll} object from the \pkg{rugarch} package, by class \code{mGARCHroll}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHroll}, distance 3.
 }
 \section{Methods}{
 \describe{

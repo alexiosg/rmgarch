@@ -22,11 +22,10 @@ The class is returned by calling the function \code{\link{dccforecast}}.
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHforecast}}, directly.
-Class \code{\link[rugarch:GARCHforecast-class]{GARCHforecast}}, by class "mGARCHforecast", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHforecast", distance 3.
+Class \code{mGARCHforecast}, directly.\\
+Class \code{GARCHforecast} object from the \pkg{rugarch} package, by class \code{mGARCHforecast}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHforecast}, distance 3.
 }
-
 \section{Methods}{
   \describe{
   	\item{rshape}{\code{signature(object = "DCCforecast")}:

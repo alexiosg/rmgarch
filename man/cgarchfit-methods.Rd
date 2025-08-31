@@ -33,7 +33,7 @@ cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL,...)
   	the parallel package. If it is not NULL, then this will be used for parallel
   	estimation (remember to stop the cluster on completion).}
   \item{fit}{ (optional) A previously estimated univariate
-  \code{\link[rugarch:S4classes]{uGARCHmultifit}} object (see details).}
+  \code{uGARCHmultifit} object from the \pkg{rugarch} package (see details).}
 	\item{VAR.fit}{ (optional) A previously estimated VAR list returned from
 	calling the \code{\link{varxfit}} function.}
 	\item{spd.control}{ If the spd transformation was chosen in the
@@ -58,9 +58,9 @@ package for more details).\cr
 The static copula allows for the estimation of the correlation matrix either by
 Maximum Likelihood or the Kendall method for the multivariate Student.\cr
 Note that the \sQuote{cgarchfit} method will assign to the global environment
-the \code{\link[rugarch:S4classes]{uGARCHmultifit}} once that is estimated in order to allow
-the routine to be restarted should something go wrong (it should show up as
-\sQuote{.fitlist}).
+the \code{uGARCHmultifit} object from the \pkg{rugarch} package once that is
+estimated in order to allow the routine to be restarted should something go
+wrong (it should show up as \sQuote{.fitlist}).
 }
 \note{
 There is no check on the VAR.fit list passed to the method so particular care

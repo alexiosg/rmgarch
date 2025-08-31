@@ -22,9 +22,9 @@ The class is returned by calling the function \code{\link{cgarchfit}}.
   }
 }
 \section{Extends}{
-Class \code{\linkS4class{mGARCHfit}}, directly.
-Class \code{\link[rugarch:GARCHfit-class]{GARCHfit}}, by class "mGARCHfit", distance 2.
-Class \code{\link[rugarch:rGARCH-class]{rGARCH}}, by class "mGARCHfit", distance 3.
+Class \code{mGARCHfit}, directly.\\
+Class \code{GARCHfit} object from the \pkg{rugarch} package, by class \code{mGARCHfit}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHfit}, distance 3.
 }
 \section{Methods}{
   \describe{

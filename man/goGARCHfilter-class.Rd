@@ -32,9 +32,9 @@ the GOGARCH model specification.}
 }
 }
 \section{Extends}{
-Class \code{\link[rugarch:S4classes]{mGARCHfilter}}, directly.\\
-Class \code{\link[rugarch:S4classes]{GARCHfilter}}, by class "mGARCHfilter", distance 2.\\
-Class \code{\link[rugarch:S4classes]{rGARCH}}, by class "mGARCHfilter", distance 3.
+Class \code{mGARCHfilter}, directly.\\
+Class \code{GARCHfilter} object from the \pkg{rugarch} package, by class \code{mGARCHfilter}, distance 2.\\
+Class \code{rGARCH} object from the \pkg{rugarch} package, by class \code{mGARCHfilter}, distance 3.
 }
 \section{Methods}{
 \describe{

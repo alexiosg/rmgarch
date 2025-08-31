@@ -34,7 +34,7 @@ cluster = NULL, fit = NULL, VAR.fit = NULL, realizedVol = NULL, ...)
   	the parallel package. If it is not NULL, then this will be used for parallel
   	estimation (remember to stop the cluster on completion).}
   \item{fit}{ (optional) A previously estimated univariate
-  \code{\link[rugarch:S4classes]{uGARCHmultifit}} object (see details).}
+  \code{uGARCHmultifit} object from the \pkg{rugarch} package (see details).}
 	\item{VAR.fit}{ (optional) A previously estimated VAR object returned from
 	calling the \code{\link{varxfit}} function.}
 	\item{realizedVol}{ Required xts matrix for the realGARCH model.}
@@ -54,8 +54,8 @@ the calculation of standard errors through the \sQuote{fit.control} option could
 be quite useful in rolling estimation such as in the \code{\link{dccroll}}
 routine.\cr
 The optional \sQuote{fit} argument allows to pass your own
-\code{\link[rugarch:S4classes]{uGARCHmultifit}}
-object instead of having the routine estimate it. This is very useful in cases
+\code{uGARCHmultifit} object from the \pkg{rugarch} package instead of having the
+routine estimate it. This is very useful in cases
 of multiple use of the same fit and problems in convergence which might require
 a more hands on approach to the univariate fitting stage. However, it is up to
 the user to ensure consistency between the \sQuote{fit} and supplied \sQuote{spec}.
