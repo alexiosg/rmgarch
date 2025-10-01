@@ -410,8 +410,8 @@
 		stop("\ndccfit-->error: out.sample must be positive\n")
 	n.start = round(out.sample, 0)
 	n = dim(xdata$data)[1]
-	if( (n-n.start) < 100)
-		stop("\ndccfit-->error: function requires at least 100 data\n points to run\n")
+	if( (n-n.start) < 20)
+		stop("\ndccfit-->error: function requires at least 20 data\n points to run\n")
 	data   = xdata$data
 	index  = xdata$index
 	period = xdata$period
@@ -677,8 +677,8 @@
 		stop("\ndccfilter-->error: out.sample must be positive\n")
 	n.start = round(out.sample, 0)
 	n = dim(xdata$data)[1]
-	if( (n-n.start) < 100)
-		stop("\ndccfilter-->error: function requires at least 100 data\n points to run\n")
+	if( (n-n.start) < 20)
+		stop("\ndccfilter-->error: function requires at least 20 data\n points to run\n")
 	data   = xdata$data
 	index  = xdata$index
 	period = xdata$period
