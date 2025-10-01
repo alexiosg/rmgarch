@@ -32,3 +32,4 @@ rmgarch.Rproj
 .Rhistory
 *.o
 .DS_Store
+.idea
