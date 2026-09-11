@@ -1,3 +1,14 @@
+2026-09-10 Alexios Galanos <alexios@4dscape.com>
+	* DESCRIPTION (Version): New version is 1.4-3.
+	* Bug fix in rmvnormx (src/rmdist.cpp): removed a redundant, nested
+	Rcpp::RNGScope instantiation which corrupted the RNG state of callers
+	(rmvtx, rmvlx), causing the chi-squared (Student-t) and exponential
+	(Laplace) mixing variates to be frozen at their first-drawn value on
+	subsequent calls. This silently degenerated simulated multivariate
+	Student-t and Laplace innovations into multivariate Normal innovations
+	in the DCC and copula simulation code paths (dccsimmvt, dccsimmvl and
+	their copula equivalents). Reported and fixed by canyalniz (PR #7).
+
 2025-05-27 Alexios Galanos <alexios@4dscape.com>
 	* DESCRIPTION (Version): New version is 1.4-3.
 	* Documentation fixes to pass CRAN checks.
