@@ -17,7 +17,6 @@
 #include "rmdist.h"
 
 arma::rowvec rmvnormx(arma::mat R, arma::rowvec Z){
-	Rcpp::RNGScope scope;
 	int m = R.n_rows;
 	arma::vec eigval(m);
 	arma::mat eigvec(m, m);
